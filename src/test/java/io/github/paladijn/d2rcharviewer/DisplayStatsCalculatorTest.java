@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DisplayStatsCalculatorTest {
 
-    private DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator());
+    private final DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator());
 
     @Test
     void simpleChar() {
@@ -111,5 +111,12 @@ class DisplayStatsCalculatorTest {
         assertEquals(8, result.resistances().lightning());
         assertEquals(20, result.resistances().cold());
         assertEquals(45, result.resistances().poison());
+    }
+
+    @Test
+    void shouldCalcRemainingXPfor99() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.77312/Goatunnheim_lvl99.d2s"));
+        assertEquals(99, result.level());
+        assertEquals("100", result.percentToNext());
     }
 }

@@ -152,6 +152,9 @@ public class DisplayStatsCalculator {
     }
 
     private String calculateLevelPercentage(byte level, long experience) {
+        if (level == 99) {
+            return "100";
+        }
         long levelMin = Constants.xpLevels[level];
         long levelMax = Constants.xpLevels[level + 1];
         long total = levelMax - levelMin;
