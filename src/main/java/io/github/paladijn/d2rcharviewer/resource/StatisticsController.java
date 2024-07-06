@@ -59,23 +59,21 @@ public class StatisticsController {
     @Produces(MediaType.TEXT_HTML)
     public String getInfo() {
         log.info("attempting to load latest savegame");
-        try {
-            final DisplayStats statsForMostRecent = saveGameWatchService.getLastDisplayStats();
-            if (statsForMostRecent == null) {
-                return readFileContents(noCharsTemplate);
-            }
-            log.debug("character stats: {}", statsForMostRecent);
-            String result;
-            try (InputStream resource = new FileInputStream(characterTemplate)) {
-                result = new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8))
-                        .lines()
-                        .map(line -> mapValues(line, statsForMostRecent))
-                        .collect(Collectors.joining());
-            }
 
-            return result;
-        } catch (Exception e) {
-            log.error("issue reading the stats", e);
+        final DisplayStats statsForMostRecent = saveGameWatchService.getLastDisplayStats();
+        if (statsForMostRecent == null) {
+            return readFileContents(noCharsTemplate);
+        }
+
+        log.debug("character stats: {}", statsForMostRecent);
+
+        try (InputStream resource = new FileInputStream(characterTemplate)) {
+            return new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8))
+                    .lines()
+                    .map(line -> mapValues(line, statsForMostRecent))
+                    .collect(Collectors.joining());
+        } catch (IOException ioe) {
+            log.error("issue reading the stats", ioe);
             return readFileContents(errorTemplate);
         }
     }
