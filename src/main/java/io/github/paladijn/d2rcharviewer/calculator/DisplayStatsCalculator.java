@@ -220,7 +220,7 @@ public class DisplayStatsCalculator {
 
     private int getResistance(String type, D2Character character, List<Item> equippedItems, List<ItemProperty> benefits) {
         final int sum = getTotalPointsInProperty(type + "resist", equippedItems, benefits);
-        final int max = 75 + getTotalPointsInProperty("max" + type + "resist", equippedItems, benefits);
+        final int max = Math.min(95, 75 + getTotalPointsInProperty("max" + type + "resist", equippedItems, benefits));
         return Math.min(max, adjustSumByLocation(character, sum));
     }
 
