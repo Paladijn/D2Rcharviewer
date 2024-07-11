@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DisplayStatsCalculatorTest {
@@ -115,8 +116,14 @@ class DisplayStatsCalculatorTest {
 
     @Test
     void shouldCalcRemainingXPfor99() {
-        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.77312/Goatunnheim_lvl99.d2s"));
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_lvl99.d2s"));
         assertEquals(99, result.level());
         assertEquals("100", result.percentToNext());
+    }
+
+    @Test
+    void brokenJewels() {
+        // This character has 6 adjusted jewels that lack a prefix and postfix id. Prior to parser version 1.3.2 this would throw a ParserException.
+        assertDoesNotThrow(() -> cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_wrong_jewels.d2s")));
     }
 }
