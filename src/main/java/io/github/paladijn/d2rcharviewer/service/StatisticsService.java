@@ -18,7 +18,6 @@ package io.github.paladijn.d2rcharviewer.service;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
@@ -39,9 +38,8 @@ public class StatisticsService {
     @ConfigProperty(name = "savegame.location")
     private String savegameLocation;
 
-    private DisplayStatsCalculator calculator;
+    private final DisplayStatsCalculator calculator;
 
-    @Inject
     public StatisticsService(DisplayStatsCalculator displayStatsCalculator) {
         this.calculator = displayStatsCalculator;
     }

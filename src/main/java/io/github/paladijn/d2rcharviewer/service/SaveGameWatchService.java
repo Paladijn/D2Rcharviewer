@@ -20,7 +20,6 @@ import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
-import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
@@ -42,15 +41,18 @@ public class SaveGameWatchService {
     @ConfigProperty(name = "savegame.location")
     private String savegameLocation;
 
-    @Inject
-    private StatisticsService statisticsService;
+    private final StatisticsService statisticsService;
 
-    @Inject
-    private DisplayStatsCalculator displayStatsCalculator;
+    private final DisplayStatsCalculator displayStatsCalculator;
 
     private Thread pollThread;
 
     private DisplayStats lastDisplayStats;
+
+    public SaveGameWatchService(StatisticsService statisticsService, DisplayStatsCalculator displayStatsCalculator) {
+        this.statisticsService = statisticsService;
+        this.displayStatsCalculator = displayStatsCalculator;
+    }
 
     void onStart(@Observes StartupEvent ev) {
         Runnable task = this::pollSaveGameChanges;

@@ -17,8 +17,6 @@ package io.github.paladijn.d2rcharviewer.resource;
 
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.service.SaveGameWatchService;
-import io.github.paladijn.d2rcharviewer.service.StatisticsService;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -49,11 +47,11 @@ public class StatisticsController {
     @ConfigProperty(name = "template.nochars", defaultValue = "templates/noChars.html")
     private String noCharsTemplate;
 
-    @Inject
-    private StatisticsService statisticsService;
+    private final SaveGameWatchService saveGameWatchService;
 
-    @Inject
-    private SaveGameWatchService saveGameWatchService;
+    public StatisticsController(SaveGameWatchService saveGameWatchService) {
+        this.saveGameWatchService = saveGameWatchService;
+    }
 
     @GET
     @Produces(MediaType.TEXT_HTML)
