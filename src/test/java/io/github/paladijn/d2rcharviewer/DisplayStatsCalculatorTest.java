@@ -126,4 +126,20 @@ class DisplayStatsCalculatorTest {
         // This character has 6 adjusted jewels that lack a prefix and postfix id. Prior to parser version 1.3.2 this would throw a ParserException.
         assertDoesNotThrow(() -> cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_wrong_jewels.d2s")));
     }
+
+    @Test
+    void shouldNotApplyStealthBonus() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/NoStealth.d2s"));
+        assertEquals(0, result.breakpoints().fCR());
+        assertEquals(27, result.breakpoints().fHR());
+        assertEquals(50, result.fasterRunWalk());
+    }
+
+    @Test
+    void shouldNotApplyCharmBonus() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/NoStealth.d2s"));
+
+        // This should not apply the bonus of the lvl 22 req Amber GC
+        assertEquals(26, result.resistances().lightning());
+    }
 }

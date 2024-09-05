@@ -226,7 +226,8 @@ public class DisplayStatsCalculator {
 
     private List<Item> getEquippedItems(D2Character character) {
         return character.items().stream()
-                .filter(this::equippedOrCharm)
+                .filter(item -> requirementsMet(character, item)
+                                && equippedOrCharm(item))
                 .toList();
     }
 
@@ -262,6 +263,12 @@ public class DisplayStatsCalculator {
     private boolean availableRune(Item item) {
         return Item.isRune(item.type())
                 && (item.container() == INVENTORY || item.container() == STASH);
+    }
+
+    private boolean requirementsMet(D2Character d2Character, Item item) {
+        return d2Character.level() >= item.reqLvl()
+                && d2Character.attributes().strength() >= item.reqStr()
+                && d2Character.attributes().dexterity() >= item.reqDex();
     }
 
     private boolean equippedOrCharm(Item item) {
