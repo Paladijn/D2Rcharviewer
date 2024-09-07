@@ -142,4 +142,13 @@ class DisplayStatsCalculatorTest {
         // This should not apply the bonus of the lvl 22 req Amber GC
         assertEquals(26, result.resistances().lightning());
     }
+
+    @Test
+    void countKeys() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/Keys.d2s"));
+
+        assertEquals(1, result.keys().terror());
+        assertEquals(1, result.keys().hate());
+        assertEquals(1, result.keys().destruction());
+    }
 }

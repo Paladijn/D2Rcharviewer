@@ -17,4 +17,4 @@ package io.github.paladijn.d2rcharviewer.model;
 
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 
-public record DisplayStats(String name, CharacterType type, int level, boolean isHardcore, String percentToNext, DisplayAttributes attributes, Resistances resistances, Breakpoints breakpoints, int fasterRunWalk, int mf, int gf, String gold, String goldInStash, String runes, String runewords, String lastUpdated) { }
+public record DisplayStats(String name, CharacterType type, int level, boolean isHardcore, String percentToNext, DisplayAttributes attributes, Resistances resistances, Breakpoints breakpoints, int fasterRunWalk, int mf, int gf, String gold, String goldInStash, String runes, String runewords, Keys keys, String lastUpdated) { }

@@ -118,6 +118,11 @@ public class StatisticsController {
         line = line.replace("${runes}", String.format("%s", statsForMostRecent.runes()));
         line = line.replace("${runewords}", String.format("%s", statsForMostRecent.runewords()));
         line = line.replace("${lastUpdated}", String.format("%s", statsForMostRecent.lastUpdated()));
+
+        line = line.replace("${keys-of-terror}", String.format("%s", statsForMostRecent.keys().terror()));
+        line = line.replace("${keys-of-hate}", String.format("%s", statsForMostRecent.keys().hate()));
+        line = line.replace("${keys-of-destruction}", String.format("%s", statsForMostRecent.keys().destruction()));
+
         return line;
     }
 }

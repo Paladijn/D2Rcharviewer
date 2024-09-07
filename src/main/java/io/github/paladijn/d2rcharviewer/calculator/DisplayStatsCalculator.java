@@ -19,6 +19,7 @@ import io.github.paladijn.d2rcharviewer.model.Breakpoints;
 import io.github.paladijn.d2rcharviewer.model.Constants;
 import io.github.paladijn.d2rcharviewer.model.DisplayAttributes;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
+import io.github.paladijn.d2rcharviewer.model.Keys;
 import io.github.paladijn.d2rcharviewer.model.Resistances;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
@@ -137,11 +138,13 @@ public class DisplayStatsCalculator {
         final List<String> runewordsOnCharacter = getRuneWordsOnCharacter(character.items());
         final String runewords = getAvailableRuneWords(availableRunes, runewordsOnCharacter);
 
+        Keys keys = getAvailableKeys(allItems);
+
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
                 attributes, resistances, breakpoints, frw, mf, gf, goldString(character.attributes().gold()), goldString(goldInStash),
-                runes, runewords, lastUpdateStr);
+                runes, runewords, keys, lastUpdateStr);
     }
 
     private String goldString(long goldValue) {
@@ -187,6 +190,22 @@ public class DisplayStatsCalculator {
                 .filter(Item::isRuneword)
                 .map(Item::itemName)
                 .toList();
+    }
+
+    private Keys getAvailableKeys(List<Item> allItems) {
+        int terror = 0;
+        int hate = 0;
+        int destruction = 0;
+        for (Item item: allItems) {
+            if (item.level() >= 80) { // hate 80, terror 85, destruction 90
+                switch (item.itemName()) {
+                    case "Key of Terror" -> terror++;
+                    case "Key of Hate" -> hate++;
+                    case "Key of Destruction" -> destruction++;
+                }
+            }
+        }
+        return new Keys(terror, hate, destruction);
     }
 
     public static List<ItemProperty> getPropertiesByNames(List<Item> items, List<String> name) {
