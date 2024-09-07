@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="refresh" content="5">
+    <style>
+        body {
+           font-family: Exocet;
+           background-color: rgba(0, 0, 0, 0.5);
+       }
+    </style>
+</head>
+<body>
+<div><span style="font-weight: bold">${name}</span> (<span>${percentToNext}</span>%) <span class="hardcore">${hardcore}</span></div>
+<table width="400px">
+    <tr>
+        <td>Lvl:</td><td><span>${level}</span></td><td colspan="6"><span class="gold">Gold: </span><span class="gold">${gold}</span> [<span class="gold">${goldInStash}</span>]<span> MF: </span><span>${mf}</span></td>
+    </tr>
+    <tr>
+        <td class="header">Str:</td><td><span>${attributes.strength}</span></td><td><div class="fire">Fire%:</div></td><td><span class="fire">${resistances.fire}</span></td><td class="header">FRW:</td><td><span>${fasterRunWalk}</span></td><td></td><td></td>
+    </tr>
+    <tr>
+        <td class="header">Dex:</td><td><span>${attributes.dexterity}</span></td><td><div class="lightning">Lgth%:</div></td><td><span class="lightning">${resistances.lightning}</span></td><td class="header">FCR:</td><td><span>${breakpoints.fCR}</span></td><td> (<span class="next">${breakpoints.nextFCR}</span>)</td><td></td>
+    </tr>
+    <tr>
+        <td class="header">Vit:</td><td><span></span>${attributes.vitality}</td><td><div class="cold">Cold%:</div></td><td><span class="cold">${resistances.cold}</span></td><td class="header">FBR:</td><td><span>${breakpoints.fBR}</span></td><td></td><td></td>
+    </tr>
+    <tr>
+        <td class="header">Ene:</td><td><span>${attributes.energy}</span></td><td><div class="poison">Pois%:</div></td><td><span class="poison">${resistances.poison}</span></td><td class="header">FHR:</td><td><span>${breakpoints.fHR}</span></td><td> (<span class="next">${breakpoints.nextFHR}</span>)</td><td></td>
+    </tr>
+    <tr>
+        <td colspan="8"><textarea maxlength="100" rows="3" wrap="soft" readonly="readonly" class="runes">${runes}</textarea></td>
+    </tr>
+    <tr>
+        <td colspan="8"><textarea rows="3" wrap="soft" readonly="readonly" class="runewords">${runewords}</textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2">T-keys: ${keys.terror}</td><td colspan="2">H-keys: ${keys.hate}</td><td colspan="4">D-keys: ${keys.destruction}</td>
+    </tr>
+</table>
+</body>
+</html>

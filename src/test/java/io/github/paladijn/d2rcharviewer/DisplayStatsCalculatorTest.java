@@ -24,8 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class DisplayStatsCalculatorTest {
 
@@ -35,40 +34,40 @@ class DisplayStatsCalculatorTest {
     void simpleChar() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.5/Dierentuin.d2s"));
 
-        assertEquals("Dierentuin", result.name());
-        assertEquals(CharacterType.NECROMANCER, result.type());
-        assertEquals(16, result.level());
-        assertEquals(30, result.fasterRunWalk());
-        assertEquals(42, result.attributes().strength());
-        assertEquals(25, result.attributes().dexterity());
-        assertEquals(70, result.attributes().vitality());
-        assertEquals(25, result.attributes().energy());
-        assertEquals(28, result.resistances().fire());
-        assertEquals(31, result.resistances().lightning());
-        assertEquals(53, result.resistances().cold());
-        assertEquals(10, result.resistances().poison());
-        assertEquals(45, result.mf());
-        assertEquals(0, result.gf());
-        assertEquals("16", result.gold());
-        assertEquals("5K", result.goldInStash());
-        assertEquals("Nef, Eth, Ith (2), Tal (3), Ral", result.runes());
+        assertThat(result.name()).isEqualTo("Dierentuin");
+        assertThat(result.type()).isEqualTo(CharacterType.NECROMANCER);
+        assertThat(result.level()).isEqualTo(16);
+        assertThat(result.fasterRunWalk()).isEqualTo(30);
+        assertThat(result.attributes().strength()).isEqualTo(42);
+        assertThat(result.attributes().dexterity()).isEqualTo(25);
+        assertThat(result.attributes().vitality()).isEqualTo(70);
+        assertThat(result.attributes().energy()).isEqualTo(25);
+        assertThat(result.resistances().fire()).isEqualTo(28);
+        assertThat(result.resistances().lightning()).isEqualTo(31);
+        assertThat(result.resistances().cold()).isEqualTo(53);
+        assertThat(result.resistances().poison()).isEqualTo(10);
+        assertThat(result.mf()).isEqualTo(45);
+        assertThat(result.gf()).isZero();
+        assertThat(result.gold()).isEqualTo("16");
+        assertThat(result.goldInStash()).isEqualTo("5K");
+        assertThat(result.runes()).isEqualTo("Nef, Eth, Ith (2), Tal (3), Ral");
     }
 
     @Test
     void newChar() {
         final  DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.5/Wandelaar.d2s"));
 
-        assertEquals("Wandelaar", result.name());
-        assertEquals(CharacterType.PALADIN, result.type());
-        assertEquals(7, result.breakpoints().nextFHR());
-        assertEquals(9, result.breakpoints().nextFCR());
+        assertThat(result.name()).isEqualTo("Wandelaar");
+        assertThat(result.type()).isEqualTo(CharacterType.PALADIN);
+        assertThat(result.breakpoints().nextFHR()).isEqualTo(7);
+        assertThat(result.breakpoints().nextFCR()).isEqualTo(9);
     }
 
     @Test
     void goldenStatueBroken() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.5/Wandelaar-stat.d2s"));
 
-        assertEquals(CharacterType.PALADIN, result.type());
+        assertThat(result.type()).isEqualTo(CharacterType.PALADIN);
         // this used to throw an exception as j34 has an extra byte (8 bits) in the item list
     }
 
@@ -80,59 +79,59 @@ class DisplayStatsCalculatorTest {
         final DisplayStats result = calculatorWithoutDuplicates.getDisplayStats(Path.of("src/test/resources/2.5/Fierljepper.d2s"));
 
         // Stealth is already made, so should be skipped
-        assertEquals("Nef (3), Eth, Ith, Tal (2), Ral", result.runes());
-        assertEquals("", result.runewords());
+        assertThat(result.runes()).isEqualTo("Nef (3), Eth, Ith, Tal (2), Ral");
+        assertThat(result.runewords()).isEmpty();
     }
 
     @Test
     void calculateNightmareResistances() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.5/Wandelaar-nm.d2s"));
 
-        assertEquals(34, result.resistances().fire());
-        assertEquals(55, result.resistances().lightning());
-        assertEquals(17, result.resistances().cold());
-        assertEquals(60, result.resistances().poison());
+        assertThat(result.resistances().fire()).isEqualTo(34);
+        assertThat(result.resistances().lightning()).isEqualTo(55);
+        assertThat(result.resistances().cold()).isEqualTo(17);
+        assertThat(result.resistances().poison()).isEqualTo(60);
     }
 
     @Test
     void calculateAnyaResistances() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.5/Wandelaar-anya.d2s"));
 
-        assertEquals(44, result.resistances().fire());
-        assertEquals(65, result.resistances().lightning());
-        assertEquals(27, result.resistances().cold());
-        assertEquals(70, result.resistances().poison());
+        assertThat(result.resistances().fire()).isEqualTo(44);
+        assertThat(result.resistances().lightning()).isEqualTo(65);
+        assertThat(result.resistances().cold()).isEqualTo(27);
+        assertThat(result.resistances().poison()).isEqualTo(70);
     }
 
     @Test
     void calculateAddedMaxResistances() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.8/Sparkles-above75percent.d2s"));
 
-        assertEquals(82, result.resistances().fire());
-        assertEquals(8, result.resistances().lightning());
-        assertEquals(20, result.resistances().cold());
-        assertEquals(45, result.resistances().poison());
+        assertThat(result.resistances().fire()).isEqualTo(82);
+        assertThat(result.resistances().lightning()).isEqualTo(8);
+        assertThat(result.resistances().cold()).isEqualTo(20);
+        assertThat(result.resistances().poison()).isEqualTo(45);
     }
 
     @Test
     void shouldCalcRemainingXPfor99() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_lvl99.d2s"));
-        assertEquals(99, result.level());
-        assertEquals("100", result.percentToNext());
+        assertThat(result.level()).isEqualTo(99);
+        assertThat(result.percentToNext()).isEqualTo("100");
     }
 
     @Test
     void brokenJewels() {
         // This character has 6 adjusted jewels that lack a prefix and postfix id. Prior to parser version 1.3.2 this would throw a ParserException.
-        assertDoesNotThrow(() -> cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_wrong_jewels.d2s")));
+        org.assertj.core.api.Assertions.assertThatCode(() -> cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_wrong_jewels.d2s"))).doesNotThrowAnyException();
     }
 
     @Test
     void shouldNotApplyStealthBonus() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/NoStealth.d2s"));
-        assertEquals(0, result.breakpoints().fCR());
-        assertEquals(27, result.breakpoints().fHR());
-        assertEquals(50, result.fasterRunWalk());
+        assertThat(result.breakpoints().fCR()).isZero();
+        assertThat(result.breakpoints().fHR()).isEqualTo(27);
+        assertThat(result.fasterRunWalk()).isEqualTo(50);
     }
 
     @Test
@@ -140,15 +139,15 @@ class DisplayStatsCalculatorTest {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/NoStealth.d2s"));
 
         // This should not apply the bonus of the lvl 22 req Amber GC
-        assertEquals(26, result.resistances().lightning());
+        assertThat(result.resistances().lightning()).isEqualTo(26);
     }
 
     @Test
     void countKeys() {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/Keys.d2s"));
 
-        assertEquals(1, result.keys().terror());
-        assertEquals(1, result.keys().hate());
-        assertEquals(1, result.keys().destruction());
+        assertThat(result.keys().terror()).isEqualTo(1);
+        assertThat(result.keys().hate()).isEqualTo(1);
+        assertThat(result.keys().destruction()).isEqualTo(1);
     }
 }

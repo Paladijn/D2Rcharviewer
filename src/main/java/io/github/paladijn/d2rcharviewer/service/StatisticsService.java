@@ -44,16 +44,10 @@ public class StatisticsService {
         this.calculator = displayStatsCalculator;
     }
 
-    public DisplayStats getStatsForChar(String characterName) {
-        final Path characterFile = Path.of(savegameLocation, characterName + ".d2s");
-        return calculator.getDisplayStats(characterFile);
-    }
-
-
     public DisplayStats getStatsForMostRecent(){
         final Path dir = Paths.get(savegameLocation);
         try (Stream<Path> pathStream = Files.list(dir)) {
-            Optional<Path> lastUpdatedSaveGame = pathStream
+            final Optional<Path> lastUpdatedSaveGame = pathStream
                     .filter(file -> !Files.isDirectory(file) && file.toString().endsWith(".d2s"))
                     .max(Comparator.comparingLong(file -> file.toFile().lastModified()));
 
@@ -68,5 +62,69 @@ public class StatisticsService {
             log.error("problem listing savegame files", e);
             return null;
         }
+    }
+
+    public String replaceValues(final String characterOutput, final DisplayStats statsForMostRecent) {
+        final StringBuilder sbResult = new StringBuilder();
+        int currentIndex = 0;
+        int nextTokenIndex = characterOutput.indexOf("${");
+        if (nextTokenIndex == -1) {
+            log.warn("could not find tokens to replace, returning original");
+            return characterOutput;
+        }
+
+        do {
+            sbResult.append(characterOutput, currentIndex, nextTokenIndex);
+
+            int nextClosingBrace = characterOutput.indexOf("}", nextTokenIndex);
+            if (nextClosingBrace == -1) {
+                throw new RuntimeException("Could not find closing brace for token starting at index " + nextTokenIndex);
+            }
+
+            sbResult.append(mapValue(characterOutput.substring(nextTokenIndex + 2, nextClosingBrace), statsForMostRecent));
+
+            currentIndex = nextClosingBrace + 1;
+            nextTokenIndex = characterOutput.indexOf("${", nextClosingBrace);
+        } while (nextTokenIndex != -1);
+        // append the leftover
+        sbResult.append(characterOutput.substring(currentIndex));
+
+        return sbResult.toString();
+    }
+
+    private String mapValue(final String token, final DisplayStats statsForMostRecent) {
+        return switch (token) {
+            case "name" -> statsForMostRecent.name();
+            case "percentToNext" -> statsForMostRecent.percentToNext();
+            case "hardcore" -> statsForMostRecent.isHardcore() ? "Hardcore" : "";
+            case "level" -> String.valueOf(statsForMostRecent.level());
+            case "gold" -> statsForMostRecent.gold();
+            case "goldInStash" -> statsForMostRecent.goldInStash();
+            case "mf" -> String.valueOf(statsForMostRecent.mf());
+            case "gf" -> String.valueOf(statsForMostRecent.gf());
+            case "attributes.strength" -> String.valueOf(statsForMostRecent.attributes().strength());
+            case "attributes.dexterity" -> String.valueOf(statsForMostRecent.attributes().dexterity());
+            case "attributes.vitality" -> String.valueOf(statsForMostRecent.attributes().vitality());
+            case "attributes.energy" -> String.valueOf(statsForMostRecent.attributes().energy());
+            case "resistances.fire" -> String.valueOf(statsForMostRecent.resistances().fire());
+            case "resistances.lightning" -> String.valueOf(statsForMostRecent.resistances().lightning());
+            case "resistances.cold" -> String.valueOf(statsForMostRecent.resistances().cold());
+            case "resistances.poison" -> String.valueOf(statsForMostRecent.resistances().poison());
+            case "resistances.physical" -> String.valueOf(statsForMostRecent.resistances().physical());
+            case "breakpoints.fCR" -> String.valueOf(statsForMostRecent.breakpoints().fCR());
+            case "breakpoints.nextFCR" -> String.valueOf(statsForMostRecent.breakpoints().nextFCR());
+            case "breakpoints.fHR" -> String.valueOf(statsForMostRecent.breakpoints().fHR());
+            case "breakpoints.nextFHR" -> String.valueOf(statsForMostRecent.breakpoints().nextFHR());
+            case "breakpoints.fBR" -> String.valueOf(statsForMostRecent.breakpoints().fBR());
+            case "breakpoints.nextFBR" -> String.valueOf(statsForMostRecent.breakpoints().nextFBR());
+            case "fasterRunWalk" -> String.valueOf(statsForMostRecent.fasterRunWalk());
+            case "runes" -> statsForMostRecent.runes();
+            case "runewords" -> statsForMostRecent.runewords();
+            case "lastUpdated" -> statsForMostRecent.lastUpdated();
+            case "keys.terror" -> String.valueOf(statsForMostRecent.keys().terror());
+            case "keys.hate" -> String.valueOf(statsForMostRecent.keys().hate());
+            case "keys.destruction" -> String.valueOf(statsForMostRecent.keys().destruction());
+            default -> token;
+        };
     }
 }
