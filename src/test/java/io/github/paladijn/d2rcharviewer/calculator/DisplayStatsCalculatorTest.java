@@ -13,10 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package io.github.paladijn.d2rcharviewer;
+package io.github.paladijn.d2rcharviewer.calculator;
 
-import io.github.paladijn.d2rcharviewer.calculator.BreakpointCalculator;
-import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 import org.junit.jupiter.api.Disabled;
