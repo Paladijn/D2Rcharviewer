@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +39,7 @@ class StatisticsServiceTest {
             "src/test/resources/1.6.80273/Goatunnheim_wrong_jewels.d2s,src/test/resources/output/Goatunnheim_wrong_jewels.html",
             "src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/output/Sparkles-above75percent.html"})
     void validateCharacterOutput(String filename, String expectedFile) throws IOException {
+        Locale.setDefault(Locale.UK); // otherwise the formatting will fail on 0.0 -> 0,0
         final String characterOutput = Files.readString(Paths.get("","src/test/resources/templates/character.html"), StandardCharsets.UTF_8);
         final DisplayStats displayStats = displayStatsCalculator.getDisplayStats(Paths.get("", filename));
         final String outcome = cut.replaceValues(characterOutput, displayStats);
