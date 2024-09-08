@@ -17,16 +17,16 @@ package io.github.paladijn.d2rcharviewer.calculator;
 
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class DisplayStatsCalculatorTest {
 
-    private final DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator());
+    private final DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator(), "", false, false);
 
     @Test
     void simpleChar() {
@@ -70,10 +70,8 @@ class DisplayStatsCalculatorTest {
     }
 
     @Test
-    @Disabled("need to overwrite removeDuplicateRuneword for this specific test")
     void removeRunewordAlreadyMade() throws NoSuchFieldException, IllegalAccessException {
-        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator(new BreakpointCalculator());
-        calculatorWithoutDuplicates.getClass().getDeclaredField("calculatorWithoutDuplicates").set("removeDuplicateRuneword", true);
+        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator(new BreakpointCalculator(), "", true, false);
         final DisplayStats result = calculatorWithoutDuplicates.getDisplayStats(Path.of("src/test/resources/2.5/Fierljepper.d2s"));
 
         // Stealth is already made, so should be skipped
@@ -121,7 +119,7 @@ class DisplayStatsCalculatorTest {
     @Test
     void brokenJewels() {
         // This character has 6 adjusted jewels that lack a prefix and postfix id. Prior to parser version 1.3.2 this would throw a ParserException.
-        org.assertj.core.api.Assertions.assertThatCode(() -> cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_wrong_jewels.d2s"))).doesNotThrowAnyException();
+        assertThatCode(() -> cut.getDisplayStats(Path.of("src/test/resources/1.6.80273/Goatunnheim_wrong_jewels.d2s"))).doesNotThrowAnyException();
     }
 
     @Test

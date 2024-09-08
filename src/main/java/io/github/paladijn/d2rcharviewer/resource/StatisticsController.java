@@ -36,22 +36,23 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class StatisticsController {
     private static final Logger log = getLogger(StatisticsController.class);
 
-    @ConfigProperty(name = "template.character", defaultValue = "templates/character.html")
     private String characterTemplate;
 
     @ConfigProperty(name = "template.error", defaultValue = "templates/error.html")
-    private String errorTemplate;
+    private String errorTemplateLocation;
 
     @ConfigProperty(name = "template.nochars", defaultValue = "templates/noChars.html")
-    private String noCharsTemplate;
+    private String noCharsTemplateLocation;
 
     private final StatisticsService statisticsService;
 
     private final SaveGameWatchService saveGameWatchService;
 
-    public StatisticsController(SaveGameWatchService saveGameWatchService, StatisticsService statisticsService) {
+    public StatisticsController(SaveGameWatchService saveGameWatchService,
+                                @ConfigProperty(name = "template.character", defaultValue = "templates/character.html") String characterTemplateLocation) {
         this.saveGameWatchService = saveGameWatchService;
-        this.statisticsService = statisticsService;
+        this.statisticsService = saveGameWatchService.getStatisticsService();
+        this.characterTemplate = readFileContents(characterTemplateLocation);;
     }
 
     @GET
@@ -61,13 +62,13 @@ public class StatisticsController {
 
         final DisplayStats statsForMostRecent = saveGameWatchService.getLastDisplayStats();
         if (statsForMostRecent == null) {
-            return readFileContents(noCharsTemplate);
+            return readFileContents(noCharsTemplateLocation);
         }
 
         log.debug("character stats: {}", statsForMostRecent);
 
         return statisticsService.replaceValues(
-                readFileContents(characterTemplate),
+                characterTemplate,
                 statsForMostRecent);
     }
 

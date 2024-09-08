@@ -28,11 +28,10 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 class StatisticsServiceTest {
 
-    private final DisplayStatsCalculator displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator());
-    private final StatisticsService cut = new StatisticsService(displayStatsCalculator);
+    private final DisplayStatsCalculator displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), "", true, false);
+    private final StatisticsService cut = new StatisticsService(displayStatsCalculator, "");
 
     @ParameterizedTest
     @CsvSource({"src/test/resources/1.6.81914/Keys.d2s,src/test/resources/output/Keys.html",

@@ -17,8 +17,6 @@ package io.github.paladijn.d2rcharviewer.service;
 
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
-import jakarta.enterprise.context.ApplicationScoped;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -31,17 +29,16 @@ import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-@ApplicationScoped
 public class StatisticsService {
     private static final Logger log = getLogger(StatisticsService.class);
 
-    @ConfigProperty(name = "savegame.location")
     private String savegameLocation;
 
     private final DisplayStatsCalculator calculator;
 
-    public StatisticsService(DisplayStatsCalculator displayStatsCalculator) {
+    public StatisticsService(DisplayStatsCalculator displayStatsCalculator, String savegameLocation) {
         this.calculator = displayStatsCalculator;
+        this.savegameLocation = savegameLocation;
     }
 
     public DisplayStats getStatsForMostRecent(){
@@ -124,7 +121,7 @@ public class StatisticsService {
             case "keys.terror" -> String.valueOf(statsForMostRecent.keys().terror());
             case "keys.hate" -> String.valueOf(statsForMostRecent.keys().hate());
             case "keys.destruction" -> String.valueOf(statsForMostRecent.keys().destruction());
-            default -> token;
+            default -> "${" + token + "}";
         };
     }
 }

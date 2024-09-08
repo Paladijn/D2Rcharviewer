@@ -37,8 +37,6 @@ import io.github.paladijn.d2rsavegameparser.parser.SharedStashParser;
 import io.github.paladijn.d2rsavegameparser.txt.MiscStats;
 import io.github.paladijn.d2rsavegameparser.txt.Runeword;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
-import jakarta.enterprise.context.ApplicationScoped;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -58,17 +56,13 @@ import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.INVENTORY
 import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.STASH;
 import static org.slf4j.LoggerFactory.getLogger;
 
-@ApplicationScoped
 public class DisplayStatsCalculator {
     private static final Logger log = getLogger(DisplayStatsCalculator.class);
 
-    @ConfigProperty(name = "savegame.location")
     private String savegameLocation;
 
-    @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true")
     private boolean removeDuplicateRuneword;
 
-    @ConfigProperty(name = "sharedstash.include", defaultValue = "false")
     private boolean includeSharedStash;
 
     private final BreakpointCalculator breakpointCalculator;
@@ -81,8 +75,14 @@ public class DisplayStatsCalculator {
 
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
 
-    public DisplayStatsCalculator(BreakpointCalculator breakpointCalculator) {
+    public DisplayStatsCalculator(BreakpointCalculator breakpointCalculator,
+                                  String savegameLocation,
+                                  boolean removeDuplicateRuneword,
+                                  boolean includeSharedStash) {
+        this.savegameLocation = savegameLocation;
         this.breakpointCalculator = breakpointCalculator;
+        this.removeDuplicateRuneword = removeDuplicateRuneword;
+        this.includeSharedStash = includeSharedStash;
     }
 
     public DisplayStats getDisplayStats(final Path characterFile) {

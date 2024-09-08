@@ -19,13 +19,11 @@ import io.github.paladijn.d2rcharviewer.model.Breakpoints;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 import io.github.paladijn.d2rsavegameparser.model.Item;
 import io.github.paladijn.d2rsavegameparser.model.ItemProperty;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
 import static io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator.getPropertiesByNames;
 
-@ApplicationScoped
 public class BreakpointCalculator {
 
     private static final int[] AMAZON_FHR = {0, 6, 13, 20, 32, 52, 86, 174, 600};

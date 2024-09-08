@@ -15,6 +15,7 @@
  */
 package io.github.paladijn.d2rcharviewer.service;
 
+import io.github.paladijn.d2rcharviewer.calculator.BreakpointCalculator;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.quarkus.runtime.StartupEvent;
@@ -23,6 +24,7 @@ import jakarta.enterprise.event.Observes;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -38,9 +40,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class SaveGameWatchService {
     private static final Logger log = getLogger(SaveGameWatchService.class);
 
-    @ConfigProperty(name = "savegame.location")
-    private String savegameLocation;
-
     private final StatisticsService statisticsService;
 
     private final DisplayStatsCalculator displayStatsCalculator;
@@ -49,9 +48,14 @@ public class SaveGameWatchService {
 
     private DisplayStats lastDisplayStats;
 
-    public SaveGameWatchService(StatisticsService statisticsService, DisplayStatsCalculator displayStatsCalculator) {
-        this.statisticsService = statisticsService;
-        this.displayStatsCalculator = displayStatsCalculator;
+    private String savegameLocation;
+
+    public SaveGameWatchService(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
+                                @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
+                                @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash) {
+        this.savegameLocation = getSavegameLocation(savegameLocation);
+        this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameLocation, removeDuplicateRuneword, includeSharedStash);
+        this.statisticsService = new StatisticsService(displayStatsCalculator, savegameLocation);
     }
 
     void onStart(@Observes StartupEvent ev) {
@@ -62,6 +66,14 @@ public class SaveGameWatchService {
 
     public DisplayStats getLastDisplayStats() {
         return lastDisplayStats;
+    }
+
+    public String getSavegameLocation() {
+        return savegameLocation;
+    }
+
+    public StatisticsService getStatisticsService() {
+        return statisticsService;
     }
 
     private void pollSaveGameChanges() {
@@ -89,5 +101,16 @@ public class SaveGameWatchService {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getSavegameLocation(String location) {
+        if (".".equals(location)) {
+            String newLocation = System.getenv("user.home")
+                    + File.separator + "Saved Games"
+                    + File.separator + "Diablo II Resurrected";
+            log.warn("savegame.location property not configured, assuming {} is the location", newLocation);
+            return newLocation;
+        }
+        return location;
     }
 }
