@@ -37,7 +37,7 @@ public class BreakpointCalculator {
 
     private static final int[] AMAZON_FCR = {0, 7, 14, 22, 32, 48, 68, 99, 152};
     private static final int[] ASSASSIN_FCR = {0, 8, 16, 27, 42, 65, 102, 174};
-    private static final int[] BARBARIAN_SORCERESS_FCR = {0, 9, 20, 37, 62, 106, 200};
+    private static final int[] BARBARIAN_SORCERESS_FCR = {0, 9, 20, 37, 63, 105, 200};
     private static final int[] DRUID_HUMAN_FCR = {0, 4, 10, 19, 30, 46, 68, 99, 163};
     private static final int[] NECROMANCER_PALADIN_FCR = {0, 9, 18, 30, 48, 75, 125};
     private static final int[] NECROMANCER_TRANG_FCR = {0, 6, 11, 18, 24, 35, 48, 65, 86, 120, 180};
