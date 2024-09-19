@@ -15,6 +15,7 @@
  */
 package io.github.paladijn.d2rcharviewer.calculator;
 
+import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,8 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 class DisplayStatsCalculatorTest {
 
-    private final DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator(), "", false, false);
+    private final DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator(), "",
+            new ConfigOptions(false, false, false));
 
     @Test
     void simpleChar() {
@@ -70,8 +72,8 @@ class DisplayStatsCalculatorTest {
     }
 
     @Test
-    void removeRunewordAlreadyMade() throws NoSuchFieldException, IllegalAccessException {
-        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator(new BreakpointCalculator(), "", true, false);
+    void removeRunewordAlreadyMade() {
+        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator(new BreakpointCalculator(), "", new ConfigOptions(true, false, false));
         final DisplayStats result = calculatorWithoutDuplicates.getDisplayStats(Path.of("src/test/resources/2.5/Fierljepper.d2s"));
 
         // Stealth is already made, so should be skipped
@@ -107,6 +109,15 @@ class DisplayStatsCalculatorTest {
         assertThat(result.resistances().lightning()).isEqualTo(8);
         assertThat(result.resistances().cold()).isEqualTo(20);
         assertThat(result.resistances().poison()).isEqualTo(45);
+    }
+
+    @Test
+    void calculateSpeedRunItems() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.8/Sparkles-above75percent.d2s"));
+
+        assertThat(result.speedRunItems().fullRejuvs()).isEqualTo(3);
+        assertThat(result.speedRunItems().smallRejuvs()).isEqualTo(2);
+        assertThat(result.speedRunItems().chippedGems()).isEqualTo(3);
     }
 
     @Test

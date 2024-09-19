@@ -17,6 +17,7 @@ package io.github.paladijn.d2rcharviewer.service;
 
 import io.github.paladijn.d2rcharviewer.calculator.BreakpointCalculator;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
+import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -31,7 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StatisticsServiceTest {
 
-    private final DisplayStatsCalculator displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), "", true, false);
+    private final DisplayStatsCalculator displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), "",
+            new ConfigOptions(true, false, false));
     private final StatisticsService cut = new StatisticsService(displayStatsCalculator, "");
 
     @ParameterizedTest

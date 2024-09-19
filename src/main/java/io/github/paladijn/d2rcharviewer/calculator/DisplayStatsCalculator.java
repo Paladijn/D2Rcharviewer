@@ -16,11 +16,13 @@
 package io.github.paladijn.d2rcharviewer.calculator;
 
 import io.github.paladijn.d2rcharviewer.model.Breakpoints;
+import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.Constants;
 import io.github.paladijn.d2rcharviewer.model.DisplayAttributes;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.model.Keys;
 import io.github.paladijn.d2rcharviewer.model.Resistances;
+import io.github.paladijn.d2rcharviewer.model.SpeedRunItems;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
 import io.github.paladijn.d2rsavegameparser.model.Item;
@@ -59,11 +61,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DisplayStatsCalculator {
     private static final Logger log = getLogger(DisplayStatsCalculator.class);
 
-    private String savegameLocation;
+    private final String savegameLocation;
 
-    private boolean removeDuplicateRuneword;
-
-    private boolean includeSharedStash;
+    private final ConfigOptions configOptions;
 
     private final BreakpointCalculator breakpointCalculator;
 
@@ -77,12 +77,10 @@ public class DisplayStatsCalculator {
 
     public DisplayStatsCalculator(BreakpointCalculator breakpointCalculator,
                                   String savegameLocation,
-                                  boolean removeDuplicateRuneword,
-                                  boolean includeSharedStash) {
+                                  ConfigOptions configOptions) {
         this.savegameLocation = savegameLocation;
         this.breakpointCalculator = breakpointCalculator;
-        this.removeDuplicateRuneword = removeDuplicateRuneword;
-        this.includeSharedStash = includeSharedStash;
+        this.configOptions = configOptions;
     }
 
     public DisplayStats getDisplayStats(final Path characterFile) {
@@ -103,7 +101,7 @@ public class DisplayStatsCalculator {
 
         long goldInStash = character.attributes().goldInStash();
         List<Item> allItems = character.items();
-        if (includeSharedStash) {
+        if (configOptions.includeSharedStash()) {
             List<Item> fullItemList = new ArrayList<>(allItems);
             List<SharedStashTab> sharedStashTabs = getSharedStashTabs(character.hardcore());
             for (SharedStashTab tab : sharedStashTabs) {
@@ -142,13 +140,14 @@ public class DisplayStatsCalculator {
         final List<String> runewordsOnCharacter = getRuneWordsOnCharacter(character.items());
         final String runewords = getAvailableRuneWords(availableRunes, runewordsOnCharacter);
 
-        Keys keys = getAvailableKeys(allItems);
+        final Keys keys = getAvailableKeys(allItems);
+        final SpeedRunItems speedRunItems = getSpeedRunItems(allItems);
 
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
                 attributes, resistances, breakpoints, frw, mf, gf, goldString(character.attributes().gold()), goldString(goldInStash),
-                runes, runewords, keys, lastUpdateStr);
+                runes, runewords, keys, speedRunItems, lastUpdateStr);
     }
 
     private String goldString(long goldValue) {
@@ -212,6 +211,26 @@ public class DisplayStatsCalculator {
         return new Keys(terror, hate, destruction);
     }
 
+    private SpeedRunItems getSpeedRunItems(List<Item> allItems) {
+        int fullRejuvs = 0;
+        int smallRejuvs = 0;
+        int chipped = 0;
+        for (Item item: allItems) {
+            switch (item.code()) {
+                case "rvs" -> smallRejuvs++;
+                case "rvl" -> fullRejuvs++;
+                case "gcv" -> chipped++; // amethyst
+                case "gcy" -> chipped++; // topaz
+                case "gcb" -> chipped++; // sapphire
+                case "gcg" -> chipped++; // emerald
+                case "gcr" -> chipped++; // ruby
+                case "gcw" -> chipped++; // diamond
+                case "skc" -> chipped++; // skull
+            }
+        }
+        return new SpeedRunItems(fullRejuvs, smallRejuvs, chipped);
+    }
+
     public static List<ItemProperty> getPropertiesByNames(List<Item> items, List<String> name) {
         List<ItemProperty> result = new ArrayList<>();
         items.forEach(item -> {
@@ -235,7 +254,7 @@ public class DisplayStatsCalculator {
     }
 
     private boolean keepRuneword(String name, List<String> runewordsOnCharacter) {
-        if (removeDuplicateRuneword) {
+        if (configOptions.removeDuplicateRuneword()) {
             return !runewordsOnCharacter.contains(name);
         }
         return true;
@@ -278,7 +297,7 @@ public class DisplayStatsCalculator {
         MiscStats miscItem = txtProperties.getMiscItemsByCode(entry.getKey());
         final String rune = miscItem.getName().substring(0, miscItem.getName().indexOf(' '));
         if (entry.getValue() > 1) {
-            return String.format("%s (%d)", rune, entry.getValue());
+            return String.format(configOptions.runesWithX() ? "%s x%d" : "%s (%d)", rune, entry.getValue());
         }
         return rune;
     }

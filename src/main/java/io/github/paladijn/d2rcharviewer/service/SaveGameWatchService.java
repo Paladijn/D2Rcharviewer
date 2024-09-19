@@ -17,6 +17,7 @@ package io.github.paladijn.d2rcharviewer.service;
 
 import io.github.paladijn.d2rcharviewer.calculator.BreakpointCalculator;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
+import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.quarkus.runtime.StartupEvent;
@@ -53,9 +54,10 @@ public class SaveGameWatchService {
 
     public SaveGameWatchService(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
                                 @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
-                                @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash) {
+                                @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
+                                @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
         this.savegameLocation = getSavegameLocation(savegameLocation);
-        this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameLocation, removeDuplicateRuneword, includeSharedStash);
+        this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameLocation, new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX));
         this.statisticsService = new StatisticsService(displayStatsCalculator, savegameLocation);
     }
 
