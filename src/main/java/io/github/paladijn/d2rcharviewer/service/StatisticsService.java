@@ -17,6 +17,7 @@ package io.github.paladijn.d2rcharviewer.service;
 
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
+import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -57,8 +58,10 @@ public class StatisticsService {
             return calculator.getDisplayStats(characterFile);
         } catch (IOException e) {
             log.error("problem listing savegame files", e);
-            return null;
+        } catch (ParseException pe) {
+            log.error("Could not parse savegame", pe);
         }
+        return null;
     }
 
     public String replaceValues(final String characterOutput, final DisplayStats statsForMostRecent) {

@@ -88,14 +88,18 @@ public class DisplayStatsCalculator {
     public DisplayStats getDisplayStats(final Path characterFile) {
         final String lastUpdateStr = dtf.format(Instant.now());
 
-        ByteBuffer buffer;
+        byte[] allBytes;
         try {
-            buffer = ByteBuffer.wrap(Files.readAllBytes(characterFile));
+            allBytes = Files.readAllBytes(characterFile);
         } catch (IOException e) {
             throw new ParseException("Failed to read characterFile", e);
         }
+        if (allBytes.length < 335) {
+            log.error("Less than 335 bytes read ({}) from {}, either the file is locked, or this is not a .d2s file", allBytes.length, characterFile);
+            throw new ParseException("not enough bytes read from characterFile");
+        }
 
-        final D2Character character = characterParser.parse(buffer);
+        final D2Character character = characterParser.parse(ByteBuffer.wrap(allBytes));
 
         long goldInStash = character.attributes().goldInStash();
         List<Item> allItems = character.items();

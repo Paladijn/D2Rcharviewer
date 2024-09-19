@@ -18,6 +18,7 @@ package io.github.paladijn.d2rcharviewer.service;
 import io.github.paladijn.d2rcharviewer.calculator.BreakpointCalculator;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
+import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -59,7 +60,7 @@ public class SaveGameWatchService {
     }
 
     void onStart(@Observes StartupEvent ev) {
-        Runnable task = this::pollSaveGameChanges;
+        Runnable task = this::startPolling;
         pollThread = Thread.startVirtualThread(task);
         pollThread.setName("SaveGame watcherThread");
     }
@@ -76,7 +77,7 @@ public class SaveGameWatchService {
         return statisticsService;
     }
 
-    private void pollSaveGameChanges() {
+    private void startPolling() {
         log.info("Starting SaveGameWatchService, loading initial savegame stats");
         lastDisplayStats = statisticsService.getStatsForMostRecent();
 
@@ -86,20 +87,31 @@ public class SaveGameWatchService {
 
             final Path dir = Paths.get(savegameLocation);
             dir.register(watcher, ENTRY_MODIFY);
-            log.info("started polling for savegame changes");
+            pollSaveGameFolder(watcher);
+        } catch (IOException e) {
+            log.error("Problem creating watcher on {}", savegameLocation, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
-            WatchKey key;
-            while ((key = watcher.take()) != null) {
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    if (event.context().toString().endsWith(".d2s")) {
-                        log.info("found savegame file updated {}", event.context());
+    private void pollSaveGameFolder(WatchService watcher) throws InterruptedException {
+        log.info("started polling for savegame changes");
+
+        WatchKey key;
+        while ((key = watcher.take()) != null) {
+            for (WatchEvent<?> event : key.pollEvents()) {
+                if (event.context().toString().endsWith(".d2s")) {
+                    log.info("found savegame file updated {}", event.context());
+                    try {
                         lastDisplayStats = displayStatsCalculator.getDisplayStats(Path.of(savegameLocation, event.context().toString()));
+                    } catch (ParseException pe) {
+                        log.error("Could not parse savegame", pe);
+                        log.info("awaiting next modification...");
                     }
                 }
-                key.reset();
             }
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            key.reset();
         }
     }
 
