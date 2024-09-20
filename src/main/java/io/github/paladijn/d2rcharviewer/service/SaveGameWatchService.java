@@ -52,11 +52,15 @@ public class SaveGameWatchService {
 
     private String savegameLocation;
 
+    private long savegameReadDelayMS;
+
     public SaveGameWatchService(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
+                                @ConfigProperty(name = "savegame.delay-in-ms", defaultValue = "0") long savegameReadDelayMS,
                                 @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
                                 @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
                                 @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
         this.savegameLocation = getSavegameLocation(savegameLocation);
+        this.savegameReadDelayMS = savegameReadDelayMS;
         this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameLocation, new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX));
         this.statisticsService = new StatisticsService(displayStatsCalculator, savegameLocation);
     }
@@ -69,10 +73,6 @@ public class SaveGameWatchService {
 
     public DisplayStats getLastDisplayStats() {
         return lastDisplayStats;
-    }
-
-    public String getSavegameLocation() {
-        return savegameLocation;
     }
 
     public StatisticsService getStatisticsService() {
@@ -104,12 +104,15 @@ public class SaveGameWatchService {
         while ((key = watcher.take()) != null) {
             for (WatchEvent<?> event : key.pollEvents()) {
                 if (event.context().toString().endsWith(".d2s")) {
-                    log.info("found savegame file updated {}", event.context());
+                    log.info("found savegame file updated {} (delayed: {} ms)", event.context(), savegameReadDelayMS);
+                    if (savegameReadDelayMS > 0) {
+                        Thread.sleep(savegameReadDelayMS);
+                    }
                     try {
                         lastDisplayStats = displayStatsCalculator.getDisplayStats(Path.of(savegameLocation, event.context().toString()));
                     } catch (ParseException pe) {
                         log.error("Could not parse savegame", pe);
-                        log.info("awaiting next modification...");
+                        log.info("awaiting next modification..., set the savegame.delay-in-ms property to fine tune a delay in reading the file.");
                     }
                 }
             }

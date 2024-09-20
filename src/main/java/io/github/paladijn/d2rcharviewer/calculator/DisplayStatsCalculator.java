@@ -93,7 +93,7 @@ public class DisplayStatsCalculator {
             throw new ParseException("Failed to read characterFile", e);
         }
         if (allBytes.length < 335) {
-            log.error("Less than 335 bytes read ({}) from {}, either the file is locked, or this is not a .d2s file", allBytes.length, characterFile);
+            log.error("Less than 335 bytes read ({}) from {}, either the file is locked, or this is not a valid .d2s file", allBytes.length, characterFile);
             throw new ParseException("not enough bytes read from characterFile");
         }
 
