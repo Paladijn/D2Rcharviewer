@@ -51,5 +51,8 @@ Available tokens:
 | keys.terror           | number | number of Key of Terror in your inventory/stash                                               |
 | keys.hate             | number | number of Key of Hate in your inventory/stash                                                 |
 | keys.destruction      | number | number of Key of Destruction in your inventory/stash                                          |
+| speedrun.fullRejuvs   | number | number of full rejuvination potions in your inventory/stash                                   |
+| speedrun.smallRejuvs  | number | number of (normal/35%) rejuvination potions in your inventory/stash                           |
+| speedrun.chippedGems  | number | number of chipped gems in your inventory                                                      |
 
 If you think any other data should be added please request so in an issue on GitHub. Not all fields can be added unfortunately (such as amount of times a character has died).
