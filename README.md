@@ -30,7 +30,10 @@ If all is configured well, you'll see the following:
 ```
 As you can see it is quite fast starting up, it also uses almost no cpu% and between 15-50mb of RAM.
 
-If an error occurs, check if your configuration is correct with the descriptions below and verify the following folders are present in the same folder as the .exe:
+In case your savegame folder is not auto-detected, add it to config/application.properties by hand and make sure to use / (or \\) instead of \. For example, mine is:
+```savegame.location=C:/Users/Paladijn/Saved Games/Diablo II Resurrected```
+
+If an error occurs, check if your configuration is correct with the descriptions in [Configuration options](docs/configuration.md) and verify the following folders are present in the same folder as the .exe:
 - config (contains the application.properties)
 - templates (contains the three template files)
 - txt (contains the Diablo resources)

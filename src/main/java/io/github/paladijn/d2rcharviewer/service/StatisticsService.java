@@ -124,6 +124,9 @@ public class StatisticsService {
             case "keys.terror" -> String.valueOf(statsForMostRecent.keys().terror());
             case "keys.hate" -> String.valueOf(statsForMostRecent.keys().hate());
             case "keys.destruction" -> String.valueOf(statsForMostRecent.keys().destruction());
+            case "speedrun.fullRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().fullRejuvs());
+            case "speedrun.smallRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().smallRejuvs());
+            case "speedrun.chippedGems" -> String.valueOf(statsForMostRecent.speedRunItems().chippedGems());
             default -> "${" + token + "}";
         };
     }
