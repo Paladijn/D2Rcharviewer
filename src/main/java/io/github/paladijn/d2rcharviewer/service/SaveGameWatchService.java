@@ -122,7 +122,7 @@ public class SaveGameWatchService {
 
     private String getSavegameLocation(String location) {
         if (".".equals(location)) {
-            String newLocation = System.getenv("user.home")
+            String newLocation = System.getenv("USERPROFILE")
                     + File.separator + "Saved Games"
                     + File.separator + "Diablo II Resurrected";
             log.warn("savegame.location property not configured, assuming {} is the location", newLocation);
