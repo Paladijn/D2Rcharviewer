@@ -18,12 +18,14 @@ package io.github.paladijn.d2rcharviewer.calculator;
 import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
+import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DisplayStatsCalculatorTest {
 
@@ -156,5 +158,13 @@ class DisplayStatsCalculatorTest {
         assertThat(result.keys().terror()).isEqualTo(1);
         assertThat(result.keys().hate()).isEqualTo(1);
         assertThat(result.keys().destruction()).isEqualTo(1);
+    }
+
+    @Test
+    void throwExceptionOnEmptySaveGame() {
+        final ParseException parseException = assertThrows(ParseException.class,
+                () -> cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/nobytes.d2s")));
+
+        assertThat(parseException.getMessage()).isEqualTo("Less than 335 bytes read (0), either the file is locked, or this is not a valid .d2s file");
     }
 }
