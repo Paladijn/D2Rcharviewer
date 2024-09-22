@@ -34,7 +34,7 @@ class StatisticsServiceTest {
 
     private final DisplayStatsCalculator displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), "",
             new ConfigOptions(true, false, false));
-    private final StatisticsService cut = new StatisticsService(displayStatsCalculator, "");
+    private final StatisticsService cut = new StatisticsService(displayStatsCalculator);
 
     @ParameterizedTest
     @CsvSource({"src/test/resources/1.6.81914/Keys.d2s,src/test/resources/output/Keys.html",

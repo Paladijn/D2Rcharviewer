@@ -33,28 +33,26 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class StatisticsService {
     private static final Logger log = getLogger(StatisticsService.class);
 
-    private String savegameLocation;
-
     private final DisplayStatsCalculator calculator;
 
-    public StatisticsService(DisplayStatsCalculator displayStatsCalculator, String savegameLocation) {
+    public StatisticsService(DisplayStatsCalculator displayStatsCalculator) {
         this.calculator = displayStatsCalculator;
-        this.savegameLocation = savegameLocation;
     }
 
-    public DisplayStats getStatsForMostRecent(){
-        final Path dir = Paths.get(savegameLocation);
+    public DisplayStats getStatsForMostRecent(String location){
+        final Path dir = Paths.get(location);
         try (Stream<Path> pathStream = Files.list(dir)) {
             final Optional<Path> lastUpdatedSaveGame = pathStream
                     .filter(file -> !Files.isDirectory(file) && file.toString().endsWith(".d2s"))
                     .max(Comparator.comparingLong(file -> file.toFile().lastModified()));
 
             if (lastUpdatedSaveGame.isEmpty()) {
+                log.info("No recent saveGame found in {}", location);
                 return null;
             }
 
             final Path characterFile = lastUpdatedSaveGame.get();
-            log.info("found {}", characterFile);
+            log.info("Found {}", characterFile);
             return calculator.getDisplayStats(characterFile);
         } catch (IOException e) {
             log.error("problem listing savegame files", e);

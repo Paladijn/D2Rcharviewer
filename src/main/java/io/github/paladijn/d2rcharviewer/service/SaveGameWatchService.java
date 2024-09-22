@@ -62,7 +62,7 @@ public class SaveGameWatchService {
         this.savegameLocation = getSavegameLocation(savegameLocation);
         this.savegameReadDelayMS = savegameReadDelayMS;
         this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameLocation, new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX));
-        this.statisticsService = new StatisticsService(displayStatsCalculator, savegameLocation);
+        this.statisticsService = new StatisticsService(displayStatsCalculator);
     }
 
     void onStart(@Observes StartupEvent ev) {
@@ -81,7 +81,7 @@ public class SaveGameWatchService {
 
     private void startPolling() {
         log.info("Starting SaveGameWatchService, loading initial savegame stats");
-        lastDisplayStats = statisticsService.getStatsForMostRecent();
+        lastDisplayStats = statisticsService.getStatsForMostRecent(savegameLocation);
 
         final WatchService watcher;
         try {
