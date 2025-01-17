@@ -5,7 +5,7 @@ While a zip with an executable is offered, you can also build the software on yo
 ```
 You can also run in developer mode with quarkus:dev, but this will impact performance.
 
-If you wish to build the .exe by yourself, follow the instructions [here](https://www.graalvm.org/latest/docs/getting-started/windows/) and install both GraalVM and Visual Studion build tools/Windows SDK if you don't have them.
+If you wish to build the .exe by yourself, follow the instructions [here](https://www.graalvm.org/latest/docs/getting-started/windows/) and install both GraalVM and Visual Studio build tools/Windows SDK if you don't have them.
 You can then build the .exe with:
 ```shell
 .\mvnw.cmd package -Dnative
