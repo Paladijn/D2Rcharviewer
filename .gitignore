@@ -3,7 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-*.log
+*.log*
+pom.xml.versionsBackup
 
 ### STS ###
 .apt_generated
