@@ -7,6 +7,7 @@ The output is templated and matches ${fields} which are replaced with the charac
 By default, the page is refreshed every 5 seconds, but the current savegame file only updates:
 * every 5 minutes, 
 * when you save&exit, 
+* when you die,
 * or when you identify an item.
 
 To install the application, unzip the file to a directory of your choice, [configure](docs/configuration.md) any options to your preference and doubleclick the d2charviewer.exe file.  

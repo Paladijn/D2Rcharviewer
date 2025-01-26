@@ -10,6 +10,8 @@ You'll need to configure at least three templates (defaults are supplied):
 | template.nochars            | templates/noChars.html   | Location of the no characters found template, this will pop up when there are no savegames in the savegame.location                                          |
 
 You can simply copy an existing template and remove any unwanted fields, or create your own using your favourite editor (that includes Notepad.exe, Llama). Any token between ${...} will be replaced. If you made a typo, or used the wrong CapS, it also won't be replaced.
+> [!CAUTION]  
+> Editing the original files may result in your changes being overwritten when you update the application.
 
 Keep in mind that to refresh the html you'll need to leave this in (or use an alternative):
 Currently, the pages refresh every 5 seconds, if you want it slower (or faster), adjust the following value in the top of each html files:
@@ -17,8 +19,17 @@ Currently, the pages refresh every 5 seconds, if you want it slower (or faster),
 <meta http-equiv="refresh" content="5">
 ```
 
-Available tokens:
+# Images
+You can add images to the output using the html `<img src="">` tag either linking to one hosted elsewhere, or by placing them in the templates/images/ folder. Subfolders are supported, so for example `templates/images/subfolder/2.jpg` can be displayed using `<img src="images/subfolder/2.jpg">`. For security reasons, only templates/images and its subfolders are supported to host image files directly.  
+If you're looking for an example, both the default `noChars.html` and `error.html` in the templates folder have an image.
 
+# CSS styling
+Separate .css files can be hosted in templates/css/ and its subfolders. To use them link to `css/`.
+
+# JavaScript files
+Separate javascript files can be hosted in templates/js/ and its subfolders. To use them link to `js/`, just make sure they work well in the OBS browser window.
+
+# Available tokens
 | token                 | type   | notes                                                                                         |
 |-----------------------|--------|-----------------------------------------------------------------------------------------------|
 | name                  | string |                                                                                               |

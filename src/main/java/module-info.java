@@ -9,4 +9,7 @@ module d2rcharviewer {
     requires microprofile.config.api;
     requires org.slf4j;
     requires quarkus.core;
+    requires io.vertx.web;
+    requires quarkus.reactive.routes;
+    requires io.smallrye.mutiny.vertx.web;
 }

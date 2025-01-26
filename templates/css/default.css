@@ -1,0 +1,62 @@
+body {
+    font-family: Exocet;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+textarea.runewords {
+    font-family: Exocet;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    width:100%;
+    border: 0;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+textarea.runes {
+    font-family: Exocet;
+    background-color: rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+    width:100%;
+    border: 0;
+    color: #808B96;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.name {
+    font-weight: bold;
+}
+.hardcore {
+    color: red;
+}
+.fire {
+    color: red;
+}
+.lightning {
+    color: yellow;
+}
+.cold {
+    color: #ADD8E6;
+}
+.poison {
+    color: green;
+}
+.rune {
+    color: #808B96;
+}
+.next {
+    color: #808B96;
+}
+.gold {
+    color: gold;
+}
+.header {
+    color: #AAB7B8;
+}
+.special {
+    color: #E67E22;
+}
+.nowrap {
+    white-space: nowrap;
+}
