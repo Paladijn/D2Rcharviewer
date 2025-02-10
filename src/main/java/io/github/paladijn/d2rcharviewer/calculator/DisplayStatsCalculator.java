@@ -46,8 +46,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,8 +71,6 @@ public class DisplayStatsCalculator {
 
     private final TXTProperties txtProperties = TXTProperties.getInstance();
 
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
-
     public DisplayStatsCalculator(BreakpointCalculator breakpointCalculator,
                                   String savegameLocation,
                                   ConfigOptions configOptions) {
@@ -84,8 +80,6 @@ public class DisplayStatsCalculator {
     }
 
     public DisplayStats getDisplayStats(final Path characterFile) {
-        final String lastUpdateStr = dtf.format(Instant.now());
-
         byte[] allBytes;
         try {
             allBytes = Files.readAllBytes(characterFile);
@@ -143,7 +137,7 @@ public class DisplayStatsCalculator {
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
                 attributes, resistances, breakpoints, frw, mf, gf, goldString(character.attributes().gold()), goldString(goldInStash),
-                runes, runewords, keys, speedRunItems, lastUpdateStr);
+                runes, runewords, keys, speedRunItems, Instant.now());
     }
 
     private String goldString(long goldValue) {

@@ -24,6 +24,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -34,6 +38,8 @@ public class StatisticsService {
     private static final Logger log = getLogger(StatisticsService.class);
 
     private final DisplayStatsCalculator calculator;
+
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
 
     public StatisticsService(DisplayStatsCalculator displayStatsCalculator) {
         this.calculator = displayStatsCalculator;
@@ -118,7 +124,8 @@ public class StatisticsService {
             case "fasterRunWalk" -> String.valueOf(statsForMostRecent.fasterRunWalk());
             case "runes" -> statsForMostRecent.runes();
             case "runewords" -> statsForMostRecent.runewords();
-            case "lastUpdated" -> statsForMostRecent.lastUpdated();
+            case "lastUpdated" -> dtf.format(statsForMostRecent.lastUpdated());
+            case "lastUpdatedAgo" -> getLastUpdatedAgo(statsForMostRecent);
             case "keys.terror" -> String.valueOf(statsForMostRecent.keys().terror());
             case "keys.hate" -> String.valueOf(statsForMostRecent.keys().hate());
             case "keys.destruction" -> String.valueOf(statsForMostRecent.keys().destruction());
@@ -127,5 +134,13 @@ public class StatisticsService {
             case "speedrun.chippedGems" -> String.valueOf(statsForMostRecent.speedRunItems().chippedGems());
             default -> "${" + token + "}";
         };
+    }
+
+    private String getLastUpdatedAgo(DisplayStats statsForMostRecent) {
+        Duration duration = Duration.between(statsForMostRecent.lastUpdated(), Instant.now());
+        if (duration.getSeconds() < 60) {
+            return "%ds".formatted(duration.getSeconds());
+        }
+        return "%d:%02d".formatted(duration.toMinutesPart(), duration.toSecondsPart());
     }
 }
