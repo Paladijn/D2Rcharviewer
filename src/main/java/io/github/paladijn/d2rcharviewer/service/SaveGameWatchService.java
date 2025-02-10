@@ -50,7 +50,7 @@ public class SaveGameWatchService {
 
     private DisplayStats lastDisplayStats;
 
-    private String savegameLocation;
+    private String savegameFolder;
 
     private long savegameReadDelayMS;
 
@@ -59,9 +59,9 @@ public class SaveGameWatchService {
                                 @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
                                 @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
                                 @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
-        this.savegameLocation = getSavegameLocation(savegameLocation);
+        this.savegameFolder = getSavegameFolder(savegameLocation);
         this.savegameReadDelayMS = savegameReadDelayMS;
-        this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameLocation, new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX));
+        this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameFolder, new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX));
         this.statisticsService = new StatisticsService(displayStatsCalculator);
     }
 
@@ -81,17 +81,17 @@ public class SaveGameWatchService {
 
     private void startPolling() {
         log.info("Starting SaveGameWatchService, loading initial savegame stats");
-        lastDisplayStats = statisticsService.getStatsForMostRecent(savegameLocation);
+        lastDisplayStats = statisticsService.getStatsForMostRecent(savegameFolder);
 
         final WatchService watcher;
         try {
             watcher = FileSystems.getDefault().newWatchService();
 
-            final Path dir = Paths.get(savegameLocation);
+            final Path dir = Paths.get(savegameFolder);
             dir.register(watcher, ENTRY_MODIFY);
             pollSaveGameFolder(watcher);
         } catch (IOException e) {
-            log.error("Problem creating watcher on {}", savegameLocation, e);
+            log.error("Problem creating watcher on {}", savegameFolder, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -109,7 +109,7 @@ public class SaveGameWatchService {
                         Thread.sleep(savegameReadDelayMS);
                     }
                     try {
-                        lastDisplayStats = displayStatsCalculator.getDisplayStats(Path.of(savegameLocation, event.context().toString()));
+                        lastDisplayStats = displayStatsCalculator.getDisplayStats(Path.of(savegameFolder, event.context().toString()));
                     } catch (ParseException pe) {
                         log.error("Could not parse savegame", pe);
                         log.info("awaiting next modification..., set the savegame.delay-in-ms property to fine tune a delay in reading the file.");
@@ -120,7 +120,7 @@ public class SaveGameWatchService {
         }
     }
 
-    private String getSavegameLocation(String location) {
+    private String getSavegameFolder(String location) {
         if (".".equals(location)) {
             String newLocation = System.getenv("USERPROFILE")
                     + File.separator + "Saved Games"
