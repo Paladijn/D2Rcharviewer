@@ -59,6 +59,7 @@ Separate javascript files can be hosted in templates/js/ and its subfolders. To 
 | runes                 | string | list of runes in inventory and stash (including shared stash if property enabled)             |
 | runewords             | string | list of runewords you can create with your runes                                              |
 | lastUpdated           | string | hh:mm timestamp of you the last time your character data was updated (can be up to 5 minutes) |
+| lastUpdatedAgo        | String | file updated time ago, 'xxs' below 1 minute, m:ss when it was longer than one minte ago       |
 | keys.terror           | number | number of Key of Terror in your inventory/stash                                               |
 | keys.hate             | number | number of Key of Hate in your inventory/stash                                                 |
 | keys.destruction      | number | number of Key of Destruction in your inventory/stash                                          |
