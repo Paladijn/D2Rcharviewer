@@ -167,4 +167,12 @@ class DisplayStatsCalculatorTest {
 
         assertThat(parseException.getMessage()).isEqualTo("Less than 335 bytes read (0), either the file is locked, or this is not a valid .d2s file");
     }
+
+    @Test
+    void requirementsMetOnKanosSpirit() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/rtltq_Kano.d2s"));
+
+        assertThat(result.breakpoints().fCR()).isEqualTo(60);
+        assertThat(result.breakpoints().fHR()).isEqualTo(80);
+    }
 }

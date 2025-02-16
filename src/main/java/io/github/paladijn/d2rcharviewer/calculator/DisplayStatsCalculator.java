@@ -102,7 +102,7 @@ public class DisplayStatsCalculator {
         }
 
         log.debug("total items: {}", character.items().size());
-        List<Item> equippedItems = getEquippedItems(character);
+        List<Item> equippedItems = getEquippedItemsWithRequirements(character);
         Map<String, Integer> availableRunes = getAvailableRunesByCode(allItems);
         List<ItemProperty> equippedSetBenefits = character.equippedSetBenefits();
 
@@ -256,10 +256,18 @@ public class DisplayStatsCalculator {
         return Math.min(max, adjustSumByLocation(character, sum));
     }
 
-    private List<Item> getEquippedItems(D2Character character) {
-        return character.items().stream()
-                .filter(item -> requirementsMet(character, item)
-                                && equippedOrCharm(item))
+    private List<Item> getEquippedItemsWithRequirements(D2Character character) {
+        final List<Item> allEquipped = character.items().stream()
+                .filter(this::equippedOrCharm)
+                .toList();
+
+        // if we want to do this well, we should check them one by one to see if the item could have been equipped,
+        //    and remove a specific set bonus if an item is part of that set. That will complicate a lot, so for now we'll just assume all can be equipped
+        final int strength = character.attributes().strength() + getTotalPointsInProperty("strength", allEquipped, character.equippedSetBenefits());
+        final int dexterity = character.attributes().dexterity() + getTotalPointsInProperty("dexterity", allEquipped, character.equippedSetBenefits());
+
+        return allEquipped.stream()
+                .filter(item -> requirementsMet(character.level(), strength, dexterity, item))
                 .toList();
     }
 
@@ -297,15 +305,14 @@ public class DisplayStatsCalculator {
                 && (item.container() == INVENTORY || item.container() == STASH);
     }
 
-    private boolean requirementsMet(D2Character d2Character, Item item) {
-        return d2Character.level() >= item.reqLvl()
-                && d2Character.attributes().strength() >= item.reqStr()
-                && d2Character.attributes().dexterity() >= item.reqDex();
+    private boolean requirementsMet(int charLevel, int strength, int dexterity, Item item) {
+        return charLevel >= item.reqLvl()
+                && strength >= item.reqStr()
+                && dexterity >= item.reqDex();
     }
 
     private boolean equippedOrCharm(Item item) {
-        return (item.location() == ItemLocation.EQUIPPED
-                && item.position() != ItemPosition.LEFT_SWAP && item.position() != ItemPosition.RIGHT_SWAP)
+        return (item.location() == ItemLocation.EQUIPPED && item.position() != ItemPosition.LEFT_SWAP && item.position() != ItemPosition.RIGHT_SWAP) // we ignore the items in the swapped position (their location is updated when you swap)
                 || (item.container() == INVENTORY && Item.isCharm(item.code()));
     }
 
