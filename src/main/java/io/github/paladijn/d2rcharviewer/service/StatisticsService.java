@@ -39,10 +39,11 @@ public class StatisticsService {
 
     private final DisplayStatsCalculator calculator;
 
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm").withZone(ZoneId.systemDefault());
 
     public StatisticsService(DisplayStatsCalculator displayStatsCalculator) {
         this.calculator = displayStatsCalculator;
+        log.debug("Using TimeZone {}", ZoneId.systemDefault());
     }
 
     public DisplayStats getStatsForMostRecent(String location){
