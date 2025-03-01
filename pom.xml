@@ -122,6 +122,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <finalName>D2RCharViewer</finalName>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
