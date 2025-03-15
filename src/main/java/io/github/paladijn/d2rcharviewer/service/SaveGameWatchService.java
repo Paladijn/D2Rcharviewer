@@ -19,10 +19,12 @@ import io.github.paladijn.d2rcharviewer.calculator.BreakpointCalculator;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
+import io.github.paladijn.d2rcharviewer.utils.SaveGameFolder;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
@@ -46,6 +48,8 @@ public class SaveGameWatchService {
 
     private final DisplayStatsCalculator displayStatsCalculator;
 
+    private final DiabloRunSyncService diabloRunSyncService;
+
     private Thread pollThread;
 
     private DisplayStats lastDisplayStats;
@@ -56,13 +60,14 @@ public class SaveGameWatchService {
 
     public SaveGameWatchService(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
                                 @ConfigProperty(name = "savegame.delay-in-ms", defaultValue = "0") long savegameReadDelayMS,
-                                @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
-                                @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
-                                @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
-        this.savegameFolder = getSavegameFolder(savegameLocation);
+                                DisplayStatsCalculator displayStatsCalculator,
+                                StatisticsService statisticsService,
+                                DiabloRunSyncService diabloRunSyncService) {
+        this.savegameFolder = SaveGameFolder.getSavegameFolder(savegameLocation);
         this.savegameReadDelayMS = savegameReadDelayMS;
-        this.displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), savegameFolder, new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX));
-        this.statisticsService = new StatisticsService(displayStatsCalculator);
+        this.displayStatsCalculator = displayStatsCalculator;
+        this.statisticsService = statisticsService;
+        this.diabloRunSyncService = diabloRunSyncService;
     }
 
     void onStart(@Observes StartupEvent ev) {
@@ -109,7 +114,10 @@ public class SaveGameWatchService {
                         Thread.sleep(savegameReadDelayMS);
                     }
                     try {
-                        lastDisplayStats = displayStatsCalculator.getDisplayStats(Path.of(savegameFolder, event.context().toString()));
+                        final Path characterFile = Path.of(savegameFolder, event.context().toString());
+
+                        lastDisplayStats = displayStatsCalculator.getDisplayStats(characterFile);
+                        diabloRunSyncService.sync(characterFile);
                     } catch (ParseException pe) {
                         log.error("Could not parse savegame", pe);
                         log.info("awaiting next modification..., set the savegame.delay-in-ms property to fine tune a delay in reading the file.");
@@ -118,16 +126,5 @@ public class SaveGameWatchService {
             }
             key.reset();
         }
-    }
-
-    private String getSavegameFolder(String location) {
-        if (".".equals(location)) {
-            String newLocation = System.getenv("USERPROFILE")
-                    + File.separator + "Saved Games"
-                    + File.separator + "Diablo II Resurrected";
-            log.warn("savegame.location property not configured, assuming {} is the location", newLocation);
-            return newLocation;
-        }
-        return location;
     }
 }

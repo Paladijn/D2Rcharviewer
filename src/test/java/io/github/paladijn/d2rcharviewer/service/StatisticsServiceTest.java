@@ -32,8 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StatisticsServiceTest {
 
-    private final DisplayStatsCalculator displayStatsCalculator = new DisplayStatsCalculator(new BreakpointCalculator(), "",
-            new ConfigOptions(true, false, false));
+    private final DisplayStatsCalculator displayStatsCalculator = new DisplayStatsCalculator("", true, false, false);
     private final StatisticsService cut = new StatisticsService(displayStatsCalculator);
 
     @ParameterizedTest

@@ -13,4 +13,5 @@ module d2rcharviewer {
     requires quarkus.reactive.routes;
     requires io.smallrye.mutiny.vertx.web;
     requires com.fasterxml.jackson.annotation;
+    requires microprofile.rest.client.api;
 }

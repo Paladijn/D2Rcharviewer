@@ -29,8 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DisplayStatsCalculatorTest {
 
-    private final DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator(), "",
-            new ConfigOptions(false, false, false));
+    private final DisplayStatsCalculator cut = new DisplayStatsCalculator("", false, false, false);
 
     @Test
     void simpleChar() {
@@ -75,7 +74,7 @@ class DisplayStatsCalculatorTest {
 
     @Test
     void removeRunewordAlreadyMade() {
-        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator(new BreakpointCalculator(), "", new ConfigOptions(true, false, false));
+        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator("", true, false, false);
         final DisplayStats result = calculatorWithoutDuplicates.getDisplayStats(Path.of("src/test/resources/2.5/Fierljepper.d2s"));
 
         // Stealth is already made, so should be skipped

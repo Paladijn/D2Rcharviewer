@@ -39,6 +39,8 @@ import io.github.paladijn.d2rsavegameparser.parser.SharedStashParser;
 import io.github.paladijn.d2rsavegameparser.txt.MiscStats;
 import io.github.paladijn.d2rsavegameparser.txt.Runeword;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -56,6 +58,7 @@ import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.INVENTORY
 import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.STASH;
 import static org.slf4j.LoggerFactory.getLogger;
 
+@ApplicationScoped
 public class DisplayStatsCalculator {
     private static final Logger log = getLogger(DisplayStatsCalculator.class);
 
@@ -71,12 +74,13 @@ public class DisplayStatsCalculator {
 
     private final TXTProperties txtProperties = TXTProperties.getInstance();
 
-    public DisplayStatsCalculator(BreakpointCalculator breakpointCalculator,
-                                  String savegameLocation,
-                                  ConfigOptions configOptions) {
+    public DisplayStatsCalculator(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
+                                  @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
+                                  @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
+                                  @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
         this.savegameLocation = savegameLocation;
-        this.breakpointCalculator = breakpointCalculator;
-        this.configOptions = configOptions;
+        this.breakpointCalculator = new BreakpointCalculator();
+        this.configOptions = new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX);
     }
 
     public DisplayStats getDisplayStats(final Path characterFile) {
