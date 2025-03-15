@@ -15,20 +15,16 @@
  */
 package io.github.paladijn.d2rcharviewer.service;
 
-import io.github.paladijn.d2rcharviewer.calculator.BreakpointCalculator;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
-import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.utils.SaveGameFolder;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
-import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;

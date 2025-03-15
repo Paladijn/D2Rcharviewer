@@ -23,6 +23,7 @@ import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.model.Keys;
 import io.github.paladijn.d2rcharviewer.model.Resistances;
 import io.github.paladijn.d2rcharviewer.model.SpeedRunItems;
+import io.github.paladijn.d2rcharviewer.utils.SaveGameFolder;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
 import io.github.paladijn.d2rsavegameparser.model.Item;
@@ -62,7 +63,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DisplayStatsCalculator {
     private static final Logger log = getLogger(DisplayStatsCalculator.class);
 
-    private final String savegameLocation;
+    private final String savegameFolder;
 
     private final ConfigOptions configOptions;
 
@@ -78,7 +79,7 @@ public class DisplayStatsCalculator {
                                   @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
                                   @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
                                   @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
-        this.savegameLocation = savegameLocation;
+        this.savegameFolder = SaveGameFolder.getSavegameFolder(savegameLocation);
         this.breakpointCalculator = new BreakpointCalculator();
         this.configOptions = new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX);
     }
@@ -168,7 +169,7 @@ public class DisplayStatsCalculator {
         final String stashFilename = isHardcore ? "SharedStashHardCoreV2.d2i" : "SharedStashSoftCoreV2.d2i";
         final ByteBuffer buffer;
         try {
-            buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameLocation, stashFilename)));
+            buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameFolder, stashFilename)));
         } catch (IOException e) {
             throw new ParseException("could not read shared stash file", e);
         }
