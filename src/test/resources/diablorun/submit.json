@@ -1,0 +1,92 @@
+{
+  "Event": "DataRead",
+  "Headers": "API_KEY=MuchKeysSuchSecret",
+  "DIApplicationInfo": {
+    "Version": "21.6.16"
+  },
+  "D2ProcessInfo": {
+    "Type": "D2R",
+    "Version": "d2s",
+    "CommandLineArgs": []
+  },
+  "Seed": 0,
+  "Seed_is_arg": false,
+  "NewCharacter": false,
+
+  "Name": "PokeTheMon",
+  "Guid": "",
+  "CharClass": 0,
+  "IsExpansion": true,
+  "IsHardcore": false,
+  "IsDead": true,
+
+  "Area": 1,
+  "Difficulty": 0,
+  "PlayersX": null,
+
+  "InventoryTab": null,
+  "Hireling": null,
+
+  "Deaths": 1,
+  "Level": 8,
+  "Experience": 35128,
+  "Strength": 35,
+  "Dexterity": 26,
+  "Vitality": 35,
+  "Energy": 15,
+
+  "FireResist": 1,
+  "ColdResist": 2,
+  "LightningResist": 3,
+  "PoisonResist": 7,
+
+  "Gold": 2,
+  "GoldStash": 42,
+
+  "Life": 0,
+  "LifeMax": 109,
+  "Mana": 14,
+  "ManaMax": 25,
+
+  "FasterCastRate": 1,
+  "FasterHitRecovery": 12,
+  "FasterRunWalk": 20,
+  "IncreasedAttackSpeed": 2,
+  "MagicFind": 16,
+
+  "CompletedQuests": {
+    "Normal": [81, 82],
+    "Nightmare": [],
+    "Hell": []
+  },
+
+  "ClearItems": true,
+  "AddedItems": [
+    {
+      "GUID": 0,
+      "Class": 0,
+      "BaseItem": "Woof helm",
+      "ItemName": "Kano's hat - just testing",
+      "Quality": "yellow",
+      "Properties": [
+        "+1 to Druid Skills",
+        "+10% Faster Hit Recovery",
+        "+1 to Solar Creeper (Druid Only)",
+        "+1 to Hunger (Druid Only)",
+        "+3 to Armageddon (Druid Only)",
+        "+29% Enhanced Defense",
+        "+28 to Life",
+        "+4 to Mana"
+      ],
+      "Location": {
+        "X": 1,
+        "Y": 0,
+        "Width": 2,
+        "Height": 2,
+        "BodyLocation": 1,
+        "Container": 0
+      }
+    }
+  ]
+
+}

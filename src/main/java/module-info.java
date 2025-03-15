@@ -12,4 +12,5 @@ module d2rcharviewer {
     requires io.vertx.web;
     requires quarkus.reactive.routes;
     requires io.smallrye.mutiny.vertx.web;
+    requires com.fasterxml.jackson.annotation;
 }

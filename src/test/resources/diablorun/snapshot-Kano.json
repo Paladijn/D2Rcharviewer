@@ -1,0 +1,482 @@
+{
+  "character": {
+    "id": 481593,
+    "user_id": 112,
+    "name": "xxwfk_Kano",
+    "hero": "dru",
+    "update_time": 1741889033,
+    "level": 60,
+    "strength": 60,
+    "dexterity": 20,
+    "vitality": 280,
+    "energy": 20,
+    "fire_res": null,
+    "cold_res": null,
+    "light_res": null,
+    "poison_res": null,
+    "gold": 28084,
+    "gold_stash": 469973,
+    "area": null,
+    "difficulty": null,
+    "players": null,
+    "hc": false,
+    "lod": true,
+    "dead": true,
+    "deaths": null,
+    "fcr": null,
+    "frw": null,
+    "fhr": null,
+    "ias": null,
+    "mf": null,
+    "gold_total": 498057,
+    "seconds_played": 12890,
+    "disqualified": null,
+    "town_visits": 1,
+    "preliminary": false,
+    "hireling_name": null,
+    "hireling_class": null,
+    "hireling_level": null,
+    "hireling_experience": null,
+    "hireling_strength": null,
+    "hireling_dexterity": null,
+    "hireling_fire_res": null,
+    "hireling_cold_res": null,
+    "hireling_light_res": null,
+    "hireling_poison_res": null,
+    "hireling_skill_ids": null,
+    "life": 378,
+    "life_max": 673,
+    "mana": 303,
+    "mana_max": 138,
+    "seed": 0,
+    "seed_is_arg": false,
+    "inventory_tab": null,
+    "experience": "125762977",
+    "in_game_time": 2468,
+    "finished_normal_quests": 19,
+    "finished_nightmare_quests": 18,
+    "finished_hell_quests": 3,
+    "total_kills": 0,
+    "undead_kills": 0,
+    "demon_kills": 0,
+    "unique_kills": 0,
+    "champion_kills": 0,
+    "animal_kills": 0,
+    "start_time": 1741876143,
+    "d2_mod": "D2R",
+    "d2_version": "d2s",
+    "d2_args": "",
+    "ladder_id": null,
+    "normal_super_uniques": 0,
+    "nightmare_super_uniques": 0,
+    "hell_super_uniques": 0,
+    "user_name": "Kano",
+    "user_country_code": "au",
+    "user_color": "#F0C03E",
+    "user_profile_image_url": "https://static-cdn.jtvnw.net/jtv_user_pictures/da906ae2-3a24-485e-8920-146c41cf89ae-profile_image-300x300.png"
+  },
+  "items": [
+    {
+      "character_id": 481593,
+      "item_hash": "26164241",
+      "item_id": 0,
+      "item_class": 3,
+      "container": "character",
+      "slot": "secondary_left",
+      "x": 11,
+      "y": 0,
+      "width": 1,
+      "height": 4,
+      "update_time": 1741889033,
+      "quality": "blue",
+      "name": "Battle Staff of Teleportation",
+      "base_name": "Battle Staff",
+      "properties": "[\"+1 to Chain Lightning (Sorceress Only)\",\"Level 1 Teleport (9/33 Charges)\"]",
+      "imageUrl": "https://static.diablo.run/item-images/Battle_Staff_(Diablo_II).gif"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "163150143",
+      "item_id": 0,
+      "item_class": 3,
+      "container": "character",
+      "slot": "primary_left",
+      "x": 4,
+      "y": 0,
+      "width": 2,
+      "height": 3,
+      "update_time": 1741889033,
+      "quality": "white",
+      "name": "Spirit [TalThulOrtAmn]",
+      "base_name": "Crystal Sword",
+      "properties": "[]",
+      "imageUrl": "https://static.diablo.run/item-images/Crystal_Sword.gif"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "279207707",
+      "item_id": 0,
+      "item_class": 1,
+      "container": "character",
+      "slot": "body_armor",
+      "x": 3,
+      "y": 0,
+      "width": 2,
+      "height": 3,
+      "update_time": 1741889033,
+      "quality": "white",
+      "name": "Stealth [TalEth]",
+      "base_name": "Breast Plate",
+      "properties": "[]",
+      "imageUrl": "https://gamepedia.cursecdn.com/diablo_gamepedia/8/83/Breast_Plate_%28Diablo_II%29.gif?version=4af25a6f8d37796bb1220352c73a6a5a"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "368021912",
+      "item_id": 0,
+      "item_class": 1,
+      "container": "character",
+      "slot": "belt",
+      "x": 8,
+      "y": 0,
+      "width": 2,
+      "height": 1,
+      "update_time": 1741889033,
+      "quality": "blue",
+      "name": "Sturdy Demonhide Sash of the Squid",
+      "base_name": "Demonhide Sash",
+      "properties": "[\"+15% Enhanced Defense\",\"+80 to Life\"]",
+      "imageUrl": "https://static.diablo.run/item-images/Sash_(Diablo_II).gif"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "783307187",
+      "item_id": 0,
+      "item_class": 1,
+      "container": "character",
+      "slot": "boots",
+      "x": 9,
+      "y": 0,
+      "width": 2,
+      "height": 2,
+      "update_time": 1741889033,
+      "quality": "blue",
+      "name": "Light Plated Boots of Acceleration",
+      "base_name": "Light Plated Boots",
+      "properties": "[\"+40% Faster Run/Walk\"]",
+      "imageUrl": "https://static.diablo.run/item-images/Light_Plated_Boots_(Diablo_II).gif"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "2374284644",
+      "item_id": 0,
+      "item_class": 4,
+      "container": "character",
+      "slot": "ring_right",
+      "x": 7,
+      "y": 0,
+      "width": 1,
+      "height": 1,
+      "update_time": 1741889033,
+      "quality": "yellow",
+      "name": "Corruption Ring Loop",
+      "base_name": "Ring",
+      "properties": "[\"+55 to Attack Rating\",\"+2 to Strength\",\"+2 to Dexterity\",\"+7 to Energy\",\"+5 Maximum Stamina\",\"Lightning Resist +22%\"]",
+      "imageUrl": "https://gamepedia.cursecdn.com/diablo_gamepedia/2/22/Ring_1_%28Diablo_II%29.gif?version=01a34f68a46881a4880237f28ac13e0a"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "2768399819",
+      "item_id": 0,
+      "item_class": 4,
+      "container": "character",
+      "slot": "amulet",
+      "x": 2,
+      "y": 0,
+      "width": 1,
+      "height": 1,
+      "update_time": 1741889033,
+      "quality": "blue",
+      "name": "Prismatic Amulet",
+      "base_name": "Amulet",
+      "properties": "[\"All Resistances +16\"]",
+      "imageUrl": "https://gamepedia.cursecdn.com/diablo_gamepedia/8/88/Amulet_1_%28Diablo_II%29.gif?version=ed0ecc61220393404ea1557207cb03a2"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "3318636941",
+      "item_id": 0,
+      "item_class": 1,
+      "container": "character",
+      "slot": "head",
+      "x": 1,
+      "y": 0,
+      "width": 2,
+      "height": 2,
+      "update_time": 1741889033,
+      "quality": "yellow",
+      "name": "Blood Wolf Head Cowl",
+      "base_name": "Wolf Head",
+      "properties": "[\"+1 to Druid Skills\",\"+10% Faster Hit Recovery\",\"+1 to Solar Creeper (Druid Only)\",\"+1 to Hunger (Druid Only)\",\"+3 to Armageddon (Druid Only)\",\"+29% Enhanced Defense\",\"+28 to Life\",\"+4 to Mana\"]",
+      "imageUrl": "https://gamepedia.cursecdn.com/diablo_gamepedia/7/7b/Wolf_Head_%28Diablo_II%29.gif?version=c66f8026786a3834dd1d56e448a9a2c5"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "3726048936",
+      "item_id": 0,
+      "item_class": 1,
+      "container": "character",
+      "slot": "primary_right",
+      "x": 5,
+      "y": 0,
+      "width": 2,
+      "height": 3,
+      "update_time": 1741889033,
+      "quality": "gold",
+      "name": "Lidless Wall",
+      "base_name": "Grim Shield",
+      "properties": "[\"+1 to All Skills\",\"+20% Faster Cast Rate\",\"+103% Enhanced Defense\",\"+10 to Energy\",\"Increase Maximum Mana 10%\",\"+3 to Mana after each Kill\",\"+1 to Light Radius\"]",
+      "imageUrl": "https://gamepedia.cursecdn.com/diablo_gamepedia/b/b3/Bone_Shield_%28Diablo_II%29.gif?version=29568e6cfbd5481b1f2fc7dc25d1459c"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "3760742495",
+      "item_id": 0,
+      "item_class": 1,
+      "container": "character",
+      "slot": "gloves",
+      "x": 10,
+      "y": 0,
+      "width": 2,
+      "height": 2,
+      "update_time": 1741889033,
+      "quality": "blue",
+      "name": "Crimson Chain Gloves",
+      "base_name": "Chain Gloves",
+      "properties": "[\"Fire Resist +9%\"]",
+      "imageUrl": "https://static.diablo.run/item-images/Chain_Gloves_(Diablo_II).gif"
+    },
+    {
+      "character_id": 481593,
+      "item_hash": "3827859547",
+      "item_id": 0,
+      "item_class": 4,
+      "container": "character",
+      "slot": "ring_left",
+      "x": 6,
+      "y": 0,
+      "width": 1,
+      "height": 1,
+      "update_time": 1741889033,
+      "quality": "yellow",
+      "name": "Entropy Ring Grip",
+      "base_name": "Ring",
+      "properties": "[\"5% Bonus to Attack Rating\",\"Replenish Life +4\",\"+10 to Mana\",\"Lightning Resist +28%\",\"+1 to Mana after each Kill\",\"+5 to Light Radius\"]",
+      "imageUrl": "https://gamepedia.cursecdn.com/diablo_gamepedia/2/22/Ring_1_%28Diablo_II%29.gif?version=01a34f68a46881a4880237f28ac13e0a"
+    }
+  ],
+  "quests": [
+    {
+      "update_time": 1741876334,
+      "difficulty": "normal",
+      "quest_id": 81
+    },
+    {
+      "update_time": 1741876964,
+      "difficulty": "normal",
+      "quest_id": 12
+    },
+    {
+      "update_time": 1741877555,
+      "difficulty": "normal",
+      "quest_id": 88
+    },
+    {
+      "update_time": 1741877598,
+      "difficulty": "normal",
+      "quest_id": 83
+    },
+    {
+      "update_time": 1741879290,
+      "difficulty": "normal",
+      "quest_id": 91
+    },
+    {
+      "update_time": 1741879290,
+      "difficulty": "normal",
+      "quest_id": 94
+    },
+    {
+      "update_time": 1741879483,
+      "difficulty": "normal",
+      "quest_id": 97
+    },
+    {
+      "update_time": 1741880014,
+      "difficulty": "normal",
+      "quest_id": 52
+    },
+    {
+      "update_time": 1741880336,
+      "difficulty": "normal",
+      "quest_id": 98
+    },
+    {
+      "update_time": 1741880336,
+      "difficulty": "normal",
+      "quest_id": 99
+    },
+    {
+      "update_time": 1741881935,
+      "difficulty": "nightmare",
+      "quest_id": 12
+    },
+    {
+      "update_time": 1741882263,
+      "difficulty": "nightmare",
+      "quest_id": 83
+    },
+    {
+      "update_time": 1741882489,
+      "difficulty": "nightmare",
+      "quest_id": 89
+    },
+    {
+      "update_time": 1741882651,
+      "difficulty": "nightmare",
+      "quest_id": 87
+    },
+    {
+      "update_time": 1741882755,
+      "difficulty": "nightmare",
+      "quest_id": 28
+    },
+    {
+      "update_time": 1741883661,
+      "difficulty": "nightmare",
+      "quest_id": 97
+    },
+    {
+      "update_time": 1741884110,
+      "difficulty": "nightmare",
+      "quest_id": 52
+    },
+    {
+      "update_time": 1741884618,
+      "difficulty": "nightmare",
+      "quest_id": 99
+    },
+    {
+      "update_time": 1741884997,
+      "difficulty": "nightmare",
+      "quest_id": 102
+    },
+    {
+      "update_time": 1741885412,
+      "difficulty": "hell",
+      "quest_id": 81
+    },
+    {
+      "update_time": 1741878200,
+      "difficulty": "normal",
+      "quest_id": 87
+    },
+    {
+      "update_time": 1741878200,
+      "difficulty": "normal",
+      "quest_id": 89
+    },
+    {
+      "update_time": 1741878200,
+      "difficulty": "normal",
+      "quest_id": 90
+    },
+    {
+      "update_time": 1741878321,
+      "difficulty": "normal",
+      "quest_id": 28
+    },
+    {
+      "update_time": 1741879429,
+      "difficulty": "normal",
+      "quest_id": 92
+    },
+    {
+      "update_time": 1741879683,
+      "difficulty": "normal",
+      "quest_id": 96
+    },
+    {
+      "update_time": 1741880471,
+      "difficulty": "normal",
+      "quest_id": 100
+    },
+    {
+      "update_time": 1741880831,
+      "difficulty": "normal",
+      "quest_id": 102
+    },
+    {
+      "update_time": 1741880954,
+      "difficulty": "normal",
+      "quest_id": 80
+    },
+    {
+      "update_time": 1741881221,
+      "difficulty": "nightmare",
+      "quest_id": 81
+    },
+    {
+      "update_time": 1741881591,
+      "difficulty": "nightmare",
+      "quest_id": 85
+    },
+    {
+      "update_time": 1741882253,
+      "difficulty": "nightmare",
+      "quest_id": 88
+    },
+    {
+      "update_time": 1741883458,
+      "difficulty": "nightmare",
+      "quest_id": 91
+    },
+    {
+      "update_time": 1741883567,
+      "difficulty": "nightmare",
+      "quest_id": 92
+    },
+    {
+      "update_time": 1741883841,
+      "difficulty": "nightmare",
+      "quest_id": 96
+    },
+    {
+      "update_time": 1741884312,
+      "difficulty": "nightmare",
+      "quest_id": 98
+    },
+    {
+      "update_time": 1741884695,
+      "difficulty": "nightmare",
+      "quest_id": 100
+    },
+    {
+      "update_time": 1741885142,
+      "difficulty": "nightmare",
+      "quest_id": 80
+    },
+    {
+      "update_time": 1741885754,
+      "difficulty": "hell",
+      "quest_id": 83
+    },
+    {
+      "update_time": 1741886169,
+      "difficulty": "hell",
+      "quest_id": 85
+    }
+  ],
+  "superUniques": [],
+  "races": []
+}
