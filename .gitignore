@@ -7,7 +7,7 @@ target/
 pom.xml.versionsBackup
 release/
 work/
-.~lock.*
+.~lock*
 
 ### STS ###
 .apt_generated

@@ -13,5 +13,8 @@ module d2rcharviewer {
     requires quarkus.reactive.routes;
     requires io.smallrye.mutiny.vertx.web;
     requires com.fasterxml.jackson.annotation;
-    requires microprofile.rest.client.api;
+    requires com.fasterxml.jackson.databind;
+    requires java.net.http;
+
+    exports io.github.paladijn.d2rcharviewer.model.diablorun to com.fasterxml.jackson.databind; // required for testing
 }

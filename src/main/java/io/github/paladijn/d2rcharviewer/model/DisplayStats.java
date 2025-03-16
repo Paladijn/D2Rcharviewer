@@ -19,4 +19,23 @@ import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 
 import java.time.Instant;
 
-public record DisplayStats(String name, CharacterType type, int level, boolean isHardcore, String percentToNext, DisplayAttributes attributes, Resistances resistances, Breakpoints breakpoints, int fasterRunWalk, int mf, int gf, String gold, String goldInStash, String runes, String runewords, Keys keys, SpeedRunItems speedRunItems, Instant lastUpdated) { }
+public record DisplayStats(
+        String name,
+        CharacterType type,
+        int level,
+        boolean isHardcore,
+        String percentToNext,
+        DisplayAttributes attributes,
+        Resistances resistances,
+        Breakpoints breakpoints,
+        int fasterRunWalk,
+        int fasterAttackRate,
+        int mf,
+        int gf,
+        String gold,
+        String goldInStash,
+        String runes,
+        String runewords,
+        Keys keys,
+        SpeedRunItems speedRunItems,
+        Instant lastUpdated) { }

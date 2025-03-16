@@ -92,8 +92,10 @@ public class DisplayStatsCalculator {
             throw new ParseException("Failed to read characterFile", e);
         }
 
-        final D2Character character = characterParser.parse(ByteBuffer.wrap(allBytes));
+        return getDisplayStats(characterParser.parse(ByteBuffer.wrap(allBytes)));
+    }
 
+    public DisplayStats getDisplayStats(final D2Character character) {
         long goldInStash = character.attributes().goldInStash();
         List<Item> allItems = character.items();
         if (configOptions.includeSharedStash()) {
@@ -112,6 +114,7 @@ public class DisplayStatsCalculator {
         List<ItemProperty> equippedSetBenefits = character.equippedSetBenefits();
 
         int frw = getTotalPointsInProperty("item_fastermovevelocity", equippedItems, equippedSetBenefits);
+        int far = getTotalPointsInProperty("item_fasterattackrate", equippedItems, equippedSetBenefits);
         int mf = getTotalPointsInProperty("item_magicbonus", equippedItems, equippedSetBenefits);
         int gf = getTotalPointsInProperty("item_goldbonus", equippedItems, equippedSetBenefits);
         int totalStrength = character.attributes().strength() + getTotalPointsInProperty("strength", equippedItems, equippedSetBenefits);
@@ -141,7 +144,7 @@ public class DisplayStatsCalculator {
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
-                attributes, resistances, breakpoints, frw, mf, gf, goldString(character.attributes().gold()), goldString(goldInStash),
+                attributes, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()), goldString(goldInStash),
                 runes, runewords, keys, speedRunItems, Instant.now());
     }
 
