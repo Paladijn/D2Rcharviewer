@@ -15,7 +15,6 @@
  */
 package io.github.paladijn.d2rcharviewer.calculator;
 
-import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
