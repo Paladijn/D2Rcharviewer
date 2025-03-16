@@ -16,5 +16,6 @@ module d2rcharviewer {
     requires com.fasterxml.jackson.databind;
     requires java.net.http;
 
-    exports io.github.paladijn.d2rcharviewer.model.diablorun to com.fasterxml.jackson.databind; // required for testing
+    exports io.github.paladijn.d2rcharviewer.model.diablorun to com.fasterxml.jackson.databind;
+    exports io.github.paladijn.d2rcharviewer.model.translation to com.fasterxml.jackson.databind;
 }

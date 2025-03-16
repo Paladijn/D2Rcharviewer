@@ -33,18 +33,25 @@ import java.nio.file.Paths;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DiabloRunSyncServiceTest {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private final CharacterParser characterParser = new CharacterParser(false);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private TranslationService translationService = new TranslationService(objectMapper);
 
     private final DiabloRunSyncService cut = new DiabloRunSyncService(
             new DisplayStatsCalculator("", true, false, false),
+            translationService,
             objectMapper);
+
+    public DiabloRunSyncServiceTest() {
+        translationService.language = "enUS";
+        cut.equipmentOnly = true;
+    }
 
     @ParameterizedTest
     @CsvSource({"src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/diablorun/output-sparkles.json"})
     void validSyncRequest(String characterFile, String expectedJSONFile) throws IOException {
-        cut.equipmentOnly = true;
 
         final String expectedJSON = Files.readString(Paths.get("",expectedJSONFile), StandardCharsets.UTF_8);
 

@@ -179,7 +179,7 @@ public class DisplayStatsCalculator {
         return sharedStashParser.parse(buffer);
     }
 
-    private Difficulty getCurrentDifficulty(List<Location> locations) {
+    public Difficulty getCurrentDifficulty(List<Location> locations) {
         return locations.stream()
                 .filter(Location::isActive)
                 .map(Location::difficulty)
@@ -324,7 +324,7 @@ public class DisplayStatsCalculator {
                 || (item.container() == INVENTORY && Item.isCharm(item.code()));
     }
 
-    private int getTotalPointsInProperty(String propertyName, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {
+    public int getTotalPointsInProperty(String propertyName, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {
         List<ItemProperty> propsFound = getPropertiesByNames(equippedItems, List.of(propertyName));
         propsFound.addAll(equippedSetBenefits.stream().filter(ip -> ip.name().equals(propertyName)).toList());
         return propsFound.stream().mapToInt(itemProperty -> itemProperty.values()[0]).sum();
