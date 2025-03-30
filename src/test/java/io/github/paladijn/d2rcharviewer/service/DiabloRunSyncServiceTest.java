@@ -18,6 +18,8 @@ package io.github.paladijn.d2rcharviewer.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.diablorun.SyncRequest;
+import io.github.paladijn.d2rcharviewer.transformer.DiabloRunItemTransformer;
+import io.github.paladijn.d2rcharviewer.transformer.DiabloRunMercenaryTransformer;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.parser.CharacterParser;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,23 +39,30 @@ class DiabloRunSyncServiceTest {
 
     private final CharacterParser characterParser = new CharacterParser(false);
 
-    private TranslationService translationService = new TranslationService(objectMapper);
+    private TranslationService translationService = new TranslationService(objectMapper, "enUS");
+
+    private final DiabloRunItemTransformer diabloRunItemTransformer = new DiabloRunItemTransformer(translationService);
+
+    private final DiabloRunMercenaryTransformer diabloRunMercenaryTransformer = new DiabloRunMercenaryTransformer(translationService, diabloRunItemTransformer);
 
     private final DiabloRunSyncService cut = new DiabloRunSyncService(
             new DisplayStatsCalculator("", true, false, false),
-            translationService,
+            diabloRunMercenaryTransformer,
+            diabloRunItemTransformer,
             objectMapper);
 
     public DiabloRunSyncServiceTest() {
-        translationService.language = "enUS";
-        cut.equipmentOnly = true;
+        cut.equipmentOnly = false;
     }
 
     @ParameterizedTest
-    @CsvSource({"src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/diablorun/output-sparkles.json"})
+    @CsvSource({
+            "src/test/resources/1.6.81914/rtltq_Kano.d2s,src/test/resources/diablorun/output-kano.json",
+            "src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/diablorun/output-sparkles.json"
+    })
     void validSyncRequest(String characterFile, String expectedJSONFile) throws IOException {
 
-        final String expectedJSON = Files.readString(Paths.get("",expectedJSONFile), StandardCharsets.UTF_8);
+        final String expectedJSON = Files.readString(Paths.get("", expectedJSONFile), StandardCharsets.UTF_8);
 
         final SyncRequest syncRequest = cut.createSyncRequest(getCharacter(characterFile));
         final String outcome = objectMapper.writeValueAsString(syncRequest);

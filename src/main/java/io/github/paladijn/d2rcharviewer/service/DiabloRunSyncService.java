@@ -18,20 +18,15 @@ package io.github.paladijn.d2rcharviewer.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
-import io.github.paladijn.d2rcharviewer.model.Constants;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.model.diablorun.CompletedQuests;
 import io.github.paladijn.d2rcharviewer.model.diablorun.D2ProcessInfo;
 import io.github.paladijn.d2rcharviewer.model.diablorun.DIApplicationInfo;
-import io.github.paladijn.d2rcharviewer.model.diablorun.DRUNItemQuality;
-import io.github.paladijn.d2rcharviewer.model.diablorun.Hireling;
-import io.github.paladijn.d2rcharviewer.model.diablorun.ItemPayload;
 import io.github.paladijn.d2rcharviewer.model.diablorun.SyncRequest;
+import io.github.paladijn.d2rcharviewer.transformer.DiabloRunItemTransformer;
+import io.github.paladijn.d2rcharviewer.transformer.DiabloRunMercenaryTransformer;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
-import io.github.paladijn.d2rsavegameparser.model.Item;
-import io.github.paladijn.d2rsavegameparser.model.ItemLocation;
-import io.github.paladijn.d2rsavegameparser.model.Mercenary;
 import io.github.paladijn.d2rsavegameparser.parser.CharacterParser;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -45,7 +40,6 @@ import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -56,7 +50,9 @@ public class DiabloRunSyncService {
 
     private final DisplayStatsCalculator displayStatsCalculator;
 
-    private final TranslationService translationService;
+    private final DiabloRunMercenaryTransformer diabloRunMercenaryTransformer;
+
+    private final DiabloRunItemTransformer diabloRunItemTransformer;
 
     private final HttpClient httpClient;
 
@@ -80,10 +76,12 @@ public class DiabloRunSyncService {
     List<String> ignoreNamesThatContain;
 
     public DiabloRunSyncService(DisplayStatsCalculator displayStatsCalculator,
-                                TranslationService translationService,
+                                DiabloRunMercenaryTransformer diabloRunMercenaryTransformer,
+                                DiabloRunItemTransformer diabloRunItemTransformer,
                                 ObjectMapper objectMapper) {
         this.displayStatsCalculator = displayStatsCalculator;
-        this.translationService = translationService;
+        this.diabloRunMercenaryTransformer = diabloRunMercenaryTransformer;
+        this.diabloRunItemTransformer = diabloRunItemTransformer;
         this.httpClient = HttpClient.newHttpClient();
         this.characterParser = new CharacterParser(false);
         this.objectMapper = objectMapper;
@@ -100,8 +98,23 @@ public class DiabloRunSyncService {
             return;
         }
 
-        // TODO this should be run in a virtual thread (reading the file, collecting stats, sending sync request in one go)
+        final SyncRunnable syncRunnable = new SyncRunnable(characterFile);
+        final Thread syncThread = Thread.startVirtualThread(syncRunnable);
+        syncThread.setName("Diablo.run sync");
+    }
 
+
+    private boolean ignoreByName(Path characterFile) {
+        for (String filter: ignoreNamesThatContain) {
+            if (characterFile.getFileName().toString().toLowerCase().contains(filter)) {
+                log.debug("matched on {}", filter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void parseAndSyncLatestCharacter(final Path characterFile) {
         final byte[] allBytes;
         try {
             allBytes = Files.readAllBytes(characterFile);
@@ -118,7 +131,7 @@ public class DiabloRunSyncService {
         final String requestBody;
         try {
             requestBody = objectMapper.writeValueAsString(syncRequest);
-            log.info("syncrequest =\n{}", requestBody);
+            log.debug("syncrequest =\n{}", requestBody);
         } catch (JsonProcessingException e) {
             log.error("could not write syncRequest json", e);
             return;
@@ -131,7 +144,7 @@ public class DiabloRunSyncService {
                 .build();
         try {
             final HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Sync request status {}, with body {}", response.statusCode(), response.body());
+            log.info("Diablo.run sync request: status {}, with body {}", response.statusCode(), response.body());
         } catch (IOException e) {
             log.error("error calling sync", e);
         } catch (InterruptedException e) {
@@ -183,141 +196,25 @@ public class DiabloRunSyncService {
                 displayStats.fasterAttackRate(),
                 displayStats.mf(),
                 new CompletedQuests(List.of(), List.of(), List.of()),
-                null, // inventorytab?
+                null, // not sure what the inventory tab does. active stash tab?
                 true, // always clear items
-                convertItems(d2Character.items(), equipmentOnly),
+                diabloRunItemTransformer.convertItems(d2Character.items(), equipmentOnly, false, d2Character.level()),
                 List.of(),
-                convertHireling(d2Character.mercenary(), difficulty)
+                diabloRunMercenaryTransformer.convertHireling(d2Character.mercenary(), difficulty)
         );
     }
 
-    private List<ItemPayload> convertItems(List<Item> items, boolean equippedOnly) {
-        final List<ItemPayload> results = new ArrayList<>();
-        for (Item item: items) {
-            if (equippedOnly && item.location() != ItemLocation.EQUIPPED) {
-                continue;
-            }
-            results.add(new ItemPayload(
-                    item.guid() == null ? 0 : Integer.parseInt(item.guid()),
-                    0, // check d2s what this value is, could be class restricted?
-                    item.type(),
-                    item.itemName(),
-                    DRUNItemQuality.fromParsed(item.quality()),
-                    List.of(),
-                    new io.github.paladijn.d2rcharviewer.model.diablorun.ItemLocation(
-                            item.x(),
-                            item.y(),
-                            1, // width
-                            1, // height
-                            item.position().ordinal(),
-                            item.container().ordinal()
-                    )));
-        }
-        return List.copyOf(results);
-    }
+    private class SyncRunnable implements Runnable {
 
-    private Hireling convertHireling(Mercenary mercenary, Difficulty difficulty) {
-        if (mercenary == null) {
-            return null;
+        private final Path characterFile;
+
+        public SyncRunnable(final Path characterFile) {
+            this.characterFile = characterFile;
         }
 
-        String name = getMercenaryName(mercenary.nameId(), mercenary.typeId());
-        int level = getLevelByXP(mercenary.experience());
-        int strength = calculateStrengthByType(mercenary.typeId(), level);
-        int dexterity = calculateDexByType(mercenary.typeId(), level);
-        int fireRes = mercenaryResistanceByLevel(level, difficulty, "fire", mercenary.items());
-        int coldRes = mercenaryResistanceByLevel(level, difficulty, "cold", mercenary.items());
-        int lightRes = mercenaryResistanceByLevel(level, difficulty, "light", mercenary.items());
-        int poisRes = mercenaryResistanceByLevel(level, difficulty, "poison", mercenary.items());
-        // note: items are currently added to the player character, so don't send those.
-        return new Hireling(name, mercenary.typeId(), level, mercenary.experience(), strength, dexterity, fireRes, coldRes, lightRes, poisRes, List.of(), List.of());
-    }
-
-    private int calculateStrengthByType(short typeId, int level) {
-        if (typeId < 6) {
-            return 32 + level;
+        @Override
+        public void run() {
+            parseAndSyncLatestCharacter(characterFile);
         }
-        if (typeId < 15) {
-            return 41 + (2 * level);
-        }
-        if (typeId < 24) {
-            return 31 + level;
-        }
-        if (typeId < 30) {
-            return 49 + (2 * level);
-        }
-        return 0;
-    }
-
-    private int calculateDexByType(short typeId, int level) {
-        if (typeId < 6) {
-            return 39 + (2 * level);
-        }
-        if (typeId < 15) {
-            return 26 + (2 * level);
-        }
-        if (typeId < 24) {
-            return 25 + level;
-        }
-        if (typeId < 30) {
-            return 29 + level;
-        }
-        return 0;
-    }
-
-    private int mercenaryResistanceByLevel(int level, Difficulty difficulty, String type, List<Item> equippedItems) {
-        int baseRes = (level - 3) * 2;
-        if (level < 4) {
-            baseRes = 0;
-        }
-
-        final int sum = baseRes + displayStatsCalculator.getTotalPointsInProperty(type + "resist", equippedItems, List.of());
-        final int max = Math.min(95, 75 + displayStatsCalculator.getTotalPointsInProperty("max" + type + "resist", equippedItems, List.of()));
-
-        return Math.min(max, switch (difficulty) {
-                case NORMAL -> sum;
-                case NIGHTMARE -> sum - 40;
-                case HELL -> sum - 100;
-            }
-        );
-    }
-
-    private String getMercenaryName(short nameId, short typeId) {
-        if (typeId < 6) {
-            return translationService.getTranslationByKey("merc%02d".formatted(1 + nameId));
-        }
-        if (typeId < 15) {
-            return translationService.getTranslationByKey("merca" + (201 + nameId));
-        }
-        if (typeId < 24) {
-            return translationService.getTranslationByKey("merca" + (222 + nameId));
-        }
-        if (typeId < 30) {
-            return translationService.getTranslationByKey("Merc" + (101 + nameId));
-        }
-        return "N.N.";
-    }
-
-
-    private int getLevelByXP(int experience) {
-        // FIXME this is not fully correct as the merc has different XP levels, for example lvl 6 ends at 41.160
-        int level = 1;
-        while (Constants.xpLevels[level] < experience) {
-            level++;
-            if (level > 99) {
-                break;
-            }
-        }
-        return level - 1;
-    }
-
-    private boolean ignoreByName(Path characterFile) {
-        for (String filter: ignoreNamesThatContain) {
-            if (characterFile.getFileName().toString().toLowerCase().contains(filter)) {
-                log.debug("matched on {}", filter);
-                return true;
-            }
-        }
-        return false;
     }
 }

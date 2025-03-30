@@ -16,7 +16,9 @@
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
 import io.github.paladijn.d2rsavegameparser.model.ItemQuality;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public enum DRUNItemQuality {
     NONE,
     WHITE,

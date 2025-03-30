@@ -16,9 +16,11 @@
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 
+@RegisterForReflection
 public record ItemPayload(
         @JsonProperty("GUID")
         int guid,

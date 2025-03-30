@@ -106,7 +106,7 @@ class DisplayStatsCalculatorTest {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.8/Sparkles-above75percent.d2s"));
 
         assertThat(result.resistances().fire()).isEqualTo(82);
-        assertThat(result.resistances().lightning()).isEqualTo(8);
+        assertThat(result.resistances().lightning()).isEqualTo(33); // 8 + 25 from Hsaru's set bonus
         assertThat(result.resistances().cold()).isEqualTo(20);
         assertThat(result.resistances().poison()).isEqualTo(45);
     }

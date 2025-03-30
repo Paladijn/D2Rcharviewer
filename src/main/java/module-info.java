@@ -3,8 +3,6 @@
  */
 module d2rcharviewer {
     requires io.github.paladijn.d2rsavegameparser;
-    requires jakarta.cdi;
-    requires jakarta.inject;
     requires jakarta.ws.rs;
     requires microprofile.config.api;
     requires org.slf4j;
@@ -15,6 +13,7 @@ module d2rcharviewer {
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
     requires java.net.http;
+    requires jakarta.cdi;
 
     exports io.github.paladijn.d2rcharviewer.model.diablorun to com.fasterxml.jackson.databind;
     exports io.github.paladijn.d2rcharviewer.model.translation to com.fasterxml.jackson.databind;

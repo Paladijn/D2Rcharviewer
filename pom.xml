@@ -20,7 +20,7 @@
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
         <maven.versions.plugin>2.18.0</maven.versions.plugin>
 
-        <d2rsavegameparser.version>1.4.0</d2rsavegameparser.version>
+        <d2rsavegameparser.version>1.4.1-SNAPSHOT</d2rsavegameparser.version>
         <slf4j.version>2.0.17</slf4j.version>
         <assertj.version>3.27.3</assertj.version>
     </properties>

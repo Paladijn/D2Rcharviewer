@@ -16,5 +16,7 @@
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public record DIApplicationInfo(@JsonProperty("Version") String version) { }

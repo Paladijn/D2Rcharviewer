@@ -13,6 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package io.github.paladijn.d2rcharviewer.model;
+package io.github.paladijn.d2rcharviewer.model.translation;
 
-public record SpeedRunItems(int fullRejuvs, int smallRejuvs, int chippedGems) { }
+import java.util.List;
+
+public record DisplayProperty(String label, List<String> values, boolean extend) { }

@@ -324,7 +324,7 @@ public class DisplayStatsCalculator {
                 || (item.container() == INVENTORY && Item.isCharm(item.code()));
     }
 
-    public int getTotalPointsInProperty(String propertyName, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {
+    public static int getTotalPointsInProperty(String propertyName, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {
         List<ItemProperty> propsFound = getPropertiesByNames(equippedItems, List.of(propertyName));
         propsFound.addAll(equippedSetBenefits.stream().filter(ip -> ip.name().equals(propertyName)).toList());
         return propsFound.stream().mapToInt(itemProperty -> itemProperty.values()[0]).sum();
