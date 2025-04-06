@@ -171,7 +171,7 @@ public class DiabloRunSyncService {
                 d2Character.characterType().ordinal(),
                 d2Character.expansion(),
                 d2Character.hardcore(),
-                d2Character.died(),
+                d2Character.attributes().hp() == 0,
                 0,
                 difficulty.ordinal(),
                 null,

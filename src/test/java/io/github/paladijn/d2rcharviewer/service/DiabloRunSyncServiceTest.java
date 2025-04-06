@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +42,7 @@ class DiabloRunSyncServiceTest {
 
     private TranslationService translationService = new TranslationService(objectMapper, "enUS");
 
-    private final DiabloRunItemTransformer diabloRunItemTransformer = new DiabloRunItemTransformer(translationService);
+    private final DiabloRunItemTransformer diabloRunItemTransformer = new DiabloRunItemTransformer(translationService, Optional.empty());
 
     private final DiabloRunMercenaryTransformer diabloRunMercenaryTransformer = new DiabloRunMercenaryTransformer(translationService, diabloRunItemTransformer);
 

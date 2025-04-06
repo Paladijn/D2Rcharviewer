@@ -22,6 +22,7 @@ import io.github.paladijn.d2rsavegameparser.model.ItemProperty;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +30,7 @@ class DiabloRunItemTransformerTest {
 
     final TranslationService translationService = new TranslationService(new ObjectMapper(), "enUS");
 
-    final DiabloRunItemTransformer cut = new DiabloRunItemTransformer(translationService);
+    final DiabloRunItemTransformer cut = new DiabloRunItemTransformer(translationService, Optional.empty());
 
     @Test
     void replaceChargedStaffFields() {

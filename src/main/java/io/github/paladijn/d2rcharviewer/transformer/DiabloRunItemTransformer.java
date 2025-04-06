@@ -30,6 +30,7 @@ import io.github.paladijn.d2rsavegameparser.model.SkillTree;
 import io.github.paladijn.d2rsavegameparser.model.SkillType;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -46,9 +47,14 @@ public class DiabloRunItemTransformer {
 
     private final TXTProperties txtProperties;
 
-    public DiabloRunItemTransformer(TranslationService translationService) {
+
+    private List<String> alwaysShareTheseItemCodes;
+
+    public DiabloRunItemTransformer(TranslationService translationService,
+                                    @ConfigProperty(name = "diablo-run.always-share-these-item-codes", defaultValue = "") Optional<List<String>> alwaysShareTheseItemCodes) {
         this.translationService = translationService;
         this.txtProperties = TXTProperties.getInstance();
+        this.alwaysShareTheseItemCodes = alwaysShareTheseItemCodes.orElse(List.of()); // yes, this is extremely ugly, but we need to handle empty list cases - see https://github.com/quarkusio/quarkus/issues/8292
     }
 
     public List<ItemPayload> convertItems(List<Item> items, boolean equippedOnly, boolean isMercenaryItem, int level) {
@@ -57,7 +63,7 @@ public class DiabloRunItemTransformer {
             if (equippedOnly && item.location() != ItemLocation.EQUIPPED) {
                 continue;
             }
-            // skip pots, scrolls, tomes, gems, keys, runes and the Horadric Cube
+            // skip pots, scrolls, tomes, gems, keys, runes and the Horadric Cube, unless they are exempted
             if (item.itemName().contains("Potion")
                     || Item.isScroll(item.code())
                     || Item.isTome(item.code())
@@ -65,7 +71,11 @@ public class DiabloRunItemTransformer {
                     || item.itemName().equals("Key")
                     || Item.isRune(item.type())
                     || item.itemName().equals("Horadric Cube")) {
-                continue;
+                if (!alwaysShareTheseItemCodes.contains(item.code())) {
+                    continue;
+                } else {
+                    log.debug("sharing item {}", item);
+                }
             }
             final String itemName = item.quality() == ItemQuality.UNIQUE || item.quality() == ItemQuality.SET ? translationService.getTranslationByKey(item.itemName()) : item.itemName();
             results.add(new ItemPayload(
