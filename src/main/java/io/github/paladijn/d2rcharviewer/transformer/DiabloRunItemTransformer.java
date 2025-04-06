@@ -25,6 +25,7 @@ import io.github.paladijn.d2rsavegameparser.model.ItemContainer;
 import io.github.paladijn.d2rsavegameparser.model.ItemLocation;
 import io.github.paladijn.d2rsavegameparser.model.ItemProperty;
 import io.github.paladijn.d2rsavegameparser.model.ItemQuality;
+import io.github.paladijn.d2rsavegameparser.model.ItemType;
 import io.github.paladijn.d2rsavegameparser.model.SkillTree;
 import io.github.paladijn.d2rsavegameparser.model.SkillType;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
@@ -69,21 +70,42 @@ public class DiabloRunItemTransformer {
             final String itemName = item.quality() == ItemQuality.UNIQUE || item.quality() == ItemQuality.SET ? translationService.getTranslationByKey(item.itemName()) : item.itemName();
             results.add(new ItemPayload(
                     item.guid() == null ? 0 : Integer.parseInt(item.guid()),
-                    0, // check d2s what this value is, could be class restricted?
-                    item.type(),
+                    getItemClass(item),
+                    getBaseName(item.itemType(), item.code()),
                     itemName,
                     item.isRuneword() ? DRUNItemQuality.GOLD : DRUNItemQuality.fromParsed(item.quality()),
                     getItemProperties(item.properties(), item.cntSockets(), level),
                     new io.github.paladijn.d2rcharviewer.model.diablorun.ItemLocation(
                             item.x(),
                             item.y(),
-                            1, // width, perhaps retrieve this from the property files
-                            1, // height, perhaps retrieve this from the property files
+                            item.invWidth(),
+                            item.invHeight(),
                             item.position().ordinal(),
                             convertItemContainer(item.container(), item.location(), isMercenaryItem)
                     )));
         }
         return List.copyOf(results);
+    }
+
+    private String getBaseName(ItemType itemType, String code) {
+        return switch (itemType){
+            case ARMOR -> txtProperties.getArmorStatsByCode(code).getName();
+            case WEAPON -> txtProperties.getWeaponStatsByCode(code).getName();
+            case MISC -> txtProperties.getMiscItemsByCode(code).getName();
+        };
+    }
+
+    private int getItemClass(Item item) {
+        // 1 for armour (including shields, 4 for ring/amu, 3 for weapon
+        if ("ring".equals(item.type()) || "amul".equals(item.type())) {
+            return 4;
+        }
+
+        return switch (item.itemType()) {
+            case ARMOR -> 1;
+            case WEAPON -> 3;
+            case MISC -> 2; // guessing this is 2, or maybe also 4?
+        };
     }
 
     /**
@@ -379,6 +401,7 @@ public class DiabloRunItemTransformer {
             output = previousOutput.replaceFirst("%d%%", value + "%")
                     .replaceFirst("%\\+d%%", "+" + value + "%")
                     .replaceFirst("%\\+d", "+" + value);
+
             if (output.equals(previousOutput)) {
                 output = previousOutput.replaceFirst("%[dis]", value);
             }

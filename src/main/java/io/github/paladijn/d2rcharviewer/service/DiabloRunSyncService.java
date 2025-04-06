@@ -144,7 +144,9 @@ public class DiabloRunSyncService {
                 .build();
         try {
             final HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            log.info("Diablo.run sync request: status {}, with body {}", response.statusCode(), response.body());
+            if (log.isDebugEnabled()) {
+                log.debug("Diablo.run sync request: status {}, with body {}", response.statusCode(), response.body());
+            }
         } catch (IOException e) {
             log.error("error calling sync", e);
         } catch (InterruptedException e) {
@@ -187,9 +189,9 @@ public class DiabloRunSyncService {
                 d2Character.attributes().gold(),
                 d2Character.attributes().goldInStash(),
                 d2Character.attributes().hp(),
-                d2Character.attributes().maxHP(),
+                displayStats.maxHP(),
                 d2Character.attributes().mana(),
-                d2Character.attributes().maxMana(),
+                displayStats.maxMana(),
                 displayStats.breakpoints().fCR(),
                 displayStats.breakpoints().fHR(),
                 displayStats.fasterRunWalk(),

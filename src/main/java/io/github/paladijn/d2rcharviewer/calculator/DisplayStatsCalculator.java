@@ -109,18 +109,21 @@ public class DisplayStatsCalculator {
         }
 
         log.debug("total items: {}", character.items().size());
-        List<Item> equippedItems = getEquippedItemsWithRequirements(character);
-        Map<String, Integer> availableRunes = getAvailableRunesByCode(allItems);
-        List<ItemProperty> equippedSetBenefits = character.equippedSetBenefits();
+        final List<Item> equippedItems = getEquippedItemsWithRequirements(character);
+        final Map<String, Integer> availableRunes = getAvailableRunesByCode(allItems);
+        final List<ItemProperty> equippedSetBenefits = character.equippedSetBenefits();
 
-        int frw = getTotalPointsInProperty("item_fastermovevelocity", equippedItems, equippedSetBenefits);
-        int far = getTotalPointsInProperty("item_fasterattackrate", equippedItems, equippedSetBenefits);
-        int mf = getTotalPointsInProperty("item_magicbonus", equippedItems, equippedSetBenefits);
-        int gf = getTotalPointsInProperty("item_goldbonus", equippedItems, equippedSetBenefits);
-        int totalStrength = character.attributes().strength() + getTotalPointsInProperty("strength", equippedItems, equippedSetBenefits);
-        int totalDexterity = character.attributes().dexterity() + getTotalPointsInProperty("dexterity", equippedItems, equippedSetBenefits);
-        int totalVitality = character.attributes().vitality() + getTotalPointsInProperty("vitality", equippedItems, equippedSetBenefits);
-        int totalEnergy = character.attributes().energy() + getTotalPointsInProperty("energy", equippedItems, equippedSetBenefits);
+        final int frw = getTotalPointsInProperty("item_fastermovevelocity", equippedItems, equippedSetBenefits);
+        final int far = getTotalPointsInProperty("item_fasterattackrate", equippedItems, equippedSetBenefits);
+        final int mf = getTotalPointsInProperty("item_magicbonus", equippedItems, equippedSetBenefits);
+        final int gf = getTotalPointsInProperty("item_goldbonus", equippedItems, equippedSetBenefits);
+        final int totalStrength = character.attributes().strength() + getTotalPointsInProperty("strength", equippedItems, equippedSetBenefits);
+        final int totalDexterity = character.attributes().dexterity() + getTotalPointsInProperty("dexterity", equippedItems, equippedSetBenefits);
+        final int totalVitality = character.attributes().vitality() + getTotalPointsInProperty("vitality", equippedItems, equippedSetBenefits);
+        final int totalEnergy = character.attributes().energy() + getTotalPointsInProperty("energy", equippedItems, equippedSetBenefits);
+        // TODO 20250406 Paladijn: There's also item_maxhp_percent and item_maxmana_percent for the two values below, but it looks like the current values are already slightly off, so we should fix that first.
+        final long maxHP = character.attributes().maxHP() + getTotalPointsInProperty("maxhp", equippedItems, equippedSetBenefits);
+        final long maxMana = character.attributes().maxMana() + getTotalPointsInProperty("maxmana", equippedItems, equippedSetBenefits);
         final DisplayAttributes attributes = new DisplayAttributes(totalStrength, totalDexterity, totalVitality, totalEnergy);
         final List<Skill> skillsWithBenefits = character.skills().stream().filter(skill -> !skill.passiveBonuses().isEmpty()).toList();
         final List<ItemProperty> benefits = new ArrayList<>(equippedSetBenefits);
@@ -144,8 +147,8 @@ public class DisplayStatsCalculator {
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
-                attributes, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()), goldString(goldInStash),
-                runes, runewords, keys, speedRunItems, Instant.now());
+                attributes, maxHP, maxMana, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()),
+                goldString(goldInStash), runes, runewords, keys, speedRunItems, Instant.now());
     }
 
     private String goldString(long goldValue) {

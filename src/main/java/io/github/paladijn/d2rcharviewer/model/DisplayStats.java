@@ -26,6 +26,8 @@ public record DisplayStats(
         boolean isHardcore,
         String percentToNext,
         DisplayAttributes attributes,
+        long maxHP,
+        long maxMana,
         Resistances resistances,
         Breakpoints breakpoints,
         int fasterRunWalk,
