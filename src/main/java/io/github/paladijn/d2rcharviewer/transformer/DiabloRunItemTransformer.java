@@ -28,15 +28,26 @@ import io.github.paladijn.d2rsavegameparser.model.ItemQuality;
 import io.github.paladijn.d2rsavegameparser.model.ItemType;
 import io.github.paladijn.d2rsavegameparser.model.SkillTree;
 import io.github.paladijn.d2rsavegameparser.model.SkillType;
+import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static io.github.paladijn.d2rcharviewer.service.TranslationService.TRANSLATION_NOT_FOUND;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @ApplicationScoped
@@ -47,14 +58,20 @@ public class DiabloRunItemTransformer {
 
     private final TXTProperties txtProperties;
 
+    private final Map<String, String> runewordLabelsByName = new HashMap<>();
 
     private List<String> alwaysShareTheseItemCodes;
 
+    private boolean translateBaseNames;
+
     public DiabloRunItemTransformer(TranslationService translationService,
-                                    @ConfigProperty(name = "diablo-run.always-share-these-item-codes", defaultValue = "") Optional<List<String>> alwaysShareTheseItemCodes) {
+                                    @ConfigProperty(name = "diablo-run.always-share-these-item-codes", defaultValue = "") Optional<List<String>> alwaysShareTheseItemCodes,
+                                    @ConfigProperty(name = "diablo-run.translate-base-names", defaultValue = "false") boolean translateBaseNames) {
         this.translationService = translationService;
         this.txtProperties = TXTProperties.getInstance();
-        this.alwaysShareTheseItemCodes = alwaysShareTheseItemCodes.orElse(List.of()); // yes, this is extremely ugly, but we need to handle empty list cases - see https://github.com/quarkusio/quarkus/issues/8292
+        this.alwaysShareTheseItemCodes = alwaysShareTheseItemCodes.orElse(List.of()); // yes, this is hideous, but we need to handle empty list cases - see https://github.com/quarkusio/quarkus/issues/8292
+        this.translateBaseNames = translateBaseNames;
+        initRunewordLabels();
     }
 
     public List<ItemPayload> convertItems(List<Item> items, boolean equippedOnly, boolean isMercenaryItem, int level) {
@@ -63,7 +80,7 @@ public class DiabloRunItemTransformer {
             if (equippedOnly && item.location() != ItemLocation.EQUIPPED) {
                 continue;
             }
-            // skip pots, scrolls, tomes, gems, keys, runes and the Horadric Cube, unless they are exempted
+            // skip pots, scrolls, tomes, gems, keys, runes and the Horadric Cube, unless they are exempted through `alwaysShareTheseItemCodes`
             if (item.itemName().contains("Potion")
                     || Item.isScroll(item.code())
                     || Item.isTome(item.code())
@@ -77,13 +94,14 @@ public class DiabloRunItemTransformer {
                     log.debug("sharing item {}", item);
                 }
             }
-            final String itemName = item.quality() == ItemQuality.UNIQUE || item.quality() == ItemQuality.SET ? translationService.getTranslationByKey(item.itemName()) : item.itemName();
+
+            final String baseName = getBaseNameFromItem(item);
             results.add(new ItemPayload(
                     item.guid() == null ? 0 : Integer.parseInt(item.guid()),
                     getItemClass(item),
-                    getBaseName(item.itemType(), item.code()),
-                    itemName,
-                    item.isRuneword() ? DRUNItemQuality.GOLD : DRUNItemQuality.fromParsed(item.quality()),
+                    baseName,
+                    getItemName(item, baseName),
+                    DRUNItemQuality.fromParsed(item.quality()),
                     getItemProperties(item.properties(), item.cntSockets(), level),
                     new io.github.paladijn.d2rcharviewer.model.diablorun.ItemLocation(
                             item.x(),
@@ -97,12 +115,78 @@ public class DiabloRunItemTransformer {
         return List.copyOf(results);
     }
 
+    private void initRunewordLabels() {
+        runewordLabelsByName.clear();
+
+        try (InputStream resource = new FileInputStream("txt/runes.txt")) {
+            new BufferedReader(new InputStreamReader(resource, StandardCharsets.UTF_8)).lines().forEach(line -> {
+                if (!line.isEmpty() && !line.startsWith("Name")) {
+                    final String[] blocks = line.split("\t");
+                    if ("1".equals(blocks[2])) { // active only
+                        runewordLabelsByName.put(blocks[1], blocks[0]);
+                    }
+                }
+            });
+        } catch (IOException | NullPointerException e) {
+            throw new ParseException("Could not parse runes.txt file", e);
+        }
+    }
+
     private String getBaseName(ItemType itemType, String code) {
         return switch (itemType){
             case ARMOR -> txtProperties.getArmorStatsByCode(code).getName();
             case WEAPON -> txtProperties.getWeaponStatsByCode(code).getName();
             case MISC -> txtProperties.getMiscItemsByCode(code).getName();
         };
+    }
+
+    private String getBaseNameFromItem(Item item) {
+        final String baseName = translateBaseNames
+                ? translationService.getTranslationByKey(item.code())
+                : getBaseName(item.itemType(), item.code());
+
+        return baseName.equals(TRANSLATION_NOT_FOUND)
+                ? item.itemName()
+                : baseName;
+    }
+
+    private String getItemName(final Item item, final String baseName) {
+        if (item.isRuneword()) {
+            final String runeList = item.socketedItems().stream().
+                    map(rune -> translationService.getTranslationByKey(rune.code() + "L"))
+                    .collect(Collectors.joining(" + "));
+            return "%s [%s (%s)]".formatted(baseName, translationService.getTranslationByKey(runewordLabelsByName.get(item.itemName())), runeList);
+        }
+
+        if (item.quality() == ItemQuality.MAGIC) {
+            String prefix = "";
+            String suffix = "";
+            if (!item.prefixIds().isEmpty()) {
+                prefix = translationService.getTranslationByKey((String) txtProperties.getMagicPrefix(item.prefixIds().getFirst()).getName()) + " ";
+            }
+            if (!item.suffixIds().isEmpty()) {
+                suffix = " " + translationService.getTranslationByKey((String) txtProperties.getMagicSuffix(item.suffixIds().getFirst()).getName());
+            }
+
+            return "%s%s%s".formatted(prefix, translationService.getTranslationByKey(item.code()), suffix);
+        }
+
+        if (item.quality() == ItemQuality.RARE || item.quality() == ItemQuality.CRAFT) {
+            // TODO 20250410 Paladijn: we should check if we can translate the rare/craft names as well, they are not part of item-names.json or the affixes
+            return item.itemName();
+        }
+
+        if (item.quality() == ItemQuality.SET) {
+            return translationService.getTranslationByKey(item.itemName());
+        }
+
+        // also filter the quest items such as horadric staff? They look odd at the moment as they're parsed as a 'unique' item.
+        if (item.quality() == ItemQuality.UNIQUE) {
+            final String translatedItemName = translationService.getTranslationByKey(item.itemName());
+            return "%s [%s]".formatted(baseName, translatedItemName);
+        }
+
+        return translationService.getTranslationByKey(item.code());
     }
 
     private int getItemClass(Item item) {

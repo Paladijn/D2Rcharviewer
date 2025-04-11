@@ -33,6 +33,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @ApplicationScoped
 public class TranslationService {
+    public static final String TRANSLATION_NOT_FOUND = "NOT_FOUND";
+
     private static final Logger log = getLogger(TranslationService.class);
 
     private final Map<String, String> translationsMappedByKey = new HashMap<>();
@@ -41,9 +43,8 @@ public class TranslationService {
 
     public TranslationService(final ObjectMapper objectMapper, @ConfigProperty(name = "translation.language", defaultValue = "enUS") String language) {
         this.language = language;
-        log.info("Translating fields to {}", language);
+        log.debug("Translating fields to {}", language);
         try {
-            storeTranslationItems(objectMapper, "translations/item-gems.json");
             storeTranslationItems(objectMapper, "translations/item-modifiers.json");
             storeTranslationItems(objectMapper, "translations/item-nameaffixes.json");
             storeTranslationItems(objectMapper, "translations/item-names.json");
@@ -60,7 +61,7 @@ public class TranslationService {
         if (!translationsMappedByKey.containsKey(key)) {
             log.warn("translation key not found: {}", key);
         }
-        return translationsMappedByKey.getOrDefault(key, "NOT_FOUND");
+        return translationsMappedByKey.getOrDefault(key, TRANSLATION_NOT_FOUND);
     }
 
     private void storeTranslationItems(ObjectMapper objectMapper, String fileLocation) throws IOException {
@@ -102,6 +103,6 @@ public class TranslationService {
         if (nextBlock == -1) {
             return value.substring(4);
         }
-        return value.substring(4, nextBlock - 1);
+        return value.substring(4, nextBlock);
     }
 }

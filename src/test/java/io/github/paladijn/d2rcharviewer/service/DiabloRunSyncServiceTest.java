@@ -42,7 +42,7 @@ class DiabloRunSyncServiceTest {
 
     private TranslationService translationService = new TranslationService(objectMapper, "enUS");
 
-    private final DiabloRunItemTransformer diabloRunItemTransformer = new DiabloRunItemTransformer(translationService, Optional.empty());
+    private final DiabloRunItemTransformer diabloRunItemTransformer = new DiabloRunItemTransformer(translationService, Optional.empty(), false);
 
     private final DiabloRunMercenaryTransformer diabloRunMercenaryTransformer = new DiabloRunMercenaryTransformer(translationService, diabloRunItemTransformer);
 

@@ -162,7 +162,7 @@ public class DiabloRunSyncService {
         return new SyncRequest("DataRead",
                 "API_KEY=%s".formatted(apiKey),
                 new DIApplicationInfo("21.6.16"),
-                new D2ProcessInfo("D2R", "d2s", List.of()),
+                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "0.0.12")),
                 0,
                 false,
                 d2Character.attributes().experience() == 0,
@@ -189,9 +189,9 @@ public class DiabloRunSyncService {
                 d2Character.attributes().gold(),
                 d2Character.attributes().goldInStash(),
                 d2Character.attributes().hp(),
-                displayStats.maxHP(),
+                Math.max(d2Character.attributes().hp(), displayStats.maxHP()), // sometimes these have rounding errors, so correct to the max value
                 d2Character.attributes().mana(),
-                displayStats.maxMana(),
+                Math.max(d2Character.attributes().mana(), displayStats.maxMana()), // sometimes these have rounding errors, so correct to the max value
                 displayStats.breakpoints().fCR(),
                 displayStats.breakpoints().fHR(),
                 displayStats.fasterRunWalk(),
