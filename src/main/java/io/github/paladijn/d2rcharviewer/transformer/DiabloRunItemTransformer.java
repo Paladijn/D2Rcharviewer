@@ -80,13 +80,12 @@ public class DiabloRunItemTransformer {
             if (equippedOnly && item.location() != ItemLocation.EQUIPPED) {
                 continue;
             }
-            // skip pots, scrolls, tomes, gems, keys, runes and the Horadric Cube, unless they are exempted through `alwaysShareTheseItemCodes`
+            // skip pots, scrolls, tomes, gems, keys and the Horadric Cube, unless they are exempted through `alwaysShareTheseItemCodes`
             if (item.itemName().contains("Potion")
                     || Item.isScroll(item.code())
                     || Item.isTome(item.code())
                     || Item.isGem(item.type(), item.type2())
                     || item.itemName().equals("Key")
-                    || Item.isRune(item.type())
                     || item.itemName().equals("Horadric Cube")) {
                 if (!alwaysShareTheseItemCodes.contains(item.code())) {
                     continue;
@@ -101,7 +100,7 @@ public class DiabloRunItemTransformer {
                     getItemClass(item),
                     baseName,
                     getItemName(item, baseName),
-                    DRUNItemQuality.fromParsed(item.quality()),
+                    getQuality(item),
                     getItemProperties(item.properties(), item.cntSockets(), level),
                     new io.github.paladijn.d2rcharviewer.model.diablorun.ItemLocation(
                             item.x(),
@@ -113,6 +112,29 @@ public class DiabloRunItemTransformer {
                     )));
         }
         return List.copyOf(results);
+    }
+
+    private DRUNItemQuality getQuality(Item item) {
+        if (Item.isRune(item.type())) { // let's colour the runes orange
+            return DRUNItemQuality.ORANGE;
+        }
+        if (isQuestItem(item)) {
+            return DRUNItemQuality.GOLD;
+        }
+        return DRUNItemQuality.fromParsed(item.quality());
+    }
+
+    private boolean isQuestItem(Item item) {
+        return (item.type().equals("ques")
+                || item.code().equals("leg") // Wirt's leg
+                || item.code().startsWith("qf") // Khalim's flail
+                || item.code().equals("hdm") // horadric malus
+                || item.code().equals("hst") // horadric staff
+                || item.code().equals("vip") // viper amulet
+                || item.code().equals("msf") // staff of kings
+                || item.code().equals("g33") // Gidbinn
+                || item.code().equals("hfh") // hellforge hammer
+        );
     }
 
     private void initRunewordLabels() {
@@ -172,8 +194,9 @@ public class DiabloRunItemTransformer {
         }
 
         if (item.quality() == ItemQuality.RARE || item.quality() == ItemQuality.CRAFT) {
-            // TODO 20250410 Paladijn: we should check if we can translate the rare/craft names as well, they are not part of item-names.json or the affixes
-            return item.itemName();
+            final String name1 = (item.rareNameId1() >= 156) ? txtProperties.getRarePrefixById(item.rareNameId1() - 156) : "DID_YOU_FORGET_TO_SET_THE_PREFIX_ID_SLIV";
+            final String name2 = txtProperties.getRareSuffixById(item.rareNameId2() - 1);
+            return "%s %s".formatted(translationService.getTranslationByKey(name1), translationService.getTranslationByKey(name2));
         }
 
         if (item.quality() == ItemQuality.SET) {
@@ -261,13 +284,49 @@ public class DiabloRunItemTransformer {
         final List<DisplayProperty> displayProperties = new ArrayList<>();
         for(int i = 0; i < properties.size(); i++) {
             final ItemProperty property = properties.get(i);
-            if (property.index() >= 39 && property.index() <= 45 && i < properties.size() - 1 && properties.get(i + 1).index() == property.index()) {
+            if (property.order() == -1) {
+                log.debug("skipping property due to order -1: {}", property);
+                continue;
+            }
+
+            if (property.index() >= 39 && property.index() <= 45 && i < properties.size() - 1
+                    && properties.get(i + 1).index() == property.index()
+                    && properties.get(i + 1).qualityFlag() == property.qualityFlag()
+            ) {
                 // combine and skip the next one
                 log.debug("Combining {} values", property.name());
                 for (int valueIndex = 0; valueIndex < property.values().length; valueIndex++) {
                     property.values()[valueIndex] += properties.get(i + 1).values()[valueIndex];
                 }
                 i++;
+            }
+
+            if (property.index() == 43 && (i + 3) < properties.size() // cold res
+                    && properties.get(i + 1).index() == 41 // lightning res
+                    && properties.get(i + 2).index() == 39 // fire res
+                    && properties.get(i + 3).index() == 45 // poison res
+                    && properties.get(i + 1).values()[0] == property.values()[0]
+                    && properties.get(i + 2).values()[0] == property.values()[0]
+                    && properties.get(i + 3).values()[0] == property.values()[0]
+            ) {
+                displayProperties.add(new DisplayProperty("strModAllResistances", List.of(String.valueOf(property.values()[0])), false));
+                i += 3;
+                log.debug("merged the resistances together");
+                continue;
+            }
+
+            if (property.index() == 0 && (i + 4) < properties.size() // strength
+                    && properties.get(i + 1).index() == 2 // dex
+                    && properties.get(i + 2).index() == 3 // vit
+                    && properties.get(i + 3).index() == 1 // energy
+                    && properties.get(i + 1).values()[0] == property.values()[0]
+                    && properties.get(i + 2).values()[0] == property.values()[0]
+                    && properties.get(i + 3).values()[0] == property.values()[0]
+            ) {
+                displayProperties.add(new DisplayProperty("Moditem2allattrib", List.of(String.valueOf(property.values()[0])), false));
+                i += 3;
+                log.debug("merged the four stats together");
+                continue;
             }
 
             switch (property.index()) {
@@ -305,6 +364,10 @@ public class DiabloRunItemTransformer {
                     continue;
                 case 107:
                     addSingleSkill(property, displayProperties);
+                    continue;
+                case 140: continue; // item_extrablood
+                case 151:
+                    addAura(property, displayProperties);
                     continue;
                 case 159: continue; // item_throw_mindamage
                 case 160: continue; // item_throw_maxdamage
@@ -361,6 +424,12 @@ public class DiabloRunItemTransformer {
         final String skillName = translationService.getTranslationByKey(getSkillLabel(skillID));
         displayProperties.add(new DisplayProperty("ModStre10d",
                 List.of(String.valueOf(property.values()[0]), skillName, String.valueOf(property.values()[2]), String.valueOf(property.values()[3])), false));
+    }
+
+    private void addAura(ItemProperty property, List<DisplayProperty> displayProperties) {
+        final int skillID = getSkillID(property.values()[0]);
+        final String skillName = translationService.getTranslationByKey(getSkillLabel(skillID));
+        displayProperties.add(new DisplayProperty("ModitemAura", List.of(String.valueOf(property.values()[1]), skillName), false));
     }
 
     private void addSkillOn(ItemProperty property, List<DisplayProperty> displayProperties) {
@@ -468,6 +537,10 @@ public class DiabloRunItemTransformer {
         List<String> result = new ArrayList<>();
         switch (values.length) {
             case 1 -> result.add(String.valueOf(values[0]));
+            case 2 -> {
+                result.add(String.valueOf(values[0]));
+                result.add(String.valueOf(values[1]));
+            }
             case 3 -> {
                 if (values[0] == values[1]) {
                     result.add(String.valueOf(values[0]));
