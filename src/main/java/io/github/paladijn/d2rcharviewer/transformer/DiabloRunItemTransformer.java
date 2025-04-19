@@ -101,7 +101,7 @@ public class DiabloRunItemTransformer {
                     baseName,
                     getItemName(item, baseName),
                     getQuality(item),
-                    getItemProperties(item.properties(), item.cntSockets(), level),
+                    getItemProperties(item, level),
                     new io.github.paladijn.d2rcharviewer.model.diablorun.ItemLocation(
                             item.x(),
                             item.y(),
@@ -259,9 +259,17 @@ public class DiabloRunItemTransformer {
         return 6;
     }
 
-    List<String> getItemProperties(List<ItemProperty> properties, short cntSockets, int level) {
-        List<String> allProperties = new ArrayList<>();
-        List<DisplayProperty> displayProperties = getDisplayProperties(properties, level);
+    List<String> getItemProperties(final Item item, final int level) {
+        final List<ItemProperty> properties = item.properties();
+        final short cntSockets = item.cntSockets();
+        final List<String> allProperties = new ArrayList<>();
+        final List<DisplayProperty> displayProperties = getDisplayProperties(properties, level);
+        for(Item socketedItem: item.socketedItems()) {
+            if (socketedItem.code().equals("jew")) {
+                log.debug("adding properties for jewel {}", socketedItem);
+                displayProperties.addAll(getDisplayProperties(socketedItem.properties(), level));
+            }
+        }
         for(DisplayProperty displayProperty: displayProperties) {
             final String translatedLabel = translationService.getTranslationByKey(displayProperty.label());
             if (displayProperty.values().isEmpty()) {
