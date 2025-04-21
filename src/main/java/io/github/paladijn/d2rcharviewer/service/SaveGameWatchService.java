@@ -55,7 +55,7 @@ public class SaveGameWatchService {
     private long savegameReadDelayMS;
 
     public SaveGameWatchService(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
-                                @ConfigProperty(name = "savegame.delay-in-ms", defaultValue = "0") long savegameReadDelayMS,
+                                @ConfigProperty(name = "savegame.delay-in-ms", defaultValue = "20") long savegameReadDelayMS,
                                 DisplayStatsCalculator displayStatsCalculator,
                                 StatisticsService statisticsService,
                                 DiabloRunSyncService diabloRunSyncService) {
@@ -113,6 +113,7 @@ public class SaveGameWatchService {
                         final Path characterFile = Path.of(savegameFolder, event.context().toString());
 
                         lastDisplayStats = displayStatsCalculator.getDisplayStats(characterFile);
+                        log.debug("updated stats for {}, checking if we need to sync", characterFile);
                         diabloRunSyncService.sync(characterFile);
                     } catch (ParseException pe) {
                         log.error("Could not parse savegame", pe);

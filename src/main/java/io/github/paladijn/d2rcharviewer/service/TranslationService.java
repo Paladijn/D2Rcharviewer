@@ -61,7 +61,7 @@ public class TranslationService {
         if (!translationsMappedByKey.containsKey(key)) {
             log.warn("translation key not found: {}", key);
         }
-        return translationsMappedByKey.getOrDefault(key, TRANSLATION_NOT_FOUND);
+        return translationsMappedByKey.getOrDefault(key, key);
     }
 
     private void storeTranslationItems(ObjectMapper objectMapper, String fileLocation) throws IOException {

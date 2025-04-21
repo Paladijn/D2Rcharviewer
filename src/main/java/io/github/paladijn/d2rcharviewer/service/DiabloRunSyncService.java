@@ -216,7 +216,11 @@ public class DiabloRunSyncService {
 
         @Override
         public void run() {
-            parseAndSyncLatestCharacter(characterFile);
+            try {
+                parseAndSyncLatestCharacter(characterFile);
+            } catch (Exception e) {
+                log.error("Exception caught while syncing", e);
+            }
         }
     }
 }

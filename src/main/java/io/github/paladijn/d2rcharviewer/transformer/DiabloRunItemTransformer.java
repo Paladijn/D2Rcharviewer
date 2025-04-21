@@ -184,10 +184,10 @@ public class DiabloRunItemTransformer {
             String prefix = "";
             String suffix = "";
             if (!item.prefixIds().isEmpty()) {
-                prefix = translationService.getTranslationByKey((String) txtProperties.getMagicPrefix(item.prefixIds().getFirst()).getName()) + " ";
+                prefix = translationService.getTranslationByKey(txtProperties.getMagicPrefix(item.prefixIds().getFirst()).getName()) + " ";
             }
             if (!item.suffixIds().isEmpty()) {
-                suffix = " " + translationService.getTranslationByKey((String) txtProperties.getMagicSuffix(item.suffixIds().getFirst()).getName());
+                suffix = " " + translationService.getTranslationByKey(txtProperties.getMagicSuffix(item.suffixIds().getFirst()).getName());
             }
 
             return "%s%s%s".formatted(prefix, translationService.getTranslationByKey(item.code()), suffix);
@@ -299,7 +299,9 @@ public class DiabloRunItemTransformer {
 
             if (property.index() >= 39 && property.index() <= 45 && i < properties.size() - 1
                     && properties.get(i + 1).index() == property.index()
-                    && properties.get(i + 1).qualityFlag() == property.qualityFlag()
+                    && (property.qualityFlag() == 0  // exception for class specific Paladin shields with equipped runes and Runewords such as Ancient's pledge
+                        || properties.get(i + 1).qualityFlag() == property.qualityFlag() // this applies to runes or gems: the quality flag will be different depending on the type of item it was socketed in
+                    )
             ) {
                 // combine and skip the next one
                 log.debug("Combining {} values", property.name());
@@ -450,7 +452,7 @@ public class DiabloRunItemTransformer {
     private void addSkillTab(ItemProperty property, List<DisplayProperty> displayProperties) {
         final SkillTree skillTree = SkillTree.findSkillTreeById(property.values()[0]);
         final String classOnly = translationService.getTranslationByKey(skillTree.getCharacterType().getDisplayName().substring(0, 3) + "Only");
-        displayProperties.add(new DisplayProperty("StrSklTabItem" + (1 + skillTree.ordinal()), List.of(String.valueOf(property.values()[1]), classOnly), true));
+        displayProperties.add(new DisplayProperty(skillTree.getItemSkillTabKey(), List.of(String.valueOf(property.values()[1]), classOnly), true));
     }
 
     private void addSingleSkill(ItemProperty property, List<DisplayProperty> displayProperties) {
