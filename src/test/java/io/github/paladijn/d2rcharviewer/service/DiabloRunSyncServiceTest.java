@@ -61,7 +61,8 @@ class DiabloRunSyncServiceTest {
             "src/test/resources/1.6.81914/rtltq_Kano.d2s,src/test/resources/diablorun/output-kano.json",
             "src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/diablorun/output-sparkles.json",
             "src/test/resources/1.6.81914/DRUNPala.d2s,src/test/resources/diablorun/output-DRUNPala.json",
-            "src/test/resources/1.6.81914/DRUNPala-mahim.d2s,src/test/resources/diablorun/output-DRUNPala-mahim.json"
+            "src/test/resources/1.6.81914/DRUNPala-mahim.d2s,src/test/resources/diablorun/output-DRUNPala-mahim.json",
+            "src/test/resources/1.6.81914/Pylkjes.d2s,src/test/resources/diablorun/output-Pylkjes.json"
     })
     void validSyncRequest(String characterFile, String expectedJSONFile) throws IOException {
 

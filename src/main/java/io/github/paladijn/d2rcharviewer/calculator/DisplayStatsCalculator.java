@@ -317,9 +317,21 @@ public class DisplayStatsCalculator {
     }
 
     private boolean requirementsMet(int charLevel, int strength, int dexterity, Item item) {
+        final int adjustRequirementPercentage = item.properties().stream()
+                .filter(itemProperty -> itemProperty.name().equals("item_req_percent"))
+                    .findAny().map(itemProperty -> itemProperty.values()[0])
+                    .orElse(0);
+
+        final int reqStr = adjustRequirementPercentage == 0
+                ? item.reqStr()
+                : item.reqStr() + (int) Math.round(item.reqStr() * (adjustRequirementPercentage / 100.0));
+        final int reqDex = adjustRequirementPercentage == 0
+                ? item.reqDex()
+                : item.reqDex() + (int) Math.round(item.reqDex() * (adjustRequirementPercentage / 100.0));
+
         return charLevel >= item.reqLvl()
-                && strength >= item.reqStr()
-                && dexterity >= item.reqDex();
+                && strength >= reqStr
+                && dexterity >= reqDex;
     }
 
     private boolean equippedOrCharm(Item item) {

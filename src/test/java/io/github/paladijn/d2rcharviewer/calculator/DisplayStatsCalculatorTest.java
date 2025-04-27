@@ -173,4 +173,16 @@ class DisplayStatsCalculatorTest {
         assertThat(result.breakpoints().fCR()).isEqualTo(60);
         assertThat(result.breakpoints().fHR()).isEqualTo(80);
     }
+
+    @Test
+    void requirementsMetOnTalRasha() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/Koelkast.d2s"));
+
+        assertThat(result.resistances().fire()).isEqualTo(9);
+        assertThat(result.resistances().lightning()).isEqualTo(50);
+        assertThat(result.resistances().cold()).isEqualTo(-79);
+        assertThat(result.resistances().poison()).isEqualTo(-3);
+        assertThat(result.mf()).isEqualTo(240);
+        assertThat(result.breakpoints().fCR()).isEqualTo(40);
+    }
 }

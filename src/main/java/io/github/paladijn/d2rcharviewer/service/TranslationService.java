@@ -67,9 +67,16 @@ public class TranslationService {
     private void storeTranslationItems(ObjectMapper objectMapper, String fileLocation) throws IOException {
         final InputStream resourceAsStream = new FileInputStream(fileLocation);
         final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
-        translatedItems.forEach(translatedItem -> translationsMappedByKey.put(translatedItem.key(), getTranslatedValue(translatedItem)));
+        translatedItems.forEach(translatedItem -> translationsMappedByKey.put(fixedKey(translatedItem), getTranslatedValue(translatedItem)));
 
         log.debug("found {} translated items in {}", translatedItems.size(), fileLocation);
+    }
+
+    private static String fixedKey(TranslationItem translatedItem) {
+        if (translatedItem.key().equals("skillsname61")) { // the only skillname with a typo...
+            return "skillname61";
+        }
+        return translatedItem.key();
     }
 
     private String getTranslatedValue(TranslationItem translatedItem) {

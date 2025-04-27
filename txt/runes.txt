@@ -12,7 +12,7 @@ Runeword10	Brand	1			Previously Ladder Only	miss									JahLoMalGul	r31	r28	r23
 Runeword11	Breath of the Dying	1			110	weap									VexHelElEldZodEth	r26	r15	r01	r02	r33	r05	swing2		60	60	dmg-undead		125	125	lifesteal		12	15	noheal		1	1	kill-skill	Poison Nova	50	20	dmg%		350	400	all-stats		30	30	0
 Runeword12	Broken Promise																																																	0
 Runeword13	Call to Arms	1			110	weap									AmnRalMalIstOhm	r11	r08	r23	r24	r27		swing2		40	40	dmg%		200	240	allskills		1	1	oskill	Battle Command	2	6	oskill	Battle Orders	1	6	oskill	Battle Cry	1	4	regen		12	12	0
-Runeword14	Chains of Honor	1			110	tors									DolUmBerIst	r14	r22	r30	r24			res-all		50	50	ac%		70	70	dmg-demon		200	200	dmg-undead		100	100	lifesteal		8	8	allskills		2	2	str		20	20	0
+Runeword14	Chains of Honor	1			110	tors				w					DolUmBerIst	r14	r22	r30	r24			res-all		50	50	ac%		70	70	dmg-demon		200	200	dmg-undead		100	100	lifesteal		8	8	allskills		2	2	str		20	20	0
 Runeword15	Chance																																																	0
 Runeword16	Chaos	1			110	h2h									FalOhmUm	r19	r27	r22				demon-heal		15	15	dmg%		240	290	dmg-mag		216	471	oskill	Whirlwind	1	1	swing2		35	35	hit-skill	Frozen Orb	9	11	hit-skill	Charged Bolt	11	9	0
 Runeword17	Crescent Moon	1			110	axe	swor	pole							ShaelUmTir	r13	r22	r03				pierce-ltng		35	35	ignore-ac		1	1	dmg%		180	220	abs-mag		9	11	charged	Summon Spirit Wolf	30	18	hit-skill	Static Field	7	13	hit-skill	Chain Lightning	10	17	0
@@ -157,7 +157,7 @@ Runeword156	Voice																																																	0
 Runeword157	Void																																																	0
 Runeword158	War																																																	0
 Runeword159	Water																																																	0
-Runeword160	Wealth	1			109	tors									LmKoTir	r20	r18	r03				gold%		250	250	mag%		100	100																					0
+Runeword160	Wealth	1			109	tors									LemKoTir	r20	r18	r03				gold%		250	250	mag%		100	100																					0
 Runeword161	Whisper																																																	0
 Runeword162	White	1			109	wand									DolIo	r14	r16					skilltab	7	3	3	red-mag		4	4	cast2		20	20	mana		13	13	skill	68	3	3	skill	84	2	2	skill	69	4	4	0
 Runeword163	Wind	1			110	mele									SurEl	r29	r01					dmg%		120	160	swing2		40	40	move2		20	20	reduce-ac		50	50	hit-skill	Tornado	10	9	charged	240	127	13	balance2		15	15	0

@@ -80,13 +80,16 @@ public class DiabloRunItemTransformer {
             if (equippedOnly && item.location() != ItemLocation.EQUIPPED) {
                 continue;
             }
-            // skip pots, scrolls, tomes, gems, keys and the Horadric Cube, unless they are exempted through `alwaysShareTheseItemCodes`
+            // skip pots, scrolls, tomes, gems, keys, quivers and the Horadric Cube, unless they are exempted through `alwaysShareTheseItemCodes`
             if (item.itemName().contains("Potion")
                     || Item.isScroll(item.code())
                     || Item.isTome(item.code())
                     || Item.isGem(item.type(), item.type2())
                     || item.itemName().equals("Key")
-                    || item.itemName().equals("Horadric Cube")) {
+                    || item.itemName().equals("Horadric Cube")
+                    || (item.itemName().equals("Arrows") && item.location() != ItemLocation.EQUIPPED)
+                    || (item.itemName().equals("Bolts") && item.location() != ItemLocation.EQUIPPED)
+            ) {
                 if (!alwaysShareTheseItemCodes.contains(item.code())) {
                     continue;
                 } else {
