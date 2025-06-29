@@ -1,5 +1,5 @@
 /*
-   Copyright 2024 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
+   Copyright 2024-2025 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,4 +19,25 @@ import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 
 import java.time.Instant;
 
-public record DisplayStats(String name, CharacterType type, int level, boolean isHardcore, String percentToNext, DisplayAttributes attributes, Resistances resistances, Breakpoints breakpoints, int fasterRunWalk, int mf, int gf, String gold, String goldInStash, String runes, String runewords, Keys keys, SpeedRunItems speedRunItems, Instant lastUpdated) { }
+public record DisplayStats(
+        String name,
+        CharacterType type,
+        int level,
+        boolean isHardcore,
+        String percentToNext,
+        DisplayAttributes attributes,
+        long maxHP,
+        long maxMana,
+        Resistances resistances,
+        Breakpoints breakpoints,
+        int fasterRunWalk,
+        int fasterAttackRate,
+        int mf,
+        int gf,
+        String gold,
+        String goldInStash,
+        String runes,
+        String runewords,
+        Keys keys,
+        SpeedRunItems speedRunItems,
+        Instant lastUpdated) { }

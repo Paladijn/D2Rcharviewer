@@ -1,5 +1,5 @@
 /*
-   Copyright 2024 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
+   Copyright 2024-2025 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.github.paladijn.d2rcharviewer.service;
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+@ApplicationScoped
 public class StatisticsService {
     private static final Logger log = getLogger(StatisticsService.class);
 
