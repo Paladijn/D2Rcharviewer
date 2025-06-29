@@ -1,5 +1,5 @@
 /*
-   Copyright 2024 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
+   Copyright 2024-2025 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package io.github.paladijn.d2rcharviewer.calculator;
 
-import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
@@ -29,8 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DisplayStatsCalculatorTest {
 
-    private final DisplayStatsCalculator cut = new DisplayStatsCalculator(new BreakpointCalculator(), "",
-            new ConfigOptions(false, false, false));
+    private final DisplayStatsCalculator cut = new DisplayStatsCalculator("", false, false, false);
 
     @Test
     void simpleChar() {
@@ -75,7 +73,7 @@ class DisplayStatsCalculatorTest {
 
     @Test
     void removeRunewordAlreadyMade() {
-        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator(new BreakpointCalculator(), "", new ConfigOptions(true, false, false));
+        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator("", true, false, false);
         final DisplayStats result = calculatorWithoutDuplicates.getDisplayStats(Path.of("src/test/resources/2.5/Fierljepper.d2s"));
 
         // Stealth is already made, so should be skipped
@@ -108,7 +106,7 @@ class DisplayStatsCalculatorTest {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/2.8/Sparkles-above75percent.d2s"));
 
         assertThat(result.resistances().fire()).isEqualTo(82);
-        assertThat(result.resistances().lightning()).isEqualTo(8);
+        assertThat(result.resistances().lightning()).isEqualTo(33); // 8 + 25 from Hsaru's set bonus
         assertThat(result.resistances().cold()).isEqualTo(20);
         assertThat(result.resistances().poison()).isEqualTo(45);
     }
@@ -174,5 +172,17 @@ class DisplayStatsCalculatorTest {
 
         assertThat(result.breakpoints().fCR()).isEqualTo(60);
         assertThat(result.breakpoints().fHR()).isEqualTo(80);
+    }
+
+    @Test
+    void requirementsMetOnTalRasha() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/Koelkast.d2s"));
+
+        assertThat(result.resistances().fire()).isEqualTo(9);
+        assertThat(result.resistances().lightning()).isEqualTo(50);
+        assertThat(result.resistances().cold()).isEqualTo(-79);
+        assertThat(result.resistances().poison()).isEqualTo(-3);
+        assertThat(result.mf()).isEqualTo(240);
+        assertThat(result.breakpoints().fCR()).isEqualTo(40);
     }
 }

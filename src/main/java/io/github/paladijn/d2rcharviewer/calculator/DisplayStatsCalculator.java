@@ -1,5 +1,5 @@
 /*
-   Copyright 2024 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
+   Copyright 2024-2025 Paladijn (paladijn2960+d2rsavegameparser@gmail.com)
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.model.Keys;
 import io.github.paladijn.d2rcharviewer.model.Resistances;
 import io.github.paladijn.d2rcharviewer.model.SpeedRunItems;
+import io.github.paladijn.d2rcharviewer.utils.SaveGameFolder;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
 import io.github.paladijn.d2rsavegameparser.model.Item;
@@ -39,6 +40,8 @@ import io.github.paladijn.d2rsavegameparser.parser.SharedStashParser;
 import io.github.paladijn.d2rsavegameparser.txt.MiscStats;
 import io.github.paladijn.d2rsavegameparser.txt.Runeword;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -56,10 +59,11 @@ import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.INVENTORY
 import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.STASH;
 import static org.slf4j.LoggerFactory.getLogger;
 
+@ApplicationScoped
 public class DisplayStatsCalculator {
     private static final Logger log = getLogger(DisplayStatsCalculator.class);
 
-    private final String savegameLocation;
+    private final String savegameFolder;
 
     private final ConfigOptions configOptions;
 
@@ -71,12 +75,13 @@ public class DisplayStatsCalculator {
 
     private final TXTProperties txtProperties = TXTProperties.getInstance();
 
-    public DisplayStatsCalculator(BreakpointCalculator breakpointCalculator,
-                                  String savegameLocation,
-                                  ConfigOptions configOptions) {
-        this.savegameLocation = savegameLocation;
-        this.breakpointCalculator = breakpointCalculator;
-        this.configOptions = configOptions;
+    public DisplayStatsCalculator(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
+                                  @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
+                                  @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
+                                  @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
+        this.savegameFolder = SaveGameFolder.getSavegameFolder(savegameLocation);
+        this.breakpointCalculator = new BreakpointCalculator();
+        this.configOptions = new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX);
     }
 
     public DisplayStats getDisplayStats(final Path characterFile) {
@@ -87,8 +92,10 @@ public class DisplayStatsCalculator {
             throw new ParseException("Failed to read characterFile", e);
         }
 
-        final D2Character character = characterParser.parse(ByteBuffer.wrap(allBytes));
+        return getDisplayStats(characterParser.parse(ByteBuffer.wrap(allBytes)));
+    }
 
+    public DisplayStats getDisplayStats(final D2Character character) {
         long goldInStash = character.attributes().goldInStash();
         List<Item> allItems = character.items();
         if (configOptions.includeSharedStash()) {
@@ -102,17 +109,21 @@ public class DisplayStatsCalculator {
         }
 
         log.debug("total items: {}", character.items().size());
-        List<Item> equippedItems = getEquippedItemsWithRequirements(character);
-        Map<String, Integer> availableRunes = getAvailableRunesByCode(allItems);
-        List<ItemProperty> equippedSetBenefits = character.equippedSetBenefits();
+        final List<Item> equippedItems = getEquippedItemsWithRequirements(character);
+        final Map<String, Integer> availableRunes = getAvailableRunesByCode(allItems);
+        final List<ItemProperty> equippedSetBenefits = character.equippedSetBenefits();
 
-        int frw = getTotalPointsInProperty("item_fastermovevelocity", equippedItems, equippedSetBenefits);
-        int mf = getTotalPointsInProperty("item_magicbonus", equippedItems, equippedSetBenefits);
-        int gf = getTotalPointsInProperty("item_goldbonus", equippedItems, equippedSetBenefits);
-        int totalStrength = character.attributes().strength() + getTotalPointsInProperty("strength", equippedItems, equippedSetBenefits);
-        int totalDexterity = character.attributes().dexterity() + getTotalPointsInProperty("dexterity", equippedItems, equippedSetBenefits);
-        int totalVitality = character.attributes().vitality() + getTotalPointsInProperty("vitality", equippedItems, equippedSetBenefits);
-        int totalEnergy = character.attributes().energy() + getTotalPointsInProperty("energy", equippedItems, equippedSetBenefits);
+        final int frw = getTotalPointsInProperty("item_fastermovevelocity", equippedItems, equippedSetBenefits);
+        final int far = getTotalPointsInProperty("item_fasterattackrate", equippedItems, equippedSetBenefits);
+        final int mf = getTotalPointsInProperty("item_magicbonus", equippedItems, equippedSetBenefits);
+        final int gf = getTotalPointsInProperty("item_goldbonus", equippedItems, equippedSetBenefits);
+        final int totalStrength = character.attributes().strength() + getTotalPointsInProperty("strength", equippedItems, equippedSetBenefits);
+        final int totalDexterity = character.attributes().dexterity() + getTotalPointsInProperty("dexterity", equippedItems, equippedSetBenefits);
+        final int totalVitality = character.attributes().vitality() + getTotalPointsInProperty("vitality", equippedItems, equippedSetBenefits);
+        final int totalEnergy = character.attributes().energy() + getTotalPointsInProperty("energy", equippedItems, equippedSetBenefits);
+        // TODO 20250406 Paladijn: There's also item_maxhp_percent and item_maxmana_percent for the two values below, but it looks like the current values are already slightly off, so we should fix that first.
+        final long maxHP = character.attributes().maxHP() + getTotalPointsInProperty("maxhp", equippedItems, equippedSetBenefits);
+        final long maxMana = character.attributes().maxMana() + getTotalPointsInProperty("maxmana", equippedItems, equippedSetBenefits);
         final DisplayAttributes attributes = new DisplayAttributes(totalStrength, totalDexterity, totalVitality, totalEnergy);
         final List<Skill> skillsWithBenefits = character.skills().stream().filter(skill -> !skill.passiveBonuses().isEmpty()).toList();
         final List<ItemProperty> benefits = new ArrayList<>(equippedSetBenefits);
@@ -136,8 +147,8 @@ public class DisplayStatsCalculator {
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
-                attributes, resistances, breakpoints, frw, mf, gf, goldString(character.attributes().gold()), goldString(goldInStash),
-                runes, runewords, keys, speedRunItems, Instant.now());
+                attributes, maxHP, maxMana, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()),
+                goldString(goldInStash), runes, runewords, keys, speedRunItems, Instant.now());
     }
 
     private String goldString(long goldValue) {
@@ -164,14 +175,14 @@ public class DisplayStatsCalculator {
         final String stashFilename = isHardcore ? "SharedStashHardCoreV2.d2i" : "SharedStashSoftCoreV2.d2i";
         final ByteBuffer buffer;
         try {
-            buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameLocation, stashFilename)));
+            buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameFolder, stashFilename)));
         } catch (IOException e) {
             throw new ParseException("could not read shared stash file", e);
         }
         return sharedStashParser.parse(buffer);
     }
 
-    private Difficulty getCurrentDifficulty(List<Location> locations) {
+    public Difficulty getCurrentDifficulty(List<Location> locations) {
         return locations.stream()
                 .filter(Location::isActive)
                 .map(Location::difficulty)
@@ -306,9 +317,21 @@ public class DisplayStatsCalculator {
     }
 
     private boolean requirementsMet(int charLevel, int strength, int dexterity, Item item) {
+        final int adjustRequirementPercentage = item.properties().stream()
+                .filter(itemProperty -> itemProperty.name().equals("item_req_percent"))
+                    .findAny().map(itemProperty -> itemProperty.values()[0])
+                    .orElse(0);
+
+        final int reqStr = adjustRequirementPercentage == 0
+                ? item.reqStr()
+                : item.reqStr() + (int) Math.round(item.reqStr() * (adjustRequirementPercentage / 100.0));
+        final int reqDex = adjustRequirementPercentage == 0
+                ? item.reqDex()
+                : item.reqDex() + (int) Math.round(item.reqDex() * (adjustRequirementPercentage / 100.0));
+
         return charLevel >= item.reqLvl()
-                && strength >= item.reqStr()
-                && dexterity >= item.reqDex();
+                && strength >= reqStr
+                && dexterity >= reqDex;
     }
 
     private boolean equippedOrCharm(Item item) {
@@ -316,7 +339,7 @@ public class DisplayStatsCalculator {
                 || (item.container() == INVENTORY && Item.isCharm(item.code()));
     }
 
-    private int getTotalPointsInProperty(String propertyName, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {
+    public static int getTotalPointsInProperty(String propertyName, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {
         List<ItemProperty> propsFound = getPropertiesByNames(equippedItems, List.of(propertyName));
         propsFound.addAll(equippedSetBenefits.stream().filter(ip -> ip.name().equals(propertyName)).toList());
         return propsFound.stream().mapToInt(itemProperty -> itemProperty.values()[0]).sum();
