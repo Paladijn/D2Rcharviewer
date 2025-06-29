@@ -13,6 +13,12 @@ By default, the page is refreshed every 5 seconds, but the current savegame file
 To install the application, unzip the file to a directory of your choice, [configure](docs/configuration.md) any options to your preference and doubleclick the d2charviewer.exe file.  
 The application has no other dependencies, but needs the config, txt and templates folder in the same location.
 
+## Microsoft Defender Anti-virus warning
+Microsoft's anti-virus tool sometimes considers the application to be a potential virus referring it to Program:Win32/Wacapew.C!ml -> [more details about this on microsoft.com](https://www.microsoft.com/en-us/wdsi/threats/malware-encyclopedia-description?Name=Program:Win32/Wacapew.C!ml) which seems to be caused by the application containing code to connect to Diablo.Run to update the players gear, which obviously is intended behaviour (you can switch this feature off with `diablo-run.enabled=false` in the config/application.properties file, but that won't prevent the virus popup). It can also be caused by the application looking up the user folder as that's where the savegames are stored - this again is legitimate behaviour.   
+
+Should this occur, then either allow it directly in the popup, or go to `virus and threat protection` in the settings. The `Current threats` has a link to `protection history` where you can select the most recent `threat` which should display `D2RCharViewer.exe` and allow it on your PC. 
+
+## In case the savegame folder is not auto-detected
 The app should pick the right savegame folder, but if you receive an error about this edit the config/application.properties and add ```savegame.location=C:/Users/Paladijn/Saved Games/Diablo II Resurrected``` where you replace ```Paladijn``` with your Windows user name.
 
 ## Detailed documentation  
