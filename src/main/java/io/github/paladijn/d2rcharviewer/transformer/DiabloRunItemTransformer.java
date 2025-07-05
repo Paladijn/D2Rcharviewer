@@ -60,9 +60,9 @@ public class DiabloRunItemTransformer {
 
     private final Map<String, String> runewordLabelsByName = new HashMap<>();
 
-    private List<String> alwaysShareTheseItemCodes;
+    private final List<String> alwaysShareTheseItemCodes;
 
-    private boolean translateBaseNames;
+    private final boolean translateBaseNames;
 
     public DiabloRunItemTransformer(TranslationService translationService,
                                     @ConfigProperty(name = "diablo-run.always-share-these-item-codes", defaultValue = "") Optional<List<String>> alwaysShareTheseItemCodes,

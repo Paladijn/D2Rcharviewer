@@ -40,7 +40,7 @@ class DiabloRunSyncServiceTest {
 
     private final CharacterParser characterParser = new CharacterParser(false);
 
-    private TranslationService translationService = new TranslationService(objectMapper, "enUS");
+    private final TranslationService translationService = new TranslationService(objectMapper, "enUS");
 
     private final DiabloRunItemTransformer diabloRunItemTransformer = new DiabloRunItemTransformer(translationService, Optional.empty(), false);
 
