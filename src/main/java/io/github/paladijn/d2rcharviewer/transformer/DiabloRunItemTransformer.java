@@ -270,7 +270,7 @@ public class DiabloRunItemTransformer {
         final List<DisplayProperty> displayProperties = getDisplayProperties(properties, level, hasSocketedOrClassSpecific);
         for(Item socketedItem: item.socketedItems()) {
             if (socketedItem.code().equals("jew")) { // TODO 20250705 Paladijn: this is a bug in the parser as the jewel's properties should have already been added to the items' property list. Fix this in ItemParser:460
-                log.warn("adding properties for jewel {}", socketedItem);
+                log.debug("adding properties for jewel {}", socketedItem);
                 displayProperties.addAll(getDisplayProperties(socketedItem.properties(), level, false));
             }
         }

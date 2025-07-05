@@ -117,7 +117,7 @@ class DiabloRunItemTransformerTest {
         assertThat(item.itemName()).isEqualTo("ロングソード [精霊 (タル + スル + オルト + アムン)]");
         assertThat(item.quality()).isEqualTo(DRUNItemQuality.WHITE);
         assertThat(item.properties()).hasSize(11);
-        assertThat(item.properties()).hasToString("[全スキル向上（+2）, スキル発動速度（+25%）, ヒットリカバリー速度（+55%）, 電撃ダメージ上昇（1 - 50）, 冷気ダメージ上昇（3 - 14）, 毒ダメージ付与（合計+75ダメージを5秒間で与える）, 攻撃命中でライフを吸収（与ダメージの7%）, 遠隔攻撃に対する防御力（+250）, 生命力（+22）, マナ（+106）, 魔法吸収（+8）]");
+        assertThat(item.properties()).hasToString("[全スキル向上（+2）, スキル発動速度（+25%）, ヒットリカバリー速度（+55%）, 電撃ダメージ上昇（1 - 50） (Weapons only), 冷気ダメージ上昇（3 - 14） (Weapons only), 毒ダメージ付与（合計+75ダメージを5秒間で与える） (Weapons only), 攻撃命中でライフを吸収（与ダメージの7%） (Weapons only), 遠隔攻撃に対する防御力（+250）, 生命力（+22）, マナ（+106）, 魔法吸収（+8）]");
     }
 
     @Test
