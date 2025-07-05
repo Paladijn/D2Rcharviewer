@@ -59,9 +59,18 @@ class DiabloRunItemTransformerTest {
 
     @Test
     void addAssassinOnlySkills() {
-        List<DisplayProperty> outcome = cut.getDisplayProperties(List.of(new ItemProperty(83, "item_addclassskills", new int[]{6, 2}, 0,150)), 1);
+        List<DisplayProperty> outcome = cut.getDisplayProperties(List.of(new ItemProperty(83, "item_addclassskills", new int[]{6, 2}, 0,150)), 1, false);
         assertThat(outcome)
                 .containsExactly(new DisplayProperty("ModStre8b", List.of("2"), false));
+    }
+
+    @Test
+    void addMultipleIdenticalGemBonus() {
+        final ItemProperty itemMagicbonus = new ItemProperty(80, "item_magicbonus", new int[]{24, 24, 0}, 8, 8);
+        final List<DisplayProperty> outcome = cut.getDisplayProperties(List.of(itemMagicbonus, itemMagicbonus, itemMagicbonus, itemMagicbonus), 59, true);
+
+        assertThat(outcome)
+                .containsExactly(new DisplayProperty("ModStr1x", List.of("96"), false));
     }
 
     @Test

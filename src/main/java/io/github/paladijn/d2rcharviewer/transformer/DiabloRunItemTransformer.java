@@ -266,11 +266,12 @@ public class DiabloRunItemTransformer {
         final List<ItemProperty> properties = item.properties();
         final short cntSockets = item.cntSockets();
         final List<String> allProperties = new ArrayList<>();
-        final List<DisplayProperty> displayProperties = getDisplayProperties(properties, level);
+        final boolean hasSocketedOrClassSpecific = item.cntFilledSockets() > 0 || item.restrictedToClass() != CharacterType.NONE;
+        final List<DisplayProperty> displayProperties = getDisplayProperties(properties, level, hasSocketedOrClassSpecific);
         for(Item socketedItem: item.socketedItems()) {
-            if (socketedItem.code().equals("jew")) {
-                log.debug("adding properties for jewel {}", socketedItem);
-                displayProperties.addAll(getDisplayProperties(socketedItem.properties(), level));
+            if (socketedItem.code().equals("jew")) { // TODO 20250705 Paladijn: this is a bug in the parser as the jewel's properties should have already been added to the items' property list. Fix this in ItemParser:460
+                log.warn("adding properties for jewel {}", socketedItem);
+                displayProperties.addAll(getDisplayProperties(socketedItem.properties(), level, false));
             }
         }
         for(DisplayProperty displayProperty: displayProperties) {
@@ -291,27 +292,40 @@ public class DiabloRunItemTransformer {
         return List.copyOf(allProperties);
     }
 
-    protected List<DisplayProperty> getDisplayProperties(final List<ItemProperty> properties, int level) {
+    protected List<DisplayProperty> getDisplayProperties(final List<ItemProperty> properties, int level, boolean hasSocketedOrClassSpecific) {
         final List<DisplayProperty> displayProperties = new ArrayList<>();
         for(int i = 0; i < properties.size(); i++) {
-            final ItemProperty property = properties.get(i);
+            ItemProperty property = properties.get(i);
             if (property.order() == -1) {
                 log.debug("skipping property due to order -1: {}", property);
                 continue;
             }
 
-            if (property.index() >= 39 && property.index() <= 45 && i < properties.size() - 1
+            if (hasSocketedOrClassSpecific
+                    && property.index() != 107 // item_singleskill
+                    && property.index() != 188 // item_addskill_tab
+                    && i < properties.size() - 1
                     && properties.get(i + 1).index() == property.index()
                     && (property.qualityFlag() == 0  // exception for class specific Paladin shields with equipped runes and Runewords such as Ancient's pledge
                         || properties.get(i + 1).qualityFlag() == property.qualityFlag() // this applies to runes or gems: the quality flag will be different depending on the type of item it was socketed in
                     )
             ) {
-                // combine and skip the next one
-                log.debug("Combining {} values", property.name());
-                for (int valueIndex = 0; valueIndex < property.values().length; valueIndex++) {
-                    property.values()[valueIndex] += properties.get(i + 1).values()[valueIndex];
-                }
-                i++;
+                // combine and skip the next one(s)
+                int[] newValues = new int[property.values().length];
+
+                do {
+                    log.debug("Combining {} values {} + {}", property.name(), newValues, properties.get(i).values());
+                    for (int valueIndex = 0; valueIndex < newValues.length; valueIndex++) {
+                        newValues[valueIndex] += properties.get(i).values()[valueIndex];
+                    }
+                    i++;
+                } while (i < properties.size()
+                        && properties.get(i).index() == property.index()
+                        && (property.qualityFlag() == 0 || properties.get(i).qualityFlag() == property.qualityFlag()));
+
+                property = new ItemProperty(property.index(), property.name(), newValues, property.qualityFlag(), property.order());
+                i--;
+                log.debug("new property -> {} at index {}", property, i);
             }
 
             if (property.index() == 43 && (i + 3) < properties.size() // cold res
@@ -324,7 +338,7 @@ public class DiabloRunItemTransformer {
             ) {
                 displayProperties.add(new DisplayProperty("strModAllResistances", List.of(String.valueOf(property.values()[0])), false));
                 i += 3;
-                log.debug("merged the resistances together");
+                log.debug("merged the resistances together for value {}", property.values()[0]);
                 continue;
             }
 

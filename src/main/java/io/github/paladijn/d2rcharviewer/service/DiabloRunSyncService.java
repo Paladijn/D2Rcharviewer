@@ -162,7 +162,7 @@ public class DiabloRunSyncService {
         return new SyncRequest("DataRead",
                 "API_KEY=%s".formatted(apiKey),
                 new DIApplicationInfo("21.6.16"),
-                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "0.0.12")),
+                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.0.1")),
                 0,
                 false,
                 d2Character.attributes().experience() == 0,
