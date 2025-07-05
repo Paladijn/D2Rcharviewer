@@ -283,6 +283,7 @@ public class DiabloRunItemTransformer {
                 if (displayProperty.extend()) {
                     extended += " " + displayProperty.values().getLast();
                 }
+                extended += qualityFlagFilter(displayProperty.qualityFlag());
                 allProperties.add(extended);
             }
         }
@@ -336,7 +337,7 @@ public class DiabloRunItemTransformer {
                     && properties.get(i + 2).values()[0] == property.values()[0]
                     && properties.get(i + 3).values()[0] == property.values()[0]
             ) {
-                displayProperties.add(new DisplayProperty("strModAllResistances", List.of(String.valueOf(property.values()[0])), false));
+                displayProperties.add(new DisplayProperty("strModAllResistances", List.of(String.valueOf(property.values()[0])), false, property.qualityFlag()));
                 i += 3;
                 log.debug("merged the resistances together for value {}", property.values()[0]);
                 continue;
@@ -350,7 +351,7 @@ public class DiabloRunItemTransformer {
                     && properties.get(i + 2).values()[0] == property.values()[0]
                     && properties.get(i + 3).values()[0] == property.values()[0]
             ) {
-                displayProperties.add(new DisplayProperty("Moditem2allattrib", List.of(String.valueOf(property.values()[0])), false));
+                displayProperties.add(new DisplayProperty("Moditem2allattrib", List.of(String.valueOf(property.values()[0])), false, property.qualityFlag()));
                 i += 3;
                 log.debug("merged the four stats together");
                 continue;
@@ -415,7 +416,7 @@ public class DiabloRunItemTransformer {
 
             final String label = txtProperties.getItemStatCostsByID(property.index()).getDescStrPos();
             final List<String> values = getValues(property.values());
-            displayProperties.add(new DisplayProperty(label, values, false));
+            displayProperties.add(new DisplayProperty(label, values, false, property.qualityFlag()));
         }
         return displayProperties;
     }
@@ -436,40 +437,40 @@ public class DiabloRunItemTransformer {
             case ASSASSIN -> "ModStre8b";
             case NONE -> "NO CLASS SELECTED";
         };
-        displayProperties.add(new DisplayProperty(label, List.of(String.valueOf(property.values()[1])), false));
+        displayProperties.add(new DisplayProperty(label, List.of(String.valueOf(property.values()[1])), false, property.qualityFlag()));
     }
 
     private void addPropertyPerLevel(ItemProperty property, int level, List<DisplayProperty> displayProperties) {
         final int value = (int) Math.floor(property.values()[0] / 8.0 * level);
         final String label = txtProperties.getItemStatCostsByID(property.index()).getDescStrPos();
         final String perLevel = translationService.getTranslationByKey("increaseswithplaylevelX");
-        displayProperties.add(new DisplayProperty(label, List.of(String.valueOf(value), perLevel), true));
+        displayProperties.add(new DisplayProperty(label, List.of(String.valueOf(value), perLevel), true, property.qualityFlag()));
     }
 
     private void addChargedItem(ItemProperty property, List<DisplayProperty> displayProperties) {
         final int skillID = getSkillID(property.values()[1]);
         final String skillName = translationService.getTranslationByKey(getSkillLabel(skillID));
         displayProperties.add(new DisplayProperty("ModStre10d",
-                List.of(String.valueOf(property.values()[0]), skillName, String.valueOf(property.values()[2]), String.valueOf(property.values()[3])), false));
+                List.of(String.valueOf(property.values()[0]), skillName, String.valueOf(property.values()[2]), String.valueOf(property.values()[3])), false, property.qualityFlag()));
     }
 
     private void addAura(ItemProperty property, List<DisplayProperty> displayProperties) {
         final int skillID = getSkillID(property.values()[0]);
         final String skillName = translationService.getTranslationByKey(getSkillLabel(skillID));
-        displayProperties.add(new DisplayProperty("ModitemAura", List.of(String.valueOf(property.values()[1]), skillName), false));
+        displayProperties.add(new DisplayProperty("ModitemAura", List.of(String.valueOf(property.values()[1]), skillName), false, property.qualityFlag()));
     }
 
     private void addSkillOn(ItemProperty property, List<DisplayProperty> displayProperties) {
         final int skillID = getSkillID(property.values()[1]);
         final String skillName = translationService.getTranslationByKey(getSkillLabel(skillID));
         displayProperties.add(new DisplayProperty(txtProperties.getItemStatCostsByID(property.index()).getDescStrPos(),
-                List.of(String.valueOf(property.values()[2]), String.valueOf(property.values()[0]), skillName), false));
+                List.of(String.valueOf(property.values()[2]), String.valueOf(property.values()[0]), skillName), false, property.qualityFlag()));
     }
 
     private void addSkillTab(ItemProperty property, List<DisplayProperty> displayProperties) {
         final SkillTree skillTree = SkillTree.findSkillTreeById(property.values()[0]);
         final String classOnly = translationService.getTranslationByKey(skillTree.getCharacterType().getDisplayName().substring(0, 3) + "Only");
-        displayProperties.add(new DisplayProperty(skillTree.getItemSkillTabKey(), List.of(String.valueOf(property.values()[1]), classOnly), true));
+        displayProperties.add(new DisplayProperty(skillTree.getItemSkillTabKey(), List.of(String.valueOf(property.values()[1]), classOnly), true, property.qualityFlag()));
     }
 
     private void addSingleSkill(ItemProperty property, List<DisplayProperty> displayProperties) {
@@ -478,7 +479,7 @@ public class DiabloRunItemTransformer {
         final String skillName = translationService.getTranslationByKey(skillLabel);
         final SkillType skillType = SkillType.findSkillById(property.values()[0]);
         final String classOnly = translationService.getTranslationByKey(skillType.getCharacterType().getDisplayName().substring(0, 3) + "Only");
-        displayProperties.add(new DisplayProperty("ItemModifierClassSkill", List.of(String.valueOf(property.values()[1]), skillName, classOnly), false));
+        displayProperties.add(new DisplayProperty("ItemModifierClassSkill", List.of(String.valueOf(property.values()[1]), skillName, classOnly), false, property.qualityFlag()));
     }
 
     private String getSkillLabel(int skillID) {
@@ -501,10 +502,10 @@ public class DiabloRunItemTransformer {
                 final String duration = String.valueOf(length / 25);
                 if (minDamage == maxDamage) {
                     displayProperties.add(new DisplayProperty("strModPoisonDamage",
-                            List.of(String.valueOf(minDamage), duration), false));
+                            List.of(String.valueOf(minDamage), duration), false, property.qualityFlag()));
                 } else {
                     displayProperties.add(new DisplayProperty("strModPoisonDamageRange",
-                            List.of(String.valueOf(minDamage), String.valueOf(maxDamage), duration), false));
+                            List.of(String.valueOf(minDamage), String.valueOf(maxDamage), duration), false, property.qualityFlag()));
                 }
                 return true;
             }
@@ -517,7 +518,7 @@ public class DiabloRunItemTransformer {
             final ItemProperty maxColdDamage = properties.get(index + 1);
             if (maxColdDamage.index() == 55) {
                 displayProperties.add(new DisplayProperty("strModColdDamageRange",
-                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxColdDamage.values()[0])), false));
+                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxColdDamage.values()[0])), false, property.qualityFlag()));
                 return true;
             }
         }
@@ -529,7 +530,7 @@ public class DiabloRunItemTransformer {
             final ItemProperty maxColdDamage = properties.get(index + 1);
             if (maxColdDamage.index() == 53) {
                 displayProperties.add(new DisplayProperty("strModMagicDamageRange",
-                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxColdDamage.values()[0])), false));
+                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxColdDamage.values()[0])), false, property.qualityFlag()));
                 return true;
             }
         }
@@ -541,7 +542,7 @@ public class DiabloRunItemTransformer {
             final ItemProperty maxLgthDamage = properties.get(index + 1);
             if (maxLgthDamage.index() == 51) {
                 displayProperties.add(new DisplayProperty("strModLightningDamageRange",
-                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxLgthDamage.values()[0])), false));
+                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxLgthDamage.values()[0])), false, property.qualityFlag()));
                 return true;
             }
         }
@@ -553,7 +554,7 @@ public class DiabloRunItemTransformer {
             final ItemProperty maxFireDamage = properties.get(index + 1);
             if (maxFireDamage.index() == 49) {
                 displayProperties.add(new DisplayProperty("strModFireDamageRange",
-                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxFireDamage.values()[0])), false));
+                        List.of(String.valueOf(property.values()[0]), String.valueOf(maxFireDamage.values()[0])), false, property.qualityFlag()));
                 return true;
             }
         }
@@ -580,6 +581,15 @@ public class DiabloRunItemTransformer {
             default -> log.warn("we ended up here with an unsupported length of {}", values.length);
         }
         return result;
+    }
+
+    private String qualityFlagFilter(int qualityFlag) {
+        return switch (qualityFlag) {
+            case 7 -> " (Weapons only)";
+            case 8 -> " (Armor/Helmet only)";
+            case 9 -> " (Shields only)";
+            default -> "";
+        };
     }
 
     String replacePropertyFields(final String input, final List<String> values) {

@@ -17,4 +17,4 @@ package io.github.paladijn.d2rcharviewer.model.translation;
 
 import java.util.List;
 
-public record DisplayProperty(String label, List<String> values, boolean extend) { }
+public record DisplayProperty(String label, List<String> values, boolean extend, int qualityFlag) { }

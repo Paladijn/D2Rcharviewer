@@ -61,7 +61,7 @@ class DiabloRunItemTransformerTest {
     void addAssassinOnlySkills() {
         List<DisplayProperty> outcome = cut.getDisplayProperties(List.of(new ItemProperty(83, "item_addclassskills", new int[]{6, 2}, 0,150)), 1, false);
         assertThat(outcome)
-                .containsExactly(new DisplayProperty("ModStre8b", List.of("2"), false));
+                .containsExactly(new DisplayProperty("ModStre8b", List.of("2"), false, 0));
     }
 
     @Test
@@ -70,7 +70,7 @@ class DiabloRunItemTransformerTest {
         final List<DisplayProperty> outcome = cut.getDisplayProperties(List.of(itemMagicbonus, itemMagicbonus, itemMagicbonus, itemMagicbonus), 59, true);
 
         assertThat(outcome)
-                .containsExactly(new DisplayProperty("ModStr1x", List.of("96"), false));
+                .containsExactly(new DisplayProperty("ModStr1x", List.of("96"), false, 8));
     }
 
     @Test
