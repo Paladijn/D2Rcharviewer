@@ -58,6 +58,7 @@ class DiabloRunSyncServiceTest {
 
     @ParameterizedTest
     @CsvSource({
+            "src/test/resources/1.6.81914/TheUberDruid.d2s,src/test/resources/diablorun/output-kanouberdruid.json",
             "src/test/resources/1.6.81914/Veehouder.d2s,src/test/resources/diablorun/output-Veehouder.json",
             "src/test/resources/1.6.81914/rtltq_Kano.d2s,src/test/resources/diablorun/output-kano.json",
             "src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/diablorun/output-sparkles.json",

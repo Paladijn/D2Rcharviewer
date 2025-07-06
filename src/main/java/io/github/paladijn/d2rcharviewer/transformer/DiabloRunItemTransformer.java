@@ -268,17 +268,15 @@ public class DiabloRunItemTransformer {
         final List<String> allProperties = new ArrayList<>();
         final boolean hasSocketedOrClassSpecific = item.cntFilledSockets() > 0 || item.restrictedToClass() != CharacterType.NONE;
         final List<DisplayProperty> displayProperties = getDisplayProperties(properties, level, hasSocketedOrClassSpecific);
-        for(Item socketedItem: item.socketedItems()) {
-            if (socketedItem.code().equals("jew")) { // TODO 20250705 Paladijn: this is a bug in the parser as the jewel's properties should have already been added to the items' property list. Fix this in ItemParser:460
-                log.debug("adding properties for jewel {}", socketedItem);
-                displayProperties.addAll(getDisplayProperties(socketedItem.properties(), level, false));
-            }
-        }
         for(DisplayProperty displayProperty: displayProperties) {
             final String translatedLabel = translationService.getTranslationByKey(displayProperty.label());
             if (displayProperty.values().isEmpty()) {
                 allProperties.add(translatedLabel);
             } else {
+                if (displayProperty.values().getFirst().equals("0")) {
+                    log.info("display property has 'value' of 0, skipping. {}", displayProperty);
+                    continue;
+                }
                 String extended = replacePropertyFields(translatedLabel, displayProperty.values());
                 if (displayProperty.extend()) {
                     extended += " " + displayProperty.values().getLast();
@@ -359,6 +357,22 @@ public class DiabloRunItemTransformer {
                 continue;
             }
 
+            if (property.index() == 18 && (i + 1) < properties.size()
+                    && properties.get(i + 1).index() == 17
+                    && properties.get(i + 1).values()[0] == property.values()[0]
+            ) {
+                displayProperties.add(new DisplayProperty("strModEnhancedDamage", List.of(String.valueOf(property.values()[0])), false, property.qualityFlag()));
+                log.debug("merged the min-max % damage together");
+                i++;
+                continue;
+            }
+
+            if (property.index() == 74 && property.values()[0] < 0) {
+                displayProperties.add(new DisplayProperty("ModStr2w", List.of(String.valueOf(property.values()[0])), false, property.qualityFlag()));
+                log.debug("replaced hp regen with drain life");
+                continue;
+            }
+
             switch (property.index()) {
                 case 23: continue; // secondary_mindamage
                 case 24: continue; // secondary_maxdamage
@@ -395,6 +409,11 @@ public class DiabloRunItemTransformer {
                 case 107:
                     addSingleSkill(property, displayProperties);
                     continue;
+                case 122:
+                    if (property.values()[0] == 50) { // don't display the blunt item bonus as it's not displayed in game either.
+                        continue;
+                    }
+                    break;
                 case 140: continue; // item_extrablood
                 case 151:
                     addAura(property, displayProperties);
@@ -607,6 +626,8 @@ public class DiabloRunItemTransformer {
             output = previousOutput.replaceFirst("%d%%", value + "%")
                     .replaceFirst("%\\+d%%", "+" + value + "%")
                     .replaceFirst("%\\+d", "+" + value);
+            // also fix the + to - in case the previous value resulted in a "+-"
+            output = output.replace("+-", "-");
 
             if (output.equals(previousOutput)) {
                 output = previousOutput.replaceFirst("%[dis]", value);
