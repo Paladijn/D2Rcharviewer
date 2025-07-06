@@ -283,7 +283,9 @@ public class DiabloRunItemTransformer {
                 if (displayProperty.extend()) {
                     extended += " " + displayProperty.values().getLast();
                 }
-                extended += qualityFlagFilter(displayProperty.qualityFlag());
+                if (!item.isSocketed()) { // we only want this for runes
+                    extended += qualityFlagFilter(displayProperty.qualityFlag());
+                }
                 allProperties.add(extended);
             }
         }
