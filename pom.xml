@@ -5,7 +5,7 @@
 
     <groupId>io.github.paladijn</groupId>
     <artifactId>d2rcharviewer</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
     <name>D2Rcharviewer</name>
     <description>Diablo II: Resurrected character viewer</description>
     <properties>
