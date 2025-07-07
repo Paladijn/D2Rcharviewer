@@ -97,7 +97,7 @@ public class DiabloRunItemTransformer {
                 }
             }
 
-            final String baseName = getBaseNameFromItem(item);
+            final String baseName = getBaseNameFromItem(item).trim();
             results.add(new ItemPayload(
                     item.guid() == null ? 0 : Integer.parseInt(item.guid()),
                     getItemClass(item),
@@ -176,6 +176,10 @@ public class DiabloRunItemTransformer {
     }
 
     private String getItemName(final Item item, final String baseName) {
+        if (!item.isIdentified()) {
+            return "%s %s".formatted(translationService.getTranslationByKey("ItemStats1b"), baseName);
+        }
+
         if (item.isRuneword()) {
             final String runeList = item.socketedItems().stream().
                     map(rune -> translationService.getTranslationByKey(rune.code() + "L"))
@@ -263,6 +267,9 @@ public class DiabloRunItemTransformer {
     }
 
     List<String> getItemProperties(final Item item, final int level) {
+        if (!item.isIdentified()) {
+            return List.of();
+        }
         final List<ItemProperty> properties = item.properties();
         final short cntSockets = item.cntSockets();
         final List<String> allProperties = new ArrayList<>();
