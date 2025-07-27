@@ -61,19 +61,19 @@ public class DiabloRunSyncService {
 
     private final ObjectMapper objectMapper;
 
-    @ConfigProperty(name = "diablo-run.enabled", defaultValue = "false")
+    @ConfigProperty(name = "gear-sync.enabled", defaultValue = "false")
     boolean isEnabled;
 
-    @ConfigProperty(name = "diablo-run.url", defaultValue = "https://api.diablo.run/sync")
+    @ConfigProperty(name = "gear-sync.url", defaultValue = "https://d2armory.littlebluefrog.nl/sync")
     String diabloRunURL;
 
-    @ConfigProperty(name = "diablo-run.apikey", defaultValue = "NoKeySpecified")
+    @ConfigProperty(name = "gear-sync.apikey", defaultValue = "NoKeySpecified")
     String apiKey;
 
-    @ConfigProperty(name = "diablo-run.equipment-only", defaultValue = "true")
+    @ConfigProperty(name = "gear-sync.equipment-only", defaultValue = "true")
     boolean equipmentOnly;
 
-    @ConfigProperty(name = "diablo-run.ignore-names-that-contain")
+    @ConfigProperty(name = "gear-sync.ignore-names-that-contain")
     List<String> ignoreNamesThatContain;
 
     public DiabloRunSyncService(DisplayStatsCalculator displayStatsCalculator,
@@ -90,7 +90,7 @@ public class DiabloRunSyncService {
 
     public void sync(final Path characterFile) {
         if (!isEnabled) {
-            log.info("Diablo.run sync disabled");
+            log.info("Gear sync is disabled, check gear-sync.enabled property");
             return;
         }
 
@@ -101,7 +101,7 @@ public class DiabloRunSyncService {
 
         final SyncRunnable syncRunnable = new SyncRunnable(characterFile);
         final Thread syncThread = Thread.startVirtualThread(syncRunnable);
-        syncThread.setName("Diablo.run sync");
+        syncThread.setName("D2Armory gear sync");
     }
 
 
@@ -127,7 +127,7 @@ public class DiabloRunSyncService {
 
         final SyncRequest syncRequest = createSyncRequest(d2Character);
 
-        log.info("Diablo.run sync for {}", d2Character.name());
+        log.info("D2Armory gear sync for {}", d2Character.name());
 
         final String requestBody;
         try {
@@ -147,7 +147,7 @@ public class DiabloRunSyncService {
         try {
             final HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (log.isDebugEnabled()) {
-                log.debug("Diablo.run sync request: status {}, with body {}", response.statusCode(), response.body());
+                log.debug("D2Armory gear sync request: status {}, with body {}", response.statusCode(), response.body());
             }
             if (response.statusCode() >= 300) {
                 log.error("Problem connecting to sync [{}] -+> {}", response.statusCode(), response.body());
