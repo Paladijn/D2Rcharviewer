@@ -27,6 +27,7 @@ import io.github.paladijn.d2rcharviewer.transformer.DiabloRunItemTransformer;
 import io.github.paladijn.d2rcharviewer.transformer.DiabloRunMercenaryTransformer;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
+import io.github.paladijn.d2rsavegameparser.model.Location;
 import io.github.paladijn.d2rsavegameparser.parser.CharacterParser;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -140,12 +141,16 @@ public class DiabloRunSyncService {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(diabloRunURL))
                 .header("Content-Type", "application/json")
+                .header("DiabloRun-APIKey", apiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
         try {
             final HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (log.isDebugEnabled()) {
                 log.debug("Diablo.run sync request: status {}, with body {}", response.statusCode(), response.body());
+            }
+            if (response.statusCode() >= 300) {
+                log.error("Problem connecting to sync [{}] -+> {}", response.statusCode(), response.body());
             }
         } catch (IOException e) {
             log.error("error calling sync", e);
@@ -160,9 +165,9 @@ public class DiabloRunSyncService {
 
         // TODO we should hardcode some of these values to constants
         return new SyncRequest("DataRead",
-                "API_KEY=%s".formatted(apiKey),
+                "API_KEY=",
                 new DIApplicationInfo("21.6.16"),
-                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.0.1")),
+                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.0.2-SNAPSHOT")),
                 0,
                 false,
                 d2Character.attributes().experience() == 0,
@@ -172,7 +177,7 @@ public class DiabloRunSyncService {
                 d2Character.expansion(),
                 d2Character.hardcore(),
                 d2Character.attributes().hp() == 0,
-                0,
+                getCurrentAct(d2Character.locations()),
                 difficulty.ordinal(),
                 null,
                 0,
@@ -204,6 +209,15 @@ public class DiabloRunSyncService {
                 List.of(),
                 diabloRunMercenaryTransformer.convertHireling(d2Character.mercenary(), difficulty)
         );
+    }
+
+    private int getCurrentAct(List<Location> locations) {
+        for(Location current: locations) {
+            if (current.isActive()) {
+                return current.currentAct();
+            }
+        }
+        return 0;
     }
 
     private class SyncRunnable implements Runnable {

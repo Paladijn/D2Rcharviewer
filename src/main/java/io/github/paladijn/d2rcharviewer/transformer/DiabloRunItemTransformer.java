@@ -124,6 +124,9 @@ public class DiabloRunItemTransformer {
         if (isQuestItem(item)) {
             return DRUNItemQuality.GOLD;
         }
+        if (item.isRuneword()) {
+            return DRUNItemQuality.RUNEWORD;
+        }
         return DRUNItemQuality.fromParsed(item.quality());
     }
 
@@ -184,7 +187,7 @@ public class DiabloRunItemTransformer {
             final String runeList = item.socketedItems().stream().
                     map(rune -> translationService.getTranslationByKey(rune.code() + "L"))
                     .collect(Collectors.joining(" + "));
-            return "%s [%s (%s)]".formatted(baseName, translationService.getTranslationByKey(runewordLabelsByName.get(item.itemName())), runeList);
+            return "%s (%s)".formatted(translationService.getTranslationByKey(runewordLabelsByName.get(item.itemName())), runeList);
         }
 
         if (item.quality() == ItemQuality.MAGIC) {
@@ -206,14 +209,8 @@ public class DiabloRunItemTransformer {
             return "%s %s".formatted(translationService.getTranslationByKey(name1), translationService.getTranslationByKey(name2));
         }
 
-        if (item.quality() == ItemQuality.SET) {
+        if (item.quality() == ItemQuality.SET || item.quality() == ItemQuality.UNIQUE) {
             return translationService.getTranslationByKey(item.itemName());
-        }
-
-        // also filter the quest items such as horadric staff? They look odd at the moment as they're parsed as a 'unique' item.
-        if (item.quality() == ItemQuality.UNIQUE) {
-            final String translatedItemName = translationService.getTranslationByKey(item.itemName());
-            return "%s [%s]".formatted(baseName, translatedItemName);
         }
 
         return translationService.getTranslationByKey(item.code());
@@ -312,6 +309,7 @@ public class DiabloRunItemTransformer {
             if (hasSocketedOrClassSpecific
                     && property.index() != 107 // item_singleskill
                     && property.index() != 188 // item_addskill_tab
+                    && property.index() != 198 // item_skillonhit
                     && i < properties.size() - 1
                     && properties.get(i + 1).index() == property.index()
                     && (property.qualityFlag() == 0  // exception for class specific Paladin shields with equipped runes and Runewords such as Ancient's pledge
@@ -413,8 +411,11 @@ public class DiabloRunItemTransformer {
                 case 83:
                     addClassSpecificSkills(property, displayProperties);
                     continue;
-                case 107:
+                case 97:
                     addSingleSkill(property, displayProperties);
+                    continue;
+                case 107:
+                    addSingleSkillForClass(property, displayProperties);
                     continue;
                 case 122:
                     if (property.values()[0] == 50) { // don't display the blunt item bonus as it's not displayed in game either.
@@ -501,13 +502,20 @@ public class DiabloRunItemTransformer {
         displayProperties.add(new DisplayProperty(skillTree.getItemSkillTabKey(), List.of(String.valueOf(property.values()[1]), classOnly), true, property.qualityFlag()));
     }
 
-    private void addSingleSkill(ItemProperty property, List<DisplayProperty> displayProperties) {
+    private void addSingleSkillForClass(ItemProperty property, List<DisplayProperty> displayProperties) {
         final int skillID = getSkillID(property.values()[0]);
         final String skillLabel = getSkillLabel(skillID);
         final String skillName = translationService.getTranslationByKey(skillLabel);
         final SkillType skillType = SkillType.findSkillById(property.values()[0]);
         final String classOnly = translationService.getTranslationByKey(skillType.getCharacterType().getDisplayName().substring(0, 3) + "Only");
         displayProperties.add(new DisplayProperty("ItemModifierClassSkill", List.of(String.valueOf(property.values()[1]), skillName, classOnly), false, property.qualityFlag()));
+    }
+
+    private void addSingleSkill(ItemProperty property, List<DisplayProperty> displayProperties) {
+        final int skillID = getSkillID(property.values()[0]);
+        final String skillLabel = getSkillLabel(skillID);
+        final String skillName = translationService.getTranslationByKey(skillLabel);
+        displayProperties.add(new DisplayProperty("ItemModifierNonClassSkill", List.of(String.valueOf(property.values()[1]), skillName), false, property.qualityFlag()));
     }
 
     private String getSkillLabel(int skillID) {

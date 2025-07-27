@@ -26,7 +26,8 @@ public enum DRUNItemQuality {
     GREEN,
     YELLOW,
     GOLD,
-    ORANGE;
+    ORANGE,
+    RUNEWORD;
 
     public static DRUNItemQuality fromParsed(ItemQuality input) {
         return switch (input) {
