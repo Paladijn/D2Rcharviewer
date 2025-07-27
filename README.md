@@ -24,6 +24,7 @@ The app should pick the right savegame folder, but if you receive an error about
 ## Detailed documentation  
 * [Configuration options](docs/configuration.md)  
 * [Templating](docs/templating.md)  
+* [Gear-sync configuration](docs/gear-sync.md) to sync your gear to D2Armory.LittleBlueFrog.nl
 * [Build on your own](docs/build.md) in case you don't want to use the supplied zip
 
 If all is configured well, you'll see the following:

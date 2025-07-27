@@ -1,6 +1,6 @@
 # Diablo II Armory gear upload
 
-N.B. this used to describe syncing to https://diablo.run/, however that site will be decommissioned soon (summer '25). This has been replaced with the _d2armory_ website.
+N.B. this used to describe syncing to https://diablo.run/, however that site will be decommissioned soon (summer '25). This has been replaced with the _D2Armory_ website.
 
 The viewer now also supports uploading your gear to https://d2armory.littlebluefrog.nl/ and offers more options and values than the original Diablo.run client (which seems better suited to LoD). For an overview of currently active profiles and their gear, check [this page](https://d2armory.littlebluefrog.nl/profiles/).
 
