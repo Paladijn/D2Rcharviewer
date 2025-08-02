@@ -123,9 +123,8 @@ public class DiabloRunMercenaryTransformer {
 
 
     private int getLevelByXP(int experience) {
-        // FIXME this is not fully correct as the merc has different XP levels, for example lvl 6 ends at 41.160
         int level = 1;
-        while (Constants.xpLevels[level] < experience) {
+        while (Constants.xpLevelsMerc[level] < experience) {
             level++;
             if (level > 99) {
                 break;
