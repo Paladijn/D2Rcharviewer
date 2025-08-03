@@ -35,7 +35,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DiabloRunSyncServiceTest {
+class GearSyncServiceTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final CharacterParser characterParser = new CharacterParser(false);
@@ -46,13 +46,13 @@ class DiabloRunSyncServiceTest {
 
     private final DiabloRunMercenaryTransformer diabloRunMercenaryTransformer = new DiabloRunMercenaryTransformer(translationService, diabloRunItemTransformer);
 
-    private final DiabloRunSyncService cut = new DiabloRunSyncService(
+    private final GearSyncService cut = new GearSyncService(
             new DisplayStatsCalculator("", true, false, false),
             diabloRunMercenaryTransformer,
             diabloRunItemTransformer,
             objectMapper);
 
-    public DiabloRunSyncServiceTest() {
+    public GearSyncServiceTest() {
         cut.equipmentOnly = false;
     }
 
@@ -71,7 +71,7 @@ class DiabloRunSyncServiceTest {
 
         final String expectedJSON = Files.readString(Paths.get("", expectedJSONFile), StandardCharsets.UTF_8);
 
-        final SyncRequest syncRequest = cut.createSyncRequest(getCharacter(characterFile));
+        final SyncRequest syncRequest = cut.createDiabloRunSyncRequest(getCharacter(characterFile));
         final String outcome = objectMapper.writeValueAsString(syncRequest);
 
         assertThat(outcome).isEqualTo(expectedJSON);

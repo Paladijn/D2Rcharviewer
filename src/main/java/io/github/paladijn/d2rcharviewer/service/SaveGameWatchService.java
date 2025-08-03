@@ -44,7 +44,7 @@ public class SaveGameWatchService {
 
     private final DisplayStatsCalculator displayStatsCalculator;
 
-    private final DiabloRunSyncService diabloRunSyncService;
+    private final GearSyncService gearSyncService;
 
     private Thread pollThread;
 
@@ -58,12 +58,12 @@ public class SaveGameWatchService {
                                 @ConfigProperty(name = "savegame.delay-in-ms", defaultValue = "20") long savegameReadDelayMS,
                                 DisplayStatsCalculator displayStatsCalculator,
                                 StatisticsService statisticsService,
-                                DiabloRunSyncService diabloRunSyncService) {
+                                GearSyncService gearSyncService) {
         this.savegameFolder = SaveGameFolder.getSavegameFolder(savegameLocation);
         this.savegameReadDelayMS = savegameReadDelayMS;
         this.displayStatsCalculator = displayStatsCalculator;
         this.statisticsService = statisticsService;
-        this.diabloRunSyncService = diabloRunSyncService;
+        this.gearSyncService = gearSyncService;
     }
 
     void onStart(@Observes StartupEvent ev) {
@@ -114,7 +114,7 @@ public class SaveGameWatchService {
 
                         lastDisplayStats = displayStatsCalculator.getDisplayStats(characterFile);
                         log.debug("updated stats for {}, checking if we need to sync", characterFile);
-                        diabloRunSyncService.sync(characterFile);
+                        gearSyncService.sync(characterFile);
                     } catch (ParseException pe) {
                         log.error("Could not parse savegame", pe);
                         log.info("awaiting next modification..., set the savegame.delay-in-ms property to fine tune a delay in reading the file.");

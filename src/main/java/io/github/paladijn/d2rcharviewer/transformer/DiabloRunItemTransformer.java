@@ -519,6 +519,9 @@ public class DiabloRunItemTransformer {
     }
 
     private String getSkillLabel(int skillID) {
+        if (skillID == 197) {// firestorm on torch is a different skill, but with the same name
+            skillID = 226;
+        }
         return skillID < 221 ? "skillname" + skillID : "Skillname" + skillID;
     }
 

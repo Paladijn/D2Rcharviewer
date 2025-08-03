@@ -41,13 +41,16 @@ import java.net.http.HttpResponse;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 @ApplicationScoped
-public class DiabloRunSyncService {
-    private static final Logger log = getLogger(DiabloRunSyncService.class);
+public class GearSyncService {
+    private static final Logger log = getLogger(GearSyncService.class);
 
     private final DisplayStatsCalculator displayStatsCalculator;
 
@@ -73,13 +76,16 @@ public class DiabloRunSyncService {
     @ConfigProperty(name = "gear-sync.equipment-only", defaultValue = "true")
     boolean equipmentOnly;
 
+    @ConfigProperty(name = "gear-sync.minimum-age", defaultValue = "PT15M")
+    String minimumAge;
+
     @ConfigProperty(name = "gear-sync.ignore-names-that-contain")
     List<String> ignoreNamesThatContain;
 
-    public DiabloRunSyncService(DisplayStatsCalculator displayStatsCalculator,
-                                DiabloRunMercenaryTransformer diabloRunMercenaryTransformer,
-                                DiabloRunItemTransformer diabloRunItemTransformer,
-                                ObjectMapper objectMapper) {
+    public GearSyncService(DisplayStatsCalculator displayStatsCalculator,
+                           DiabloRunMercenaryTransformer diabloRunMercenaryTransformer,
+                           DiabloRunItemTransformer diabloRunItemTransformer,
+                           ObjectMapper objectMapper) {
         this.displayStatsCalculator = displayStatsCalculator;
         this.diabloRunMercenaryTransformer = diabloRunMercenaryTransformer;
         this.diabloRunItemTransformer = diabloRunItemTransformer;
@@ -117,15 +123,22 @@ public class DiabloRunSyncService {
 
     private void parseAndSyncLatestCharacter(final Path characterFile) {
         final byte[] allBytes;
+        final Instant creationTime;
         try {
             allBytes = Files.readAllBytes(characterFile);
+            creationTime = ((FileTime) Files.getAttribute(characterFile, "creationTime")).toInstant();
         } catch (IOException e) {
             log.error("Failed to read characterFile", e);
             return;
         }
         final D2Character d2Character = characterParser.parse(ByteBuffer.wrap(allBytes));
 
-        final SyncRequest syncRequest = createSyncRequest(d2Character);
+        if (!canSyncCharacter(d2Character.level(), creationTime)) {
+            log.info("did not sync character (yet).");
+            return;
+        }
+
+        final SyncRequest syncRequest = createDiabloRunSyncRequest(d2Character);
 
         log.info("D2Armory gear sync for {}", d2Character.name());
 
@@ -150,7 +163,7 @@ public class DiabloRunSyncService {
                 log.debug("D2Armory gear sync request: status {}, with body {}", response.statusCode(), response.body());
             }
             if (response.statusCode() >= 300) {
-                log.error("Problem connecting to sync [{}] -+> {}", response.statusCode(), response.body());
+                log.error("Problem connecting to sync [{}] -> {}", response.statusCode(), response.body());
             }
         } catch (IOException e) {
             log.error("error calling sync", e);
@@ -159,7 +172,21 @@ public class DiabloRunSyncService {
         }
     }
 
-    protected SyncRequest createSyncRequest(D2Character d2Character) {
+    private boolean canSyncCharacter(final byte level, final Instant creationTime) {
+        final Instant firstSendTime = creationTime.plus(Duration.parse(minimumAge));
+        if (level == 1) {
+            log.info("Not syncing character as it is level 1.");
+            return false;
+        }
+        if (firstSendTime.isAfter(Instant.now())) {
+            final Duration remnant = Duration.between(Instant.now(), firstSendTime);
+            log.info("Not syncing as char is too new (it will be possible in {}m{}s).", remnant.toMinutes(), remnant.toSecondsPart());
+            return false;
+        }
+        return true;
+    }
+
+    protected SyncRequest createDiabloRunSyncRequest(D2Character d2Character) {
         final DisplayStats displayStats = displayStatsCalculator.getDisplayStats(d2Character);
         final Difficulty difficulty = displayStatsCalculator.getCurrentDifficulty(d2Character.locations());
 
@@ -167,7 +194,7 @@ public class DiabloRunSyncService {
         return new SyncRequest("DataRead",
                 "API_KEY=",
                 new DIApplicationInfo("21.6.16"),
-                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.1.0-SNAPSHOT")),
+                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.1.1")),
                 0,
                 false,
                 d2Character.attributes().experience() == 0,
