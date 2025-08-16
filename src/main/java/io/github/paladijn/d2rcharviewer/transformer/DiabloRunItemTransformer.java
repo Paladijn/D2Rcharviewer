@@ -294,6 +294,7 @@ public class DiabloRunItemTransformer {
                     && property.index() != 107 // item_singleskill
                     && property.index() != 188 // item_addskill_tab
                     && property.index() != 198 // item_skillonhit
+                    && property.index() != 204 // item_charged_skill
                     && i < properties.size() - 1
                     && properties.get(i + 1).index() == property.index()
                     && (property.qualityFlag() == 0  // exception for class specific Paladin shields with equipped runes and Runewords such as Ancient's pledge
