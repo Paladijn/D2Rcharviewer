@@ -19,32 +19,16 @@ import io.github.paladijn.d2rcharviewer.model.diablorun.DRUNItemQuality;
 import io.github.paladijn.d2rcharviewer.model.diablorun.ItemPayload;
 import io.github.paladijn.d2rcharviewer.model.translation.DisplayProperty;
 import io.github.paladijn.d2rcharviewer.service.TranslationService;
-import io.github.paladijn.d2rsavegameparser.model.CharacterType;
-import io.github.paladijn.d2rsavegameparser.model.Item;
-import io.github.paladijn.d2rsavegameparser.model.ItemContainer;
-import io.github.paladijn.d2rsavegameparser.model.ItemLocation;
-import io.github.paladijn.d2rsavegameparser.model.ItemProperty;
-import io.github.paladijn.d2rsavegameparser.model.ItemQuality;
-import io.github.paladijn.d2rsavegameparser.model.ItemType;
-import io.github.paladijn.d2rsavegameparser.model.SkillTree;
-import io.github.paladijn.d2rsavegameparser.model.SkillType;
+import io.github.paladijn.d2rsavegameparser.model.*;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.github.paladijn.d2rcharviewer.service.TranslationService.TRANSLATION_NOT_FOUND;
@@ -422,6 +406,9 @@ public class DiabloRunItemTransformer {
                         continue;
                     }
                     break;
+                case 126: // item_elemskill
+                    addGenericFireSkills(property, displayProperties);
+                    continue;
                 case 140: continue; // item_extrablood
                 case 151:
                     addAura(property, displayProperties);
@@ -516,6 +503,10 @@ public class DiabloRunItemTransformer {
         final String skillLabel = getSkillLabel(skillID);
         final String skillName = translationService.getTranslationByKey(skillLabel);
         displayProperties.add(new DisplayProperty("ItemModifierNonClassSkill", List.of(String.valueOf(property.values()[1]), skillName), false, property.qualityFlag()));
+    }
+
+    private void addGenericFireSkills(ItemProperty property, List<DisplayProperty> displayProperties) {
+        displayProperties.add(new DisplayProperty("ModStr3i", List.of(String.valueOf(property.values()[1])), false, property.qualityFlag()));
     }
 
     private String getSkillLabel(int skillID) {
