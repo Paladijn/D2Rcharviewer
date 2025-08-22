@@ -194,7 +194,7 @@ public class GearSyncService {
         return new SyncRequest("DataRead",
                 "API_KEY=",
                 new DIApplicationInfo("21.6.16"),
-                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.1.2")),
+                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.1.3-SNAPSHOT")),
                 0,
                 false,
                 d2Character.attributes().experience() == 0,
