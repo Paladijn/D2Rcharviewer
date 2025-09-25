@@ -5,24 +5,24 @@
 
     <groupId>io.github.paladijn</groupId>
     <artifactId>d2rcharviewer</artifactId>
-	<version>1.1.3-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
     <name>D2Rcharviewer</name>
     <description>Diablo II: Resurrected character viewer</description>
     <properties>
-        <compiler-plugin.version>3.14.0</compiler-plugin.version>
+        <compiler-plugin.version>3.14.1</compiler-plugin.version>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.25.3</quarkus.platform.version>
+        <quarkus.platform.version>3.28.1</quarkus.platform.version>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.5.3</surefire-plugin.version>
-        <maven.versions.plugin>2.18.0</maven.versions.plugin>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
+        <maven.versions.plugin>2.19.1</maven.versions.plugin>
 
         <d2rsavegameparser.version>1.5.3</d2rsavegameparser.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <assertj.version>3.27.4</assertj.version>
+        <assertj.version>3.27.6</assertj.version>
     </properties>
 
     <dependencyManagement>
