@@ -126,14 +126,14 @@ public record SyncRequest(
         try {
             addedItems.addAll(List.of());
             throw new IllegalArgumentException("added items should be an immutable list");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException _) {
             // expected behaviour, valid
         }
 
         try {
             removedItems.addAll(List.of());
             throw new IllegalArgumentException("added items should be an immutable list");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException _) {
             // expected behaviour, valid
         }
     }

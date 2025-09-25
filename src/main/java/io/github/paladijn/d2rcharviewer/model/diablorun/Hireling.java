@@ -52,7 +52,7 @@ public record Hireling(
         try {
             items.addAll(List.of());
             throw new IllegalArgumentException("items should be an immutable list");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException _) {
             // expected behaviour, valid
         }
     }

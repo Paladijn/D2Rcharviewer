@@ -87,7 +87,7 @@ public class GearSyncService {
     @ConfigProperty(name = "gear-sync.ignore-names-that-contain")
     List<String> ignoreNamesThatContain;
 
-    private final Timer delayedTimer = new Timer("DelayedSync timer");;
+    private final Timer delayedTimer = new Timer("DelayedSync timer");
 
     private TimerTask delayedSyncTask = null;
 
@@ -193,7 +193,7 @@ public class GearSyncService {
             }
         } catch (IOException e) {
             log.error("error calling sync", e);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

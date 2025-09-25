@@ -41,7 +41,7 @@ public record ItemPayload(
         try {
             properties.addAll(List.of());
             throw new IllegalArgumentException("properties should be an immutable list");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException _) {
             // expected behaviour, valid
         }
     }

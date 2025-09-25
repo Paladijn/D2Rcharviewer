@@ -33,21 +33,21 @@ public record CompletedQuests(
         try {
             normal.addAll(List.of());
             throw new IllegalArgumentException("Normal should be an immutable list");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException _) {
             // expected behaviour, valid
         }
 
         try {
             nightmare.addAll(List.of());
             throw new IllegalArgumentException("Nightmares should be an immutable list");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException _) {
             // expected behaviour, valid
         }
 
         try {
             hell.addAll(List.of());
             throw new IllegalArgumentException("Hell should be an immutable list");
-        } catch (UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException _) {
             // expected behaviour, valid
         }
     }

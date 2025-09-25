@@ -52,7 +52,7 @@ public class StatisticsController {
                                 @ConfigProperty(name = "template.character", defaultValue = "templates/character.html") String characterTemplateLocation) {
         this.saveGameWatchService = saveGameWatchService;
         this.statisticsService = saveGameWatchService.getStatisticsService();
-        this.characterTemplate = readFileContents(characterTemplateLocation);;
+        this.characterTemplate = readFileContents(characterTemplateLocation);
     }
 
     @GET

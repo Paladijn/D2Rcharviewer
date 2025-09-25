@@ -155,7 +155,7 @@ public class DisplayStatsCalculator {
         if (goldValue < 1000) {
             return String.valueOf(goldValue);
         }
-        return String.format("%dK", goldValue / 1000);
+        return "%dK".formatted(goldValue / 1000);
     }
 
     private String calculateLevelPercentage(byte level, long experience) {
@@ -168,7 +168,7 @@ public class DisplayStatsCalculator {
         long current = experience - levelMin;
 
         double percentage = ((double)current / (double)total) * 100.0f;
-        return String.format("%2.1f", percentage);
+        return "%2.1f".formatted(percentage);
     }
 
     private List<SharedStashTab> getSharedStashTabs(boolean isHardcore) {

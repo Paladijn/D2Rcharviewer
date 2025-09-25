@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -88,12 +87,12 @@ public class SaveGameWatchService {
         try {
             watcher = FileSystems.getDefault().newWatchService();
 
-            final Path dir = Paths.get(savegameFolder);
+            final Path dir = Path.of(savegameFolder);
             dir.register(watcher, ENTRY_MODIFY);
             pollSaveGameFolder(watcher);
         } catch (IOException e) {
             log.error("Problem creating watcher on {}", savegameFolder, e);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

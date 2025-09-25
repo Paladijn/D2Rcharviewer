@@ -23,7 +23,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,11 +40,11 @@ class StatisticsServiceTest {
     })
     void validateCharacterOutput(String filename, String expectedFile) throws IOException {
         Locale.setDefault(Locale.UK); // otherwise the formatting will fail on 0.0 -> 0,0
-        final String characterOutput = Files.readString(Paths.get("","src/test/resources/templates/character.html"), StandardCharsets.UTF_8);
-        final DisplayStats displayStats = displayStatsCalculator.getDisplayStats(Paths.get("", filename));
+        final String characterOutput = Files.readString(Path.of("","src/test/resources/templates/character.html"), StandardCharsets.UTF_8);
+        final DisplayStats displayStats = displayStatsCalculator.getDisplayStats(Path.of("", filename));
         final String outcome = cut.replaceValues(characterOutput, displayStats);
 
-        final String expected = Files.readString(Paths.get("", expectedFile), StandardCharsets.UTF_8);
+        final String expected = Files.readString(Path.of("", expectedFile), StandardCharsets.UTF_8);
 
         assertThat(outcome).isEqualTo(expected);
     }

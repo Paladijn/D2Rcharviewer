@@ -30,7 +30,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,7 +69,7 @@ class GearSyncServiceTest {
     })
     void validSyncRequest(String characterFile, String expectedJSONFile) throws IOException {
 
-        final String expectedJSON = Files.readString(Paths.get("", expectedJSONFile), StandardCharsets.UTF_8);
+        final String expectedJSON = Files.readString(Path.of("", expectedJSONFile), StandardCharsets.UTF_8);
 
         final SyncRequest syncRequest = cut.createDiabloRunSyncRequest(getCharacter(characterFile));
         final String outcome = objectMapper.writeValueAsString(syncRequest);

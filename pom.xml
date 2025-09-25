@@ -10,7 +10,7 @@
     <description>Diablo II: Resurrected character viewer</description>
     <properties>
         <compiler-plugin.version>3.14.1</compiler-plugin.version>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -19,6 +19,9 @@
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
         <maven.versions.plugin>2.19.1</maven.versions.plugin>
+
+        <openrewrite-plugin.version>6.19.0</openrewrite-plugin.version>
+        <openrewrite-migrate-java.version>3.17.1</openrewrite-migrate-java.version>
 
         <d2rsavegameparser.version>1.5.3</d2rsavegameparser.version>
         <slf4j.version>2.0.17</slf4j.version>
@@ -161,6 +164,23 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>${openrewrite-plugin.version}</version>
+                <configuration>
+                    <activeRecipes>
+                        <recipe>org.openrewrite.java.migrate.UpgradeToJava25</recipe>
+                    </activeRecipes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-migrate-java</artifactId>
+                        <version>${openrewrite-migrate-java.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
