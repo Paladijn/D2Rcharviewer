@@ -45,6 +45,8 @@ import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -79,8 +81,15 @@ public class GearSyncService {
     @ConfigProperty(name = "gear-sync.minimum-age", defaultValue = "PT15M")
     String minimumAge;
 
+    @ConfigProperty(name = "gear-sync.delay-in-ms", defaultValue = "1000")
+    long syncDelayInMS;
+
     @ConfigProperty(name = "gear-sync.ignore-names-that-contain")
     List<String> ignoreNamesThatContain;
+
+    private final Timer delayedTimer = new Timer("DelayedSync timer");;
+
+    private TimerTask delayedSyncTask = null;
 
     public GearSyncService(DisplayStatsCalculator displayStatsCalculator,
                            DiabloRunMercenaryTransformer diabloRunMercenaryTransformer,
@@ -105,9 +114,24 @@ public class GearSyncService {
             return;
         }
 
-        final SyncRunnable syncRunnable = new SyncRunnable(characterFile);
-        final Thread syncThread = Thread.startVirtualThread(syncRunnable);
-        syncThread.setName("D2Armory gear sync");
+        if (delayedSyncTask != null && delayedSyncTask.scheduledExecutionTime() > System.currentTimeMillis()) {
+            log.info("D2Armory sync overwritten with newer data");
+            delayedSyncTask.cancel();
+        }
+
+        log.debug("starting sync for {}", characterFile);
+        delayedSyncTask = new TimerTask() {
+            @Override
+            public void run() {
+                log.debug("syncing...");
+                try {
+                    parseAndSyncLatestCharacter(characterFile);
+                } catch (Exception e) {
+                    log.error("Exception caught while syncing", e);
+                }
+            }
+        };
+        delayedTimer.schedule(delayedSyncTask, syncDelayInMS);
     }
 
 
@@ -159,11 +183,13 @@ public class GearSyncService {
                 .build();
         try {
             final HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (log.isDebugEnabled()) {
-                log.debug("D2Armory gear sync request: status {}, with body {}", response.statusCode(), response.body());
-            }
             if (response.statusCode() >= 300) {
                 log.error("Problem connecting to sync [{}] -> {}", response.statusCode(), response.body());
+            } else {
+                log.info("D2Armory gear synced with status {}", response.statusCode());
+                if (log.isDebugEnabled()) {
+                    log.debug("D2Armory gear sync request: status {}, with body {}", response.statusCode(), response.body());
+                }
             }
         } catch (IOException e) {
             log.error("error calling sync", e);
@@ -194,7 +220,7 @@ public class GearSyncService {
         return new SyncRequest("DataRead",
                 "API_KEY=",
                 new DIApplicationInfo("21.6.16"),
-                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "1.1.3-SNAPSHOT")),
+                new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "2.0.0-SNAPSHOT")),
                 0,
                 false,
                 d2Character.attributes().experience() == 0,
@@ -245,23 +271,5 @@ public class GearSyncService {
             }
         }
         return 0;
-    }
-
-    private class SyncRunnable implements Runnable {
-
-        private final Path characterFile;
-
-        public SyncRunnable(final Path characterFile) {
-            this.characterFile = characterFile;
-        }
-
-        @Override
-        public void run() {
-            try {
-                parseAndSyncLatestCharacter(characterFile);
-            } catch (Exception e) {
-                log.error("Exception caught while syncing", e);
-            }
-        }
     }
 }
