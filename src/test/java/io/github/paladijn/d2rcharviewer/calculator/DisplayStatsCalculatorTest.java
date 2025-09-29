@@ -185,4 +185,12 @@ class DisplayStatsCalculatorTest {
         assertThat(result.mf()).isEqualTo(240);
         assertThat(result.breakpoints().fCR()).isEqualTo(40);
     }
+
+    @Test
+    void shouldAddAliBabaMagicAndGoldFind() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.6.84219/Lohengrin.d2s"));
+
+        assertThat(result.mf()).isEqualTo(310);
+        assertThat(result.gf()).isEqualTo(536);
+    }
 }

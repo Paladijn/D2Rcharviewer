@@ -115,8 +115,10 @@ public class DisplayStatsCalculator {
 
         final int frw = getTotalPointsInProperty("item_fastermovevelocity", equippedItems, equippedSetBenefits);
         final int far = getTotalPointsInProperty("item_fasterattackrate", equippedItems, equippedSetBenefits);
-        final int mf = getTotalPointsInProperty("item_magicbonus", equippedItems, equippedSetBenefits);
-        final int gf = getTotalPointsInProperty("item_goldbonus", equippedItems, equippedSetBenefits);
+        final int mf = getTotalPointsInProperty("item_magicbonus", equippedItems, equippedSetBenefits) +
+                    (int) Math.floor(getTotalPointsInProperty("item_find_magic_perlevel", equippedItems, equippedSetBenefits) / 8.0 * character.level());
+        final int gf = getTotalPointsInProperty("item_goldbonus", equippedItems, equippedSetBenefits) +
+                    (int) Math.floor(getTotalPointsInProperty("item_find_gold_perlevel", equippedItems, equippedSetBenefits) / 8.0 * character.level());
         final int totalStrength = character.attributes().strength() + getTotalPointsInProperty("strength", equippedItems, equippedSetBenefits);
         final int totalDexterity = character.attributes().dexterity() + getTotalPointsInProperty("dexterity", equippedItems, equippedSetBenefits);
         final int totalVitality = character.attributes().vitality() + getTotalPointsInProperty("vitality", equippedItems, equippedSetBenefits);
