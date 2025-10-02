@@ -21,10 +21,10 @@ import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.model.diablorun.CompletedQuests;
 import io.github.paladijn.d2rcharviewer.model.diablorun.D2ProcessInfo;
-import io.github.paladijn.d2rcharviewer.model.diablorun.DIApplicationInfo;
 import io.github.paladijn.d2rcharviewer.model.diablorun.SyncRequest;
 import io.github.paladijn.d2rcharviewer.transformer.DiabloRunItemTransformer;
 import io.github.paladijn.d2rcharviewer.transformer.DiabloRunMercenaryTransformer;
+import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
 import io.github.paladijn.d2rsavegameparser.model.Location;
@@ -217,23 +217,18 @@ public class GearSyncService {
         final Difficulty difficulty = displayStatsCalculator.getCurrentDifficulty(d2Character.locations());
 
         // TODO we should hardcode some of these values to constants
-        return new SyncRequest("DataRead",
-                "API_KEY=",
-                new DIApplicationInfo("21.6.16"),
+        return new SyncRequest(
+                "2",
                 new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "2.0.0-SNAPSHOT")),
-                0,
-                false,
-                d2Character.attributes().experience() == 0,
+                d2Character.mapId(),
                 d2Character.name(),
-                "", // this is a UUID, should we keep track of them? The API server seems to ignore the field
+                getTitleString(d2Character.characterType(), d2Character.actProgression(), d2Character.hardcore(), d2Character.expansion()),
                 d2Character.characterType().ordinal(),
                 d2Character.expansion(),
                 d2Character.hardcore(),
                 d2Character.attributes().hp() == 0,
                 getCurrentAct(d2Character.locations()),
                 difficulty.ordinal(),
-                null,
-                0,
                 d2Character.level(),
                 d2Character.attributes().experience(),
                 displayStats.attributes().strength(),
@@ -255,13 +250,66 @@ public class GearSyncService {
                 displayStats.fasterRunWalk(),
                 displayStats.fasterAttackRate(),
                 displayStats.mf(),
+                displayStats.gf(),
                 new CompletedQuests(List.of(), List.of(), List.of()),
-                null, // not sure what the inventory tab does. active stash tab?
-                true, // always clear items
-                diabloRunItemTransformer.convertItems(d2Character.items(), equipmentOnly, false, d2Character.level()),
-                List.of(),
-                diabloRunMercenaryTransformer.convertHireling(d2Character.mercenary(), difficulty)
+                diabloRunItemTransformer.convertItems(d2Character.items(), equipmentOnly, d2Character.level()),
+                diabloRunItemTransformer.convertItems(d2Character.deadBodyItems(), false, d2Character.level()),
+                diabloRunMercenaryTransformer.convertMercenary(d2Character.mercenary(), difficulty)
         );
+    }
+
+    private String getTitleString(CharacterType characterType, byte progression, boolean hardcore, boolean expansion) {
+        if (expansion) {
+            return switch (progression) {
+                case 5, 6, 7, 8 -> hardcore ? "Destroyer" : "Slayer";
+                case 10, 11, 12, 13 -> hardcore ? "Conqueror" : "Champion";
+                case 15 -> {
+                    if (hardcore) {
+                        yield "Guardian";
+                    } else {
+                        yield isMaleGender(characterType) ? "Patriarch" : "Matriarch";
+                    }
+                }
+                default -> "";
+            };
+        }
+        return switch (progression) {
+            case 4, 5, 6, 7 -> {
+                if (hardcore) {
+                    yield isMaleGender(characterType) ? "Count" : "Countess";
+                } else {
+                    yield isMaleGender(characterType) ? "Sir" : "Dame";
+                }
+            }
+            case 8, 9, 10, 11 -> {
+                if (hardcore) {
+                    yield isMaleGender(characterType) ? "Duke" : "Duchess";
+                } else {
+                    yield isMaleGender(characterType) ? "Lord" : "Lady";
+                }
+            }
+            case 12 -> {
+                if (hardcore) {
+                    yield isMaleGender(characterType) ? "King" : "Queen";
+                } else {
+                    yield isMaleGender(characterType) ? "Baron" : "Baroness";
+                }
+            }
+            default -> "";
+        };
+    }
+
+    private boolean isMaleGender(CharacterType characterType) {
+        return switch (characterType) {
+            case AMAZON -> false;
+            case SORCERESS -> false;
+            case NECROMANCER -> true;
+            case PALADIN -> true;
+            case BARBARIAN -> true;
+            case DRUID -> true;
+            case ASSASSIN -> false;
+            case NONE -> false;
+        };
     }
 
     private int getCurrentAct(List<Location> locations) {

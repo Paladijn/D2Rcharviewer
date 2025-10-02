@@ -15,8 +15,33 @@
  */
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+import java.util.List;
+
 @RegisterForReflection
-public record DIApplicationInfo(@JsonProperty("Version") String version) { }
+public record Mercenary(
+        String name,
+        int classID,
+        int level,
+        boolean alive,
+        long experience,
+        int strength,
+        int dexterity,
+        int fireResist,
+        int coldResist,
+        int lightningResist,
+        int poisonResist,
+        List<Integer> skillIds,
+
+        List<ItemPayload> items
+) {
+    public Mercenary {
+        try {
+            items.addAll(List.of());
+            throw new IllegalArgumentException("items should be an immutable list");
+        } catch (UnsupportedOperationException _) {
+            // expected behaviour, valid
+        }
+    }
+}

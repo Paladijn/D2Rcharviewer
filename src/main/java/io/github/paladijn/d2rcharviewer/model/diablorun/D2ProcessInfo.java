@@ -15,18 +15,14 @@
  */
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 
 @RegisterForReflection
 public record D2ProcessInfo(
-        @JsonProperty("Type")
         String type,
-        @JsonProperty("Version")
         String version,
-        @JsonProperty("CommandLineArgs")
         List<String> commandLineArgs
 ) {
 }

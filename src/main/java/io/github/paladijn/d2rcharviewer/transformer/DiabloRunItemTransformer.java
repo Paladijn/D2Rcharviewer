@@ -15,21 +15,34 @@
  */
 package io.github.paladijn.d2rcharviewer.transformer;
 
-import io.github.paladijn.d2rcharviewer.model.diablorun.DRUNItemQuality;
 import io.github.paladijn.d2rcharviewer.model.diablorun.ItemPayload;
 import io.github.paladijn.d2rcharviewer.model.translation.DisplayProperty;
 import io.github.paladijn.d2rcharviewer.service.TranslationService;
-import io.github.paladijn.d2rsavegameparser.model.*;
+import io.github.paladijn.d2rsavegameparser.model.CharacterType;
+import io.github.paladijn.d2rsavegameparser.model.Item;
+import io.github.paladijn.d2rsavegameparser.model.ItemLocation;
+import io.github.paladijn.d2rsavegameparser.model.ItemProperty;
+import io.github.paladijn.d2rsavegameparser.model.ItemQuality;
+import io.github.paladijn.d2rsavegameparser.model.ItemType;
+import io.github.paladijn.d2rsavegameparser.model.SkillTree;
+import io.github.paladijn.d2rsavegameparser.model.SkillType;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static io.github.paladijn.d2rcharviewer.service.TranslationService.TRANSLATION_NOT_FOUND;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -58,21 +71,17 @@ public class DiabloRunItemTransformer {
         initRunewordLabels();
     }
 
-    public List<ItemPayload> convertItems(List<Item> items, boolean equippedOnly, boolean isMercenaryItem, int level) {
+    public List<ItemPayload> convertItems(List<Item> items, boolean equippedOnly, int level) {
         final List<ItemPayload> results = new ArrayList<>();
         for (Item item: items) {
             if (equippedOnly && item.location() != ItemLocation.EQUIPPED) {
                 continue;
             }
-            // skip pots, scrolls, tomes, gems, keys, quivers and the Horadric Cube, unless they are exempted through `alwaysShareTheseItemCodes`
+            // skip pots, scrolls, gems and the Horadric Cube, unless they are exempted through `alwaysShareTheseItemCodes`
             if (item.itemName().contains("Potion")
                     || Item.isScroll(item.code())
-                    || Item.isTome(item.code())
                     || Item.isGem(item.type(), item.type2())
-                    || item.itemName().equals("Key")
                     || item.itemName().equals("Horadric Cube")
-                    || (item.itemName().equals("Arrows") && item.location() != ItemLocation.EQUIPPED)
-                    || (item.itemName().equals("Bolts") && item.location() != ItemLocation.EQUIPPED)
             ) {
                 if (!alwaysShareTheseItemCodes.contains(item.code())) {
                     continue;
@@ -82,11 +91,13 @@ public class DiabloRunItemTransformer {
             }
 
             final String baseName = getBaseNameFromItem(item).trim();
+            final List<String> runewordRunes = item.isRuneword() ? getRunewordRunes(item.socketedItems()) : List.of();
+
             results.add(new ItemPayload(
-                    item.guid() == null ? 0 : Integer.parseInt(item.guid()),
-                    getItemClass(item),
                     baseName,
                     getItemName(item, baseName),
+                    item.setName() == null ? "" : item.setName(),
+                    runewordRunes,
                     getQuality(item),
                     getItemProperties(item, level),
                     new io.github.paladijn.d2rcharviewer.model.diablorun.ItemLocation(
@@ -94,24 +105,34 @@ public class DiabloRunItemTransformer {
                             item.y(),
                             item.invWidth(),
                             item.invHeight(),
-                            item.position().ordinal(),
-                            convertItemContainer(item.container(), item.location(), isMercenaryItem)
-                    )));
+                            item.position(),
+                            item.container(),
+                            item.location()
+                    ),
+                    item.stacks(),
+                    item.maxStacks(),
+                    item.durability(),
+                    Math.max(item.durability(), item.maxDurability()), // some items have higher durability than their base item, such as the unique shields
+                    item.treasureClass()
+            ));
         }
         return List.copyOf(results);
     }
 
-    private DRUNItemQuality getQuality(Item item) {
+    private List<String> getRunewordRunes(List<Item> items) {
+        return items.stream()
+                .map(rune -> translationService.getTranslationByKey(rune.code() + "L"))
+                .toList();
+    }
+
+    private String getQuality(Item item) {
         if (Item.isRune(item.type())) { // let's colour the runes orange
-            return DRUNItemQuality.ORANGE;
-        }
-        if (isQuestItem(item)) {
-            return DRUNItemQuality.GOLD;
+            return ItemQuality.CRAFT.name();
         }
         if (item.isRuneword()) {
-            return DRUNItemQuality.RUNEWORD;
+            return "RUNEWORD";
         }
-        return DRUNItemQuality.fromParsed(item.quality());
+        return item.quality().name();
     }
 
     private boolean isQuestItem(Item item) {
@@ -168,10 +189,7 @@ public class DiabloRunItemTransformer {
         }
 
         if (item.isRuneword()) {
-            final String runeList = item.socketedItems().stream().
-                    map(rune -> translationService.getTranslationByKey(rune.code() + "L"))
-                    .collect(Collectors.joining(" + "));
-            return "%s (%s)".formatted(translationService.getTranslationByKey(runewordLabelsByName.get(item.itemName())), runeList);
+            return translationService.getTranslationByKey(runewordLabelsByName.get(item.itemName()));
         }
 
         if (item.quality() == ItemQuality.MAGIC) {
@@ -198,53 +216,6 @@ public class DiabloRunItemTransformer {
         }
 
         return translationService.getTranslationByKey(item.code());
-    }
-
-    private int getItemClass(Item item) {
-        // 1 for armour (including shields, 4 for ring/amu, 3 for weapon
-        if ("ring".equals(item.type()) || "amul".equals(item.type())) {
-            return 4;
-        }
-
-        return switch (item.itemType()) {
-            case ARMOR -> 1;
-            case WEAPON -> 3;
-            case MISC -> 2; // guessing this is 2, or maybe also 4?
-        };
-    }
-
-    /**
-     * List from https://github.com/DiabloRun/diablorun-api-server/blob/master/src/sync/item-updates.ts
-     *
-     * @param container {@link ItemContainer} of the item
-     * @param location {@link ItemLocation} of the item
-     * @param isMercenaryItem true if this item is equipped on the mercenary
-     * @return the Diablo.run id for the container
-     */
-    private int convertItemContainer(ItemContainer container, ItemLocation location, boolean isMercenaryItem) {
-        if (isMercenaryItem) {
-            return 10;
-        }
-
-        if (location == ItemLocation.EQUIPPED) {
-            return 0;
-        }
-        if (location == ItemLocation.BELT) {
-            return 1;
-        }
-        if (container == ItemContainer.INVENTORY) {
-            return 2;
-        }
-        if (container == ItemContainer.HORADRIC_CUBE) {
-            return 5;
-        }
-        if (container == ItemContainer.STASH) {
-            return 6;
-        }
-
-        // if unknown or stash, it's displayed as a stash item, so:
-        log.warn("unknown location for item at container {}, location {}", container, location);
-        return 6;
     }
 
     List<String> getItemProperties(final Item item, final int level) {

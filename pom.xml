@@ -23,7 +23,7 @@
         <openrewrite-plugin.version>6.19.0</openrewrite-plugin.version>
         <openrewrite-migrate-java.version>3.17.1</openrewrite-migrate-java.version>
 
-        <d2rsavegameparser.version>1.5.3</d2rsavegameparser.version>
+        <d2rsavegameparser.version>2.0.1</d2rsavegameparser.version>
         <slf4j.version>2.0.17</slf4j.version>
         <assertj.version>3.27.6</assertj.version>
     </properties>

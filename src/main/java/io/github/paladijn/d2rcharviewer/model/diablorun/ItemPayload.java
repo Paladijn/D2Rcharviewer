@@ -15,27 +15,24 @@
  */
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 
 @RegisterForReflection
 public record ItemPayload(
-        @JsonProperty("GUID")
-        int guid,
-        @JsonProperty("Class")
-        int itemClass,
-        @JsonProperty("BaseItem")
         String baseItem,
-        @JsonProperty("ItemName")
         String itemName,
-        @JsonProperty("Quality")
-        DRUNItemQuality quality,
-        @JsonProperty("Properties")
+        String setName,
+        List<String> runes,
+        String quality,
         List<String> properties,
-        @JsonProperty("Location")
-        ItemLocation location
+        ItemLocation location,
+        int amount,
+        int maxStacks,
+        int durability,
+        int maxDurability,
+        int treasureClass
 ) {
     public ItemPayload {
         try {

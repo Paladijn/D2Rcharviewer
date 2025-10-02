@@ -16,7 +16,6 @@
 package io.github.paladijn.d2rcharviewer.transformer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.paladijn.d2rcharviewer.model.diablorun.DRUNItemQuality;
 import io.github.paladijn.d2rcharviewer.model.diablorun.ItemPayload;
 import io.github.paladijn.d2rcharviewer.model.translation.DisplayProperty;
 import io.github.paladijn.d2rcharviewer.service.TranslationService;
@@ -110,13 +109,13 @@ class DiabloRunItemTransformerTest {
                         .addProperty(new ItemProperty(56, "coldlength", new int[]{75, 14, 75}, 7, -1))
                 .build());
 
-        final List<ItemPayload> outcome = cut.convertItems(spirit, true, false, 25);
+        final List<ItemPayload> outcome = cut.convertItems(spirit, false, 25);
 
         assertThat(outcome).hasSize(1);
         final ItemPayload item = outcome.getFirst();
         assertThat(item.baseItem()).isEqualTo("ロングソード");
-        assertThat(item.itemName()).isEqualTo("精霊 (タル + スル + オルト + アムン)");
-        assertThat(item.quality()).isEqualTo(DRUNItemQuality.RUNEWORD);
+        assertThat(item.itemName()).isEqualTo("精霊");
+        assertThat(item.quality()).isEqualTo("RUNEWORD");
         assertThat(item.properties()).hasSize(11);
         assertThat(item.properties()).hasToString("[全スキル向上（+2）, スキル発動速度（+25%）, ヒットリカバリー速度（+55%）, 電撃ダメージ上昇（1 - 50）, 冷気ダメージ上昇（3 - 14）, 毒ダメージ付与（合計+75ダメージを5秒間で与える）, 攻撃命中でライフを吸収（与ダメージの7%）, 遠隔攻撃に対する防御力（+250）, 生命力（+22）, マナ（+106）, 魔法吸収（+8）]");
     }
@@ -136,12 +135,12 @@ class DiabloRunItemTransformerTest {
                         .location(ItemLocation.EQUIPPED)
                         .build());
 
-        final List<ItemPayload> outcome = germanTransformer.convertItems(unique, false, false, 99);
+        final List<ItemPayload> outcome = germanTransformer.convertItems(unique, false, 99);
 
         assertThat(outcome).hasSize(1);
         final ItemPayload item = outcome.getFirst();
         assertThat(item.itemName()).isEqualTo("Lidlose Wand");
-        assertThat(item.quality()).isEqualTo(DRUNItemQuality.GOLD);
+        assertThat(item.quality()).isEqualTo(ItemQuality.UNIQUE.name());
     }
 
     @Test
@@ -159,12 +158,12 @@ class DiabloRunItemTransformerTest {
                 .location(ItemLocation.EQUIPPED)
                 .build());
 
-        final List<ItemPayload> outcome = germanTransformer.convertItems(unique, false, false, 99);
+        final List<ItemPayload> outcome = germanTransformer.convertItems(unique, false, 99);
 
         assertThat(outcome).hasSize(1);
         final ItemPayload item = outcome.getFirst();
         assertThat(item.itemName()).isEqualTo("Lidlose Wand");
         assertThat(item.baseItem()).isEqualTo("Grim Shield");
-        assertThat(item.quality()).isEqualTo(DRUNItemQuality.GOLD);
+        assertThat(item.quality()).isEqualTo(ItemQuality.UNIQUE.name());
     }
 }

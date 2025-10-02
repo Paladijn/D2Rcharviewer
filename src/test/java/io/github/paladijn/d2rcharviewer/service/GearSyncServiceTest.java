@@ -57,7 +57,8 @@ class GearSyncServiceTest {
 
     @ParameterizedTest
     @CsvSource({
-            "src/test/resources/1.6.84219/Fjoerich.d2s,src/test/resources/diablorun/output-Fjoerich.json",
+            "src/test/resources/1.6.84219/Lohengrin.d2s,src/test/resources/diablorun/output-Fjoerich.json",
+            "src/test/resources/1.6.84219/IsThisHardcore.d2s,src/test/resources/diablorun/output-IsThisHardcore.json",
             "src/test/resources/1.6.84219/Peace.d2s,src/test/resources/diablorun/output-Peace.json",
             "src/test/resources/1.6.81914/TheUberDruid.d2s,src/test/resources/diablorun/output-kanouberdruid.json",
             "src/test/resources/1.6.81914/Veehouder.d2s,src/test/resources/diablorun/output-Veehouder.json",

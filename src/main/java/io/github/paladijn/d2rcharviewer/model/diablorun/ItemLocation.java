@@ -15,22 +15,18 @@
  */
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.paladijn.d2rsavegameparser.model.ItemContainer;
+import io.github.paladijn.d2rsavegameparser.model.ItemPosition;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public record ItemLocation(
-        @JsonProperty("X")
         int x,
-        @JsonProperty("Y")
         int y,
-        @JsonProperty("Width")
         int width,
-        @JsonProperty("Height")
         int height,
-        @JsonProperty("BodyLocation")
-        int itemPosition,
-        @JsonProperty("Container")
-        int container
+        ItemPosition itemPosition,
+        ItemContainer container,
+        io.github.paladijn.d2rsavegameparser.model.ItemLocation displayLocation
 ) {
 }

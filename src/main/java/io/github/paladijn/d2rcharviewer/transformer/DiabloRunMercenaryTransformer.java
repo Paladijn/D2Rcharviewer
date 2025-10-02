@@ -17,12 +17,11 @@ package io.github.paladijn.d2rcharviewer.transformer;
 
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
 import io.github.paladijn.d2rcharviewer.model.Constants;
-import io.github.paladijn.d2rcharviewer.model.diablorun.Hireling;
 import io.github.paladijn.d2rcharviewer.model.diablorun.ItemPayload;
+import io.github.paladijn.d2rcharviewer.model.diablorun.Mercenary;
 import io.github.paladijn.d2rcharviewer.service.TranslationService;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
 import io.github.paladijn.d2rsavegameparser.model.Item;
-import io.github.paladijn.d2rsavegameparser.model.Mercenary;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class DiabloRunMercenaryTransformer {
         this.diabloRunItemTransformer = diabloRunItemTransformer;
     }
 
-    public Hireling convertHireling(Mercenary mercenary, Difficulty difficulty) {
+    public Mercenary convertMercenary(io.github.paladijn.d2rsavegameparser.model.Mercenary mercenary, Difficulty difficulty) {
         if (mercenary == null) {
             return null;
         }
@@ -51,9 +50,9 @@ public class DiabloRunMercenaryTransformer {
         final int coldRes = mercenaryResistanceByLevel(level, difficulty, "cold", mercenary.items());
         final int lightRes = mercenaryResistanceByLevel(level, difficulty, "light", mercenary.items());
         final int poisRes = mercenaryResistanceByLevel(level, difficulty, "poison", mercenary.items());
-        final List<ItemPayload> mercItems = diabloRunItemTransformer.convertItems(mercenary.items(), false, true, level);
+        final List<ItemPayload> mercItems = diabloRunItemTransformer.convertItems(mercenary.items(), true, level);
 
-        return new Hireling(name, mercenary.typeId(), level, mercenary.experience(), strength, dexterity, fireRes, coldRes, lightRes, poisRes, List.of(), mercItems);
+        return new Mercenary(name, mercenary.typeId(), level, mercenary.alive(), mercenary.experience(), strength, dexterity, fireRes, coldRes, lightRes, poisRes, List.of(), mercItems);
     }
 
     private int calculateStrengthByMercenaryType(short typeId, int level) {
@@ -118,7 +117,7 @@ public class DiabloRunMercenaryTransformer {
         if (typeId < 30) {
             return translationService.getTranslationByKey("Merc" + (101 + nameId));
         }
-        return "N.N.";
+        return "N.N. - %d [%d]".formatted(nameId, typeId);
     }
 
 

@@ -15,18 +15,14 @@
  */
 package io.github.paladijn.d2rcharviewer.model.diablorun;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.util.List;
 
 @RegisterForReflection
 public record CompletedQuests(
-        @JsonProperty("Normal")
         List<Integer> normal,
-        @JsonProperty("Nightmare")
         List<Integer> nightmare,
-        @JsonProperty("Hell")
         List<Integer> hell
 ) {
     public CompletedQuests {
