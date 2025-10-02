@@ -57,16 +57,16 @@ class GearSyncServiceTest {
 
     @ParameterizedTest
     @CsvSource({
-            "src/test/resources/1.6.84219/Lohengrin.d2s,src/test/resources/diablorun/output-Fjoerich.json",
-            "src/test/resources/1.6.84219/IsThisHardcore.d2s,src/test/resources/diablorun/output-IsThisHardcore.json",
-            "src/test/resources/1.6.84219/Peace.d2s,src/test/resources/diablorun/output-Peace.json",
-            "src/test/resources/1.6.81914/TheUberDruid.d2s,src/test/resources/diablorun/output-kanouberdruid.json",
-            "src/test/resources/1.6.81914/Veehouder.d2s,src/test/resources/diablorun/output-Veehouder.json",
-            "src/test/resources/1.6.81914/rtltq_Kano.d2s,src/test/resources/diablorun/output-kano.json",
-            "src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/diablorun/output-sparkles.json",
-            "src/test/resources/1.6.81914/DRUNPala.d2s,src/test/resources/diablorun/output-DRUNPala.json",
-            "src/test/resources/1.6.81914/DRUNPala-mahim.d2s,src/test/resources/diablorun/output-DRUNPala-mahim.json",
-            "src/test/resources/1.6.81914/Pylkjes.d2s,src/test/resources/diablorun/output-Pylkjes.json"
+            "src/test/resources/1.6.84219/Lohengrin.d2s,src/test/resources/gear-sync/output-Fjoerich.json",
+            "src/test/resources/1.6.84219/IsThisHardcore.d2s,src/test/resources/gear-sync/output-IsThisHardcore.json",
+            "src/test/resources/1.6.84219/Peace.d2s,src/test/resources/gear-sync/output-Peace.json",
+            "src/test/resources/1.6.81914/TheUberDruid.d2s,src/test/resources/gear-sync/output-kanouberdruid.json",
+            "src/test/resources/1.6.81914/Veehouder.d2s,src/test/resources/gear-sync/output-Veehouder.json",
+            "src/test/resources/1.6.81914/rtltq_Kano.d2s,src/test/resources/gear-sync/output-kano.json",
+            "src/test/resources/2.8/Sparkles-above75percent.d2s,src/test/resources/gear-sync/output-sparkles.json",
+            "src/test/resources/1.6.81914/DRUNPala.d2s,src/test/resources/gear-sync/output-DRUNPala.json",
+            "src/test/resources/1.6.81914/DRUNPala-mahim.d2s,src/test/resources/gear-sync/output-DRUNPala-mahim.json",
+            "src/test/resources/1.6.81914/Pylkjes.d2s,src/test/resources/gear-sync/output-Pylkjes.json"
     })
     void validSyncRequest(String characterFile, String expectedJSONFile) throws IOException {
 
