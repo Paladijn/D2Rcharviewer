@@ -92,6 +92,8 @@ public class DiabloRunItemTransformer {
 
             final String baseName = getBaseNameFromItem(item).trim();
             final List<String> runewordRunes = item.isRuneword() ? getRunewordRunes(item.socketedItems()) : List.of();
+            final boolean indestructable = item.maxDurability() == 0
+                    || item.properties().stream().anyMatch(itemProperty -> itemProperty.index() == 152); // item_indesctructible
 
             results.add(new ItemPayload(
                     baseName,
@@ -111,8 +113,8 @@ public class DiabloRunItemTransformer {
                     ),
                     item.stacks(),
                     item.maxStacks(),
-                    item.durability(),
-                    Math.max(item.durability(), item.maxDurability()), // some items have higher durability than their base item, such as the unique shields
+                    indestructable ? 0 : item.durability(),
+                    indestructable ? 0 : Math.max(item.durability(), item.maxDurability()), // some items have higher durability than their base item, such as the unique shields
                     item.treasureClass()
             ));
         }
@@ -264,7 +266,12 @@ public class DiabloRunItemTransformer {
             if (hasSocketedOrClassSpecific
                     && property.index() != 107 // item_singleskill
                     && property.index() != 188 // item_addskill_tab
+                    && property.index() != 195 // item_skillonattack
+                    && property.index() != 196 // item_skillonkill
+                    && property.index() != 197 // item_skillondeath
                     && property.index() != 198 // item_skillonhit
+                    && property.index() != 199 // item_skillonlevelup
+                    && property.index() != 201 // item_skillongethit
                     && property.index() != 204 // item_charged_skill
                     && i < properties.size() - 1
                     && properties.get(i + 1).index() == property.index()
