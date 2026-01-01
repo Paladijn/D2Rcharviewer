@@ -271,7 +271,7 @@ public class DisplayStatsCalculator {
 
     private List<Item> getEquippedItemsWithRequirements(D2Character character) {
         final List<Item> allEquipped = character.items().stream()
-                .filter(this::equippedOrCharm)
+                .filter(this::equippedOrIdentifiedCharm)
                 .toList();
 
         // if we want to do this well, we should check them one by one to see if the item could have been equipped,
@@ -336,9 +336,9 @@ public class DisplayStatsCalculator {
                 && dexterity >= reqDex;
     }
 
-    private boolean equippedOrCharm(Item item) {
+    private boolean equippedOrIdentifiedCharm(Item item) {
         return (item.location() == ItemLocation.EQUIPPED && item.position() != ItemPosition.LEFT_SWAP && item.position() != ItemPosition.RIGHT_SWAP) // we ignore the items in the swapped position (their location is updated when you swap)
-                || (item.container() == INVENTORY && Item.isCharm(item.code()));
+                || (item.container() == INVENTORY && Item.isCharm(item.code()) && item.isIdentified());
     }
 
     public static int getTotalPointsInProperty(String propertyName, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {

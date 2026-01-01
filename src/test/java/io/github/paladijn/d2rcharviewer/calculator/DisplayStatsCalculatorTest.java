@@ -24,7 +24,7 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class DisplayStatsCalculatorTest {
 
@@ -160,10 +160,9 @@ class DisplayStatsCalculatorTest {
 
     @Test
     void throwExceptionOnEmptySaveGame() {
-        final ParseException parseException = assertThrows(ParseException.class,
-                () -> cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/nobytes.d2s")));
-
-        assertThat(parseException.getMessage()).isEqualTo("Less than 335 bytes read (0), either the file is locked, or this is not a valid .d2s file");
+        assertThatExceptionOfType(ParseException.class)
+                .isThrownBy(() -> cut.getDisplayStats(Path.of("src/test/resources/1.6.81914/nobytes.d2s")))
+                .withMessage("Less than 335 bytes read (0), either the file is locked, or this is not a valid .d2s file");
     }
 
     @Test
@@ -192,5 +191,12 @@ class DisplayStatsCalculatorTest {
 
         assertThat(result.mf()).isEqualTo(310);
         assertThat(result.gf()).isEqualTo(536);
+    }
+
+    @Test
+    void shouldIgnoreUnidentifiedCharmStsats() {
+        final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.7.90898/Fjoerich.d2s"));
+
+        assertThat(result.maxHP()).isEqualTo(902); // Should not count the +6 from the small charm
     }
 }
