@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 
 import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.INVENTORY;
 import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.STASH;
+import static java.lang.Math.min;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @ApplicationScoped
@@ -97,12 +98,13 @@ public class DisplayStatsCalculator {
 
     public DisplayStats getDisplayStats(final D2Character character) {
         long goldInStash = character.attributes().goldInStash();
+        long goldInSharedStash = 0;
         List<Item> allItems = character.items();
         if (configOptions.includeSharedStash()) {
             List<Item> fullItemList = new ArrayList<>(allItems);
             List<SharedStashTab> sharedStashTabs = getSharedStashTabs(character.hardcore());
             for (SharedStashTab tab : sharedStashTabs) {
-                goldInStash += tab.gold();
+                goldInSharedStash += tab.gold();
                 fullItemList.addAll(tab.items());
             }
             allItems = List.copyOf(fullItemList);
@@ -150,7 +152,7 @@ public class DisplayStatsCalculator {
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
                 attributes, maxHP, maxMana, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()),
-                goldString(goldInStash), runes, runewords, keys, speedRunItems, Instant.now());
+                goldString(goldInStash), goldString(goldInSharedStash), runes, runewords, keys, speedRunItems, Instant.now());
     }
 
     private String goldString(long goldValue) {
@@ -211,7 +213,9 @@ public class DisplayStatsCalculator {
                 }
             }
         }
-        return new Keys(terror, hate, destruction);
+        // the total is maxed at three for the speedrun stats
+        final int total = min(terror, 3) + min(hate, 3) + min(destruction, 3);
+        return new Keys(terror, hate, destruction, total);
     }
 
     private SpeedRunItems getSpeedRunItems(List<Item> allItems) {

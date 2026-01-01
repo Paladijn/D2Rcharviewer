@@ -36,6 +36,7 @@ public record DisplayStats(
         int gf,
         String gold,
         String goldInStash,
+        String goldInSharedStash,
         String runes,
         String runewords,
         Keys keys,

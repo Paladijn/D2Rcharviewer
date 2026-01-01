@@ -106,6 +106,7 @@ public class StatisticsService {
             case "level" -> String.valueOf(statsForMostRecent.level());
             case "gold" -> statsForMostRecent.gold();
             case "goldInStash" -> statsForMostRecent.goldInStash();
+            case "goldInSharedStash" -> statsForMostRecent.goldInSharedStash();
             case "mf" -> String.valueOf(statsForMostRecent.mf());
             case "gf" -> String.valueOf(statsForMostRecent.gf());
             case "attributes.strength" -> String.valueOf(statsForMostRecent.attributes().strength());
@@ -131,6 +132,7 @@ public class StatisticsService {
             case "keys.terror" -> String.valueOf(statsForMostRecent.keys().terror());
             case "keys.hate" -> String.valueOf(statsForMostRecent.keys().hate());
             case "keys.destruction" -> String.valueOf(statsForMostRecent.keys().destruction());
+            case "keys.totalKeys" -> String.valueOf(statsForMostRecent.keys().totalKeys());
             case "speedrun.fullRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().fullRejuvs());
             case "speedrun.smallRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().smallRejuvs());
             case "speedrun.chippedGems" -> String.valueOf(statsForMostRecent.speedRunItems().chippedGems());

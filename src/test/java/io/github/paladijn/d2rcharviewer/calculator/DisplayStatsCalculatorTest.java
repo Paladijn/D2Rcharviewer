@@ -156,6 +156,7 @@ class DisplayStatsCalculatorTest {
         assertThat(result.keys().terror()).isEqualTo(1);
         assertThat(result.keys().hate()).isEqualTo(1);
         assertThat(result.keys().destruction()).isEqualTo(1);
+        assertThat(result.keys().totalKeys()).isEqualTo(3);
     }
 
     @Test
