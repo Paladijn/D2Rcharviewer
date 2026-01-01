@@ -31,7 +31,7 @@ If all is configured well, you'll see the following:
 ```logcatfilter
 [io.git.pal.d2c.ser.SaveGameWatchService] (SaveGame watcherThread) Starting SaveGameWatchService, loading initial savegame stats
 [io.git.pal.d2c.ser.StatisticsService] (SaveGame watcherThread) found C:/Users/Paladijn/Saved Games/Diablo II Resurrected/Hamers.d2s
-[io.quarkus] (main) d2charviewer 0.0.1-SNAPSHOT native (powered by Quarkus 3.10.0) started in 0.074s. Listening on: http://0.0.0.0:8081
+[io.quarkus] (main) d2charviewer 2.1.0 native (powered by Quarkus 3.30.5) started in 0.021s. Listening on: http://0.0.0.0:8081
 [io.quarkus] (main) Profile prod activated. 
 [io.quarkus] (main) Installed features: [cdi, rest, smallrye-context-propagation, vertx]
 [io.git.pal.d2c.ser.SaveGameWatchService] (SaveGame watcherThread) started polling for savegame changes
