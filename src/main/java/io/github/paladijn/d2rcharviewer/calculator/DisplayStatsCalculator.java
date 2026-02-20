@@ -361,7 +361,7 @@ public class DisplayStatsCalculator {
         }
 
         final Difficulty difficulty = getCurrentDifficulty(character.locations());
-        if (character.expansion()) { // most common use case, so first
+        if (character.lordOfDestruction() || character.riseOfTheWarlock()) { // most common use case, so first
             return switch (difficulty) {
                 case NORMAL -> sum;
                 case NIGHTMARE -> sum - 40;

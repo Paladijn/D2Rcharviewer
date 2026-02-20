@@ -222,9 +222,9 @@ public class GearSyncService {
                 new D2ProcessInfo("D2R", "1.6.84219", List.of("D2RCharViewer", "2.0.1-SNAPSHOT")),
                 d2Character.mapId(),
                 d2Character.name(),
-                getTitleString(d2Character.characterType(), d2Character.actProgression(), d2Character.hardcore(), d2Character.expansion()),
+                getTitleString(d2Character.characterType(), d2Character.actProgression(), d2Character.hardcore(), d2Character.lordOfDestruction() || d2Character.riseOfTheWarlock()),
                 d2Character.characterType().ordinal(),
-                d2Character.expansion(),
+                d2Character.lordOfDestruction() || d2Character.riseOfTheWarlock(),
                 d2Character.hardcore(),
                 d2Character.attributes().hp() == 0,
                 getCurrentAct(d2Character.locations()),
@@ -308,6 +308,7 @@ public class GearSyncService {
             case BARBARIAN -> true;
             case DRUID -> true;
             case ASSASSIN -> false;
+            case WARLOCK -> true;
             case NONE -> false;
         };
     }

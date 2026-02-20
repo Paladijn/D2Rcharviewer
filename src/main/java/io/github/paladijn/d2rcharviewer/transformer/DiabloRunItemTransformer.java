@@ -430,6 +430,7 @@ public class DiabloRunItemTransformer {
             case BARBARIAN -> "ModStr3e";
             case DRUID -> "ModStre8a";
             case ASSASSIN -> "ModStre8b";
+            case WARLOCK -> "ModStrge9";
             case NONE -> "NO CLASS SELECTED";
         };
         displayProperties.add(new DisplayProperty(label, List.of(String.valueOf(property.values()[1])), false, property.qualityFlag()));
@@ -488,15 +489,50 @@ public class DiabloRunItemTransformer {
         displayProperties.add(new DisplayProperty("ModStr3i", List.of(String.valueOf(property.values()[1])), false, property.qualityFlag()));
     }
 
-    private String getSkillLabel(int skillID) {
-        if (skillID == 197) {// firestorm on torch is a different skill, but with the same name
-            skillID = 226;
-        }
-        return skillID < 221 ? "skillname" + skillID : "Skillname" + skillID;
+    private String getSkillLabel(final int skillID) {
+        return switch (skillID) {
+            case 197 -> "Skillname226"; // firestorm on torch is a different skill, but with the same name
+            case 373 -> "SummonGoatmanName";
+            case 374 -> "DemonicMasteryName";
+            case 375 -> "DeathMarkName";
+            case 376 -> "SummonTaintedName";
+            case 377 -> "SummonDefilerName";
+            case 378 -> "BloodOathName";
+            case 379 -> "EngorgeName";
+            case 380 -> "BloodBoilName";
+            case 381 -> "ConsumeName";
+            case 382 -> "BindDemonName";
+            case 383 -> "LevitateName";
+            case 384 -> "EldritchBlastName";
+            case 385 -> "BaneHexName";
+            case 386 -> "SiphonHexName";
+            case 387 -> "PsychicWardName";
+            case 388 -> "EchoingStrikeName";
+            case 389 -> "PurgeHexName";
+            case 390 -> "BladeWarpName";
+            case 391 -> "CleaveName";
+            case 392 -> "MirroredBladesName";
+            case 393 -> "LethargySigilName";
+            case 394 -> "RingOfFireName";
+            case 395 -> "MiasmaBoltName";
+            case 396 -> "RancorSigilName";
+            case 397 -> "EnhancedEntropyName";
+            case 398 -> "FlameWaveName";
+            case 399 -> "MiasmaChainName";
+            case 400 -> "DeathSigilName";
+            case 401 -> "ApocalypseName";
+            case 402 -> "AbyssName";
+            // TODO 20260220 - these two are missing
+            // case 0 -> "SkillnameMetamorphosisBear";
+            // case 0 -> "SkillnameMetamorphosisWolf";
+            default -> skillID < 221 ? "skillname" + skillID : "Skillname" + skillID;
+        };
     }
 
     private int getSkillID(int value) {
-        return value < 221 ? value : 1 + value;
+        return (value < 221 || value > 372)
+                ? value : // classic + Warlock characters
+                1 + value; // Druid + Assassin
     }
 
     private boolean addedPoisonDamage(ItemProperty property, int index, List<ItemProperty> properties, List<DisplayProperty> displayProperties) {

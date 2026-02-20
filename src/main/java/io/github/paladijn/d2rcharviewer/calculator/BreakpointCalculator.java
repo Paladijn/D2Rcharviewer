@@ -30,7 +30,7 @@ public class BreakpointCalculator {
     private static final int[] ASS_BARB_PALA_FHR = {0, 7, 15, 27, 48, 86, 200};
     private static final int[] DRUID_1H_FHR = {0, 3, 7, 13, 19, 29, 42, 63, 99, 174, 456 };
     private static final int[] DRUID_OTHER_FHR = {0, 5, 10, 16, 26, 39, 56, 86, 152, 377};
-    private static final int[] NECRO_FHR = {0, 5, 10, 16, 26, 39, 56, 86, 152, 377};
+    private static final int[] NECRO_WARLOCK_FHR = {0, 5, 10, 16, 26, 39, 56, 86, 152, 377};
     private static final int[] NECRO_TRANG_FHR = {0, 2, 6, 10, 16, 24, 34, 48, 72, 117};
     private static final int[] PALADIN_STAVES_SPEARS_FHR = {0, 3, 7, 13, 20, 32, 48, 75, 129, 280};
     private static final int[] SORCERESS_FHR = {0, 5, 9, 14, 20, 30, 42, 60, 86, 142, 280};
@@ -39,7 +39,7 @@ public class BreakpointCalculator {
     private static final int[] ASSASSIN_FCR = {0, 8, 16, 27, 42, 65, 102, 174};
     private static final int[] BARBARIAN_SORCERESS_FCR = {0, 9, 20, 37, 63, 105, 200};
     private static final int[] DRUID_HUMAN_FCR = {0, 4, 10, 19, 30, 46, 68, 99, 163};
-    private static final int[] NECROMANCER_PALADIN_FCR = {0, 9, 18, 30, 48, 75, 125};
+    private static final int[] NECROMANCER_PALADIN_WARLOCK_FCR = {0, 9, 18, 30, 48, 75, 125};
     private static final int[] NECROMANCER_TRANG_FCR = {0, 6, 11, 18, 24, 35, 48, 65, 86, 120, 180};
 
     public Breakpoints calculateBreakpoints(CharacterType characterType, List<Item> equippedItems, List<ItemProperty> equippedSetBenefits) {
@@ -58,7 +58,7 @@ public class BreakpointCalculator {
             case ASSASSIN -> getNextBreakpoint(fasterCastRate, ASSASSIN_FCR);
             case BARBARIAN, SORCERESS -> getNextBreakpoint(fasterCastRate, BARBARIAN_SORCERESS_FCR);
             case DRUID -> getNextBreakpoint(fasterCastRate, DRUID_HUMAN_FCR);
-            case NECROMANCER, PALADIN -> getNextBreakpoint(fasterCastRate, NECROMANCER_PALADIN_FCR);
+            case NECROMANCER, PALADIN, WARLOCK -> getNextBreakpoint(fasterCastRate, NECROMANCER_PALADIN_WARLOCK_FCR);
             case NONE -> 0;
         };
     }
@@ -68,7 +68,7 @@ public class BreakpointCalculator {
             case AMAZON -> getNextBreakpoint(fasterHitRecovery, AMAZON_FHR);
             case ASSASSIN, BARBARIAN -> getNextBreakpoint(fasterHitRecovery, ASS_BARB_PALA_FHR);
             case DRUID -> getNextBreakpoint(fasterHitRecovery, DRUID_1H_FHR);// should filter both on 1H and 'other'
-            case NECROMANCER -> getNextBreakpoint(fasterHitRecovery, NECRO_FHR);
+            case NECROMANCER, WARLOCK -> getNextBreakpoint(fasterHitRecovery, NECRO_WARLOCK_FHR);
             case PALADIN -> getNextBreakpoint(fasterHitRecovery, ASS_BARB_PALA_FHR); // should filter on spear/saves
             case SORCERESS -> getNextBreakpoint(fasterHitRecovery, SORCERESS_FHR);
             case NONE -> 0;
