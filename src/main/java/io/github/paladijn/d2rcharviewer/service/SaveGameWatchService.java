@@ -145,7 +145,7 @@ public class SaveGameWatchService {
             // Java magix... would be nice to have a helper method for this tbh.
             try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
                 e.printStackTrace(pw);
-                Files.writeString(Path.of(
+                Files.writeString(Path.of("broken",
                         "%s_stacktrace.log".formatted(timestamp)),
                         sw.toString(),
                         StandardOpenOption.CREATE,
