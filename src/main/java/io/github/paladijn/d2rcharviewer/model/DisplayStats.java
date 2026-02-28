@@ -41,4 +41,9 @@ public record DisplayStats(
         String runewords,
         Keys keys,
         SpeedRunItems speedRunItems,
-        Instant lastUpdated) { }
+        Instant lastUpdated,
+        int chronicleSetsDiscovered,
+        int chronicleUniquesDiscovered,
+        int chronicleRunewordsDiscovered,
+        int totalChronicleDiscovered
+) { }

@@ -136,6 +136,10 @@ public class StatisticsService {
             case "speedrun.fullRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().fullRejuvs());
             case "speedrun.smallRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().smallRejuvs());
             case "speedrun.chippedGems" -> String.valueOf(statsForMostRecent.speedRunItems().chippedGems());
+            case "chronicle.setItems" -> String.valueOf(statsForMostRecent.chronicleSetsDiscovered());
+            case "chronicle.uniques" -> String.valueOf(statsForMostRecent.chronicleUniquesDiscovered());
+            case "chronicle.runewords" -> String.valueOf(statsForMostRecent.chronicleRunewordsDiscovered());
+            case "chronicle.total" -> String.valueOf(statsForMostRecent.totalChronicleDiscovered());
             default -> "${" + token + "}";
         };
     }

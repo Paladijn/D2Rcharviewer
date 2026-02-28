@@ -24,6 +24,7 @@ import io.github.paladijn.d2rcharviewer.model.Keys;
 import io.github.paladijn.d2rcharviewer.model.Resistances;
 import io.github.paladijn.d2rcharviewer.model.SpeedRunItems;
 import io.github.paladijn.d2rcharviewer.utils.SaveGameFolder;
+import io.github.paladijn.d2rsavegameparser.model.ChronicleStashTab;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
 import io.github.paladijn.d2rsavegameparser.model.Item;
@@ -70,9 +71,9 @@ public class DisplayStatsCalculator {
 
     private final BreakpointCalculator breakpointCalculator;
 
-    private final CharacterParser characterParser = new CharacterParser(false);
+    private final CharacterParser characterParser = new CharacterParser(true);
 
-    private final SharedStashParser sharedStashParser = new SharedStashParser(false);
+    private final SharedStashParser sharedStashParser = new SharedStashParser(true);
 
     private final TXTProperties txtProperties = TXTProperties.getInstance();
 
@@ -101,8 +102,8 @@ public class DisplayStatsCalculator {
         long goldInSharedStash = 0;
         List<Item> allItems = character.items();
         if (configOptions.includeSharedStash()) {
-            List<Item> fullItemList = new ArrayList<>(allItems);
-            List<SharedStashTab> sharedStashTabs = getSharedStashTabs(character.hardcore());
+            final List<Item> fullItemList = new ArrayList<>(allItems);
+            final List<SharedStashTab> sharedStashTabs = getSharedStashTabs(character.hardcore(), character.riseOfTheWarlock());
             for (SharedStashTab tab : sharedStashTabs) {
                 goldInSharedStash += tab.gold();
                 fullItemList.addAll(tab.items());
@@ -150,9 +151,23 @@ public class DisplayStatsCalculator {
 
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
+        int chronicleSetsDiscovered = 0;
+        int chronicleUniquesDiscovered = 0;
+        int chronicleRunewordsDiscovered = 0;
+        // If this item is a RotW character, also collect data from the Chronicle
+        if (character.riseOfTheWarlock()) {
+            final ChronicleStashTab chronicleTab = getChronicleTab(character.hardcore());
+            chronicleSetsDiscovered = chronicleTab.setItemsDiscovered();
+            chronicleUniquesDiscovered = chronicleTab.uniqueItemsDiscovered();
+            chronicleRunewordsDiscovered = chronicleTab.runewordsDiscovered();
+        }
+
+        final int totalChronicleDiscovered = chronicleSetsDiscovered + chronicleUniquesDiscovered + chronicleRunewordsDiscovered;
+
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
                 attributes, maxHP, maxMana, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()),
-                goldString(goldInStash), goldString(goldInSharedStash), runes, runewords, keys, speedRunItems, Instant.now());
+                goldString(goldInStash), goldString(goldInSharedStash), runes, runewords, keys, speedRunItems, Instant.now(),
+                chronicleSetsDiscovered, chronicleUniquesDiscovered, chronicleRunewordsDiscovered, totalChronicleDiscovered);
     }
 
     private String goldString(long goldValue) {
@@ -175,15 +190,31 @@ public class DisplayStatsCalculator {
         return "%2.1f".formatted(percentage);
     }
 
-    private List<SharedStashTab> getSharedStashTabs(boolean isHardcore) {
-        final String stashFilename = isHardcore ? "SharedStashHardCoreV2.d2i" : "SharedStashSoftCoreV2.d2i";
+    private List<SharedStashTab> getSharedStashTabs(final boolean isHardcore, final boolean isRotW) {
+        final String stashFilename = getSharedStashFilename(isHardcore, isRotW);
         final ByteBuffer buffer;
         try {
             buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameFolder, stashFilename)));
         } catch (IOException e) {
-            throw new ParseException("could not read shared stash file", e);
+            throw new ParseException("could not read shared stash file %s".formatted(stashFilename), e);
         }
         return sharedStashParser.parse(buffer);
+    }
+
+    private ChronicleStashTab getChronicleTab(final boolean isHardcore) {
+        final String stashFilename = getSharedStashFilename(isHardcore, true);
+        final ByteBuffer buffer;
+        try {
+            buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameFolder, stashFilename)));
+        } catch (IOException e) {
+            throw new ParseException("could not read shared stash file %s".formatted(stashFilename), e);
+        }
+        return sharedStashParser.getChronicleStashTab(buffer);
+    }
+
+    private String getSharedStashFilename(final boolean isHardcore, final boolean isRotW) {
+        return (isRotW ? "Modern" : "")
+                + (isHardcore ? "SharedStashHardCoreV2.d2i" : "SharedStashSoftCoreV2.d2i");
     }
 
     public Difficulty getCurrentDifficulty(List<Location> locations) {
@@ -222,19 +253,20 @@ public class DisplayStatsCalculator {
         int fullRejuvs = 0;
         int smallRejuvs = 0;
         int chipped = 0;
-        for (Item item: allItems) {
-            switch (item.code()) {
-                case "rvs" -> smallRejuvs++;
-                case "rvl" -> fullRejuvs++;
-                case "gcv" -> chipped++; // amethyst
-                case "gcy" -> chipped++; // topaz
-                case "gcb" -> chipped++; // sapphire
-                case "gcg" -> chipped++; // emerald
-                case "gcr" -> chipped++; // ruby
-                case "gcw" -> chipped++; // diamond
-                case "skc" -> chipped++; // skull
-            }
-        }
+        // TODO 20260228 this is broken due to the material stash, so we'll skip checking for these items - will fix in a later update.
+//        for (Item item: allItems) {
+//            switch (item.code()) {
+//                case "rvs" -> smallRejuvs++;
+//                case "rvl" -> fullRejuvs++;
+//                case "gcv" -> chipped++; // amethyst
+//                case "gcy" -> chipped++; // topaz
+//                case "gcb" -> chipped++; // sapphire
+//                case "gcg" -> chipped++; // emerald
+//                case "gcr" -> chipped++; // ruby
+//                case "gcw" -> chipped++; // diamond
+//                case "skc" -> chipped++; // skull
+//            }
+//        }
         return new SpeedRunItems(fullRejuvs, smallRejuvs, chipped);
     }
 
@@ -366,6 +398,7 @@ public class DisplayStatsCalculator {
                 case NORMAL -> sum;
                 case NIGHTMARE -> sum - 40;
                 case HELL -> sum - 100;
+                default -> throw new ParseException("Unknown difficulty %s".formatted(difficulty));
             };
         }
 
@@ -374,6 +407,7 @@ public class DisplayStatsCalculator {
             case NORMAL -> sum;
             case NIGHTMARE -> sum - 20;
             case HELL -> sum - 50;
+            default -> throw new ParseException("Unknown difficulty %s".formatted(difficulty));
         };
     }
 }

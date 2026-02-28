@@ -9,23 +9,23 @@
     <name>D2Rcharviewer</name>
     <description>Diablo II: Resurrected character viewer</description>
     <properties>
-        <compiler-plugin.version>3.14.1</compiler-plugin.version>
+        <compiler-plugin.version>3.15.0</compiler-plugin.version>
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.30.5</quarkus.platform.version>
+        <quarkus.platform.version>3.32.1</quarkus.platform.version>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.5.4</surefire-plugin.version>
-        <maven.versions.plugin>2.20.1</maven.versions.plugin>
+        <surefire-plugin.version>3.5.5</surefire-plugin.version>
+        <maven.versions.plugin>2.21.0</maven.versions.plugin>
 
-        <openrewrite-plugin.version>6.26.0</openrewrite-plugin.version>
-        <openrewrite-migrate-java.version>3.24.0</openrewrite-migrate-java.version>
+        <openrewrite-plugin.version>6.30.0</openrewrite-plugin.version>
+        <openrewrite-migrate-java.version>3.28.0</openrewrite-migrate-java.version>
 
-        <d2rsavegameparser.version>3.0.0-SNAPSHOT</d2rsavegameparser.version>
+        <d2rsavegameparser.version>3.0.0</d2rsavegameparser.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <assertj.version>3.27.6</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
     </properties>
 
     <dependencyManagement>

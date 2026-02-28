@@ -22,6 +22,7 @@ import io.github.paladijn.d2rcharviewer.model.diablorun.Mercenary;
 import io.github.paladijn.d2rcharviewer.service.TranslationService;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
 import io.github.paladijn.d2rsavegameparser.model.Item;
+import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
@@ -100,6 +101,7 @@ public class DiabloRunMercenaryTransformer {
                     case NORMAL -> sum;
                     case NIGHTMARE -> sum - 40;
                     case HELL -> sum - 100;
+                    default -> throw new ParseException("Unknown difficulty %s".formatted(difficulty));
                 }
         );
     }

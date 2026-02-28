@@ -14,7 +14,7 @@
     <div><span class="name">${name}</span> (<span>${percentToNext}</span>%) <span class="hardcore">${hardcore}</span></div>
     <table width="100%">
         <tr>
-            <td>Lvl:</td><td><span>${level}</span></td><td colspan="6"><span class="gold">Gold: </span><span class="gold">${gold}</span> [<span class="gold">${goldInStash}</span>]<span> MF: </span><span>${mf}</span></td>
+            <td>Lvl:</td><td><span>${level}</span></td><td colspan="6"><span class="gold">Gold: </span><span class="gold">${gold}</span> [<span class="gold">${goldInStash}</span>]<span> M/GF: </span><span>${mf}/${gf}</span></td>
         </tr>
         <tr>
             <td class="header">Str:</td><td><span>${attributes.strength}</span></td><td><div class="fire">Fire%:</div></td><td><span class="fire">${resistances.fire}</span></td><td class="header">FRW:</td><td><span>${fasterRunWalk}</span></td><td></td><td></td>
@@ -29,17 +29,20 @@
             <td class="header">Ene:</td><td><span>${attributes.energy}</span></td><td><div class="poison">Pois%:</div></td><td><span class="poison">${resistances.poison}</span></td><td class="header">FHR:</td><td><span>${breakpoints.fHR}</span></td><td> (<span class="next">${breakpoints.nextFHR}</span>)</td><td></td>
         </tr>
         <tr>
-            <td colspan="8"><textarea maxlength="100" rows="3" wrap="soft" readonly="readonly" class="runes">${runes}</textarea></td>
+            <td colspan="8">Set: <span>${chronicle.setItems}/135, </span>UQ: <span>${chronicle.uniques}/409, </span>RW: <span>${chronicle.runewords}/104</span></td>
         </tr>
-        <tr>
-            <td colspan="8"><textarea rows="3" wrap="soft" readonly="readonly" class="runewords">${runewords}</textarea></td>
-        </tr>
-        <tr>
-            <td colspan="2">T: ${keys.terror}</td><td colspan="2">H: ${keys.hate}</td><td colspan="2">D: ${keys.destruction}</td><td colspan="4">${keys.totalKeys} / 9</td></td>
-        </tr>
-        <tr>
-            <td colspan="8">Rejuvs: ${speedrun.smallRejuvs} / ${speedrun.fullRejuvs}, chipped: ${speedrun.chippedGems}</td>
-        </tr>
+<!--        <tr>-->
+<!--            <td colspan="8"><textarea maxlength="100" rows="3" wrap="soft" readonly="readonly" class="runes">${runes}</textarea></td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td colspan="8"><textarea rows="3" wrap="soft" readonly="readonly" class="runewords">${runewords}</textarea></td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td colspan="2">T: ${keys.terror}</td><td colspan="2">H: ${keys.hate}</td><td colspan="2">D: ${keys.destruction}</td><td colspan="4">${keys.totalKeys} / 9</td></td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td colspan="8">Rejuvs: ${speedrun.smallRejuvs} / ${speedrun.fullRejuvs}, chipped: ${speedrun.chippedGems}</td>-->
+<!--        </tr>-->
         <tr>
             <td colspan="8">Last updated <span class="nowrap">${lastUpdatedAgo}</span> ago</td>
         </tr>
