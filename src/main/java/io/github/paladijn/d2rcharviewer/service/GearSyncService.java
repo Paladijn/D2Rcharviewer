@@ -219,7 +219,7 @@ public class GearSyncService {
         // TODO we should hardcode some of these values to constants
         return new SyncRequest(
                 "2",
-                new D2ProcessInfo("D2R", "3.1.91735", List.of("D2RCharViewer", "3.0.1-SNAPSHOT")),
+                new D2ProcessInfo("D2R", "3.1.91735", List.of("D2RCharViewer", "3.0.0")),
                 d2Character.mapId(),
                 d2Character.name(),
                 getTitleString(d2Character.characterType(), d2Character.actProgression(), d2Character.hardcore(), d2Character.lordOfDestruction() || d2Character.riseOfTheWarlock()),
