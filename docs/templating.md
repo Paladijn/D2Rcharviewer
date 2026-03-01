@@ -60,13 +60,17 @@ Separate javascript files can be hosted in templates/js/ and its subfolders. To 
 | runes                 | string | list of runes in inventory and stash (including shared stash if property enabled)                        |
 | runewords             | string | list of runewords you can create with your runes                                                         |
 | lastUpdated           | string | hh:mm timestamp of you the last time your character data was updated (can be up to 5 minutes)            |
-| lastUpdatedAgo        | String | file updated time ago, 'xxs' below 1 minute, m:ss when it was longer than one minte ago                  |
+| lastUpdatedAgo        | String | file updated time ago, 'xxs' below 1 minute, m:ss when it was longer than one minute ago                 |
 | keys.terror           | number | number of Key of Terror in your inventory/stash                                                          |
 | keys.hate             | number | number of Key of Hate in your inventory/stash                                                            |
 | keys.destruction      | number | number of Key of Destruction in your inventory/stash                                                     |
 | keys.totalKeys        | number | number of total keys available, maxed at 3 per type (so if you have 4 keys of hate it will only count 3) |
-| speedrun.fullRejuvs   | number | number of full rejuvination potions in your inventory/stash                                              |
-| speedrun.smallRejuvs  | number | number of (normal/35%) rejuvination potions in your inventory/stash                                      |
-| speedrun.chippedGems  | number | number of chipped gems in your inventory                                                                 |
+| speedrun.fullRejuvs   | number | Disabled on RotW - number of full rejuvenation potions in your inventory/stash                           |
+| speedrun.smallRejuvs  | number | Disabled on RotW - number of (normal/35%) rejuvenation potions in your inventory/stash                   |
+| speedrun.chippedGems  | number | Disabled on RotW - number of chipped gems in your inventory                                              |
+| chronicle.setItems    | number | The amount of set items discovered so far                                                                |
+| chronicle.uniques     | number | The amount of unique items discovered so far                                                             |
+| chronicle.runewords   | number | The amount of runewords discovered so far                                                                |
+| chronicle.total       | number | The amount of set, unique and runeword items discovered so far                                           |
 
 If you think any other data should be added please request so in an issue on GitHub. Not all fields can be added unfortunately (such as amount of times a character has died).
