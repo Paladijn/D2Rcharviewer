@@ -103,7 +103,7 @@ public class DisplayStatsCalculator {
         List<Item> allItems = character.items();
         if (configOptions.includeSharedStash()) {
             final List<Item> fullItemList = new ArrayList<>(allItems);
-            final List<SharedStashTab> sharedStashTabs = getSharedStashTabs(character.hardcore(), character.riseOfTheWarlock());
+            final List<SharedStashTab> sharedStashTabs = getSharedStashTabs(character.hardcore(), character.reignOfTheWarlock());
             for (SharedStashTab tab : sharedStashTabs) {
                 goldInSharedStash += tab.gold();
                 fullItemList.addAll(tab.items());
@@ -155,7 +155,7 @@ public class DisplayStatsCalculator {
         int chronicleUniquesDiscovered = 0;
         int chronicleRunewordsDiscovered = 0;
         // If this item is a RotW character, also collect data from the Chronicle
-        if (character.riseOfTheWarlock()) {
+        if (character.reignOfTheWarlock()) {
             final ChronicleStashTab chronicleTab = getChronicleTab(character.hardcore());
             chronicleSetsDiscovered = chronicleTab.setItemsDiscovered();
             chronicleUniquesDiscovered = chronicleTab.uniqueItemsDiscovered();
@@ -393,7 +393,7 @@ public class DisplayStatsCalculator {
         }
 
         final Difficulty difficulty = getCurrentDifficulty(character.locations());
-        if (character.lordOfDestruction() || character.riseOfTheWarlock()) { // most common use case, so first
+        if (character.lordOfDestruction() || character.reignOfTheWarlock()) { // most common use case, so first
             return switch (difficulty) {
                 case NORMAL -> sum;
                 case NIGHTMARE -> sum - 40;
