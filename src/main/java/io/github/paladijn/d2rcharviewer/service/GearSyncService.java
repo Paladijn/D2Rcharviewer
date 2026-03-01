@@ -200,8 +200,8 @@ public class GearSyncService {
 
     private boolean canSyncCharacter(final byte level, final Instant creationTime) {
         final Instant firstSendTime = creationTime.plus(Duration.parse(minimumAge));
-        if (level == 1) {
-            log.info("Not syncing character as it is level 1.");
+        if (level < 6) {
+            log.info("Not syncing character as it is below level 6.");
             return false;
         }
         if (firstSendTime.isAfter(Instant.now())) {
