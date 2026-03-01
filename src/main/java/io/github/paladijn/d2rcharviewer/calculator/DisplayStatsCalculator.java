@@ -71,9 +71,9 @@ public class DisplayStatsCalculator {
 
     private final BreakpointCalculator breakpointCalculator;
 
-    private final CharacterParser characterParser = new CharacterParser(true);
+    private final CharacterParser characterParser = new CharacterParser(false);
 
-    private final SharedStashParser sharedStashParser = new SharedStashParser(true);
+    private final SharedStashParser sharedStashParser = new SharedStashParser(false);
 
     private final TXTProperties txtProperties = TXTProperties.getInstance();
 
