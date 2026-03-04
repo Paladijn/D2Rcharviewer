@@ -42,8 +42,5 @@ public record DisplayStats(
         Keys keys,
         SpeedRunItems speedRunItems,
         Instant lastUpdated,
-        int chronicleSetsDiscovered,
-        int chronicleUniquesDiscovered,
-        int chronicleRunewordsDiscovered,
-        int totalChronicleDiscovered
+        ChronicleStats chronicleStats
 ) { }

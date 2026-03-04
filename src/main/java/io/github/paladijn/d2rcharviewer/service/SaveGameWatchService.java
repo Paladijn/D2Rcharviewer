@@ -16,6 +16,7 @@
 package io.github.paladijn.d2rcharviewer.service;
 
 import io.github.paladijn.d2rcharviewer.calculator.DisplayStatsCalculator;
+import io.github.paladijn.d2rcharviewer.model.ChronicleStats;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.utils.SaveGameFolder;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
@@ -36,6 +37,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -114,24 +116,69 @@ public class SaveGameWatchService {
         while ((key = watcher.take()) != null) {
             for (WatchEvent<?> event : key.pollEvents()) {
                 if (event.context().toString().endsWith(".d2s")) {
-                    log.info("found savegame file updated {} (delayed: {} ms)", event.context(), savegameReadDelayMS);
-                    if (savegameReadDelayMS > 0) {
-                        Thread.sleep(savegameReadDelayMS);
-                    }
-                    final Path characterFile = Path.of(savegameFolder, event.context().toString());
-                    try {
-
-                        lastDisplayStats = displayStatsCalculator.getDisplayStats(characterFile);
-                        log.debug("updated stats for {}, checking if we need to sync", characterFile);
-                        gearSyncService.sync(characterFile);
-                    } catch (ParseException | NullPointerException | IndexOutOfBoundsException e) {
-                        log.error("Could not parse savegame", e);
-                        log.info("awaiting next modification..., set the savegame.delay-in-ms property to fine tune a delay in reading the file.");
-                        storeSavegamesIfNeeded(e, characterFile);
-                    }
+                    updateCharacter(event.context().toString());
+                } else if (event.context().toString().endsWith(".d2i")) {
+                    updateChronicle(event.context().toString());
                 }
             }
             key.reset();
+        }
+    }
+
+    private void updateChronicle(String filename) {
+        if (!filename.startsWith("Modern")) {
+            return;
+        }
+        log.info("Shared stash with chronicle data updated {} (delayed: {} ms)", filename, savegameReadDelayMS);
+
+        final boolean isHardcore = filename.contains("HardCore");
+        final ChronicleStats chronicleStats = displayStatsCalculator.getChronicleStats(isHardcore);
+
+        log.debug("latest chronicle item: {}", chronicleStats);
+
+        lastDisplayStats = new DisplayStats(
+                lastDisplayStats.name(),
+                lastDisplayStats.type(),
+                lastDisplayStats.level(),
+                lastDisplayStats.isHardcore(),
+                lastDisplayStats.percentToNext(),
+                lastDisplayStats.attributes(),
+                lastDisplayStats.maxHP(),
+                lastDisplayStats.maxMana(),
+                lastDisplayStats.resistances(),
+                lastDisplayStats.breakpoints(),
+                lastDisplayStats.fasterRunWalk(),
+                lastDisplayStats.fasterAttackRate(),
+                lastDisplayStats.mf(),
+                lastDisplayStats.gf(),
+                lastDisplayStats.gold(),
+                lastDisplayStats.goldInStash(),
+                lastDisplayStats.goldInSharedStash(),
+                lastDisplayStats.runes(),
+                lastDisplayStats.runewords(),
+                lastDisplayStats.keys(),
+                lastDisplayStats.speedRunItems(),
+                Instant.now(),
+                chronicleStats
+        );
+    }
+
+    private void updateCharacter(String filename) throws InterruptedException, IOException {
+        log.info("found savegame file updated {} (delayed: {} ms)", filename, savegameReadDelayMS);
+        if (savegameReadDelayMS > 0) {
+            Thread.sleep(savegameReadDelayMS);
+        }
+        final Path characterFile = Path.of(savegameFolder, filename);
+        try {
+
+            lastDisplayStats = displayStatsCalculator.getDisplayStats(characterFile);
+            log.debug("updated stats for {}, checking if we need to sync", characterFile);
+            gearSyncService.sync(characterFile);
+            log.debug("latest chronicle from char: {}", lastDisplayStats.chronicleStats());
+        } catch (ParseException | NullPointerException | IndexOutOfBoundsException e) {
+            log.error("Could not parse savegame", e);
+            log.info("awaiting next modification..., set the savegame.delay-in-ms property to fine tune a delay in reading the file.");
+            storeSavegamesIfNeeded(e, characterFile);
         }
     }
 

@@ -50,6 +50,7 @@ public class TranslationService {
             storeTranslationItems(objectMapper, "translations/item-names.json");
             storeTranslationItems(objectMapper, "translations/item-runes.json");
             storeTranslationItems(objectMapper, "translations/mercenaries.json");
+            storeTranslationForMonsters(objectMapper);
             storeTranslationItems(objectMapper, "translations/skills.json");
         } catch (IOException e) {
             log.error("Could not read one of the translation jsons, please ensure they are present in the translations/ folder", e);
@@ -70,6 +71,14 @@ public class TranslationService {
         translatedItems.forEach(translatedItem -> translationsMappedByKey.put(fixedKey(translatedItem), getTranslatedValue(translatedItem)));
 
         log.debug("found {} translated items in {}", translatedItems.size(), fileLocation);
+    }
+
+    private void storeTranslationForMonsters(ObjectMapper objectMapper) throws IOException {
+        final InputStream resourceAsStream = new FileInputStream("translations/monsters.json");
+        final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+        translatedItems.forEach(translatedItem -> translationsMappedByKey.put(String.valueOf(translatedItem.id()), getTranslatedValue(translatedItem)));
+
+        log.debug("found {} translated items in monsters.json", translatedItems.size());
     }
 
     private static String fixedKey(TranslationItem translatedItem) {

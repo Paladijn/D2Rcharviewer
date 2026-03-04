@@ -136,10 +136,16 @@ public class StatisticsService {
             case "speedrun.fullRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().fullRejuvs());
             case "speedrun.smallRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().smallRejuvs());
             case "speedrun.chippedGems" -> String.valueOf(statsForMostRecent.speedRunItems().chippedGems());
-            case "chronicle.setItems" -> String.valueOf(statsForMostRecent.chronicleSetsDiscovered());
-            case "chronicle.uniques" -> String.valueOf(statsForMostRecent.chronicleUniquesDiscovered());
-            case "chronicle.runewords" -> String.valueOf(statsForMostRecent.chronicleRunewordsDiscovered());
-            case "chronicle.total" -> String.valueOf(statsForMostRecent.totalChronicleDiscovered());
+            case "chronicle.setItems" -> String.valueOf(statsForMostRecent.chronicleStats().chronicleSetsDiscovered());
+            case "chronicle.uniques" -> String.valueOf(statsForMostRecent.chronicleStats().chronicleUniquesDiscovered());
+            case "chronicle.runewords" -> String.valueOf(statsForMostRecent.chronicleStats().chronicleRunewordsDiscovered());
+            case "chronicle.total" -> String.valueOf(statsForMostRecent.chronicleStats().totalChronicleDiscovered());
+
+            case "chronicle.item" -> String.valueOf(statsForMostRecent.chronicleStats().itemName());
+            case "chronicle.itemType" -> String.valueOf(statsForMostRecent.chronicleStats().quality());
+            case "chronicle.monster" -> String.valueOf(statsForMostRecent.chronicleStats().monsterName());
+            case "chronicle.found" -> String.valueOf(statsForMostRecent.chronicleStats().found());
+
             default -> "${" + token + "}";
         };
     }

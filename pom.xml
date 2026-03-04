@@ -20,10 +20,10 @@
         <surefire-plugin.version>3.5.5</surefire-plugin.version>
         <maven.versions.plugin>2.21.0</maven.versions.plugin>
 
-        <openrewrite-plugin.version>6.30.0</openrewrite-plugin.version>
-        <openrewrite-migrate-java.version>3.28.0</openrewrite-migrate-java.version>
+        <openrewrite-plugin.version>6.32.0</openrewrite-plugin.version>
+        <openrewrite-migrate-java.version>3.29.0</openrewrite-migrate-java.version>
 
-        <d2rsavegameparser.version>3.0.1-SNAPSHOT</d2rsavegameparser.version>
+        <d2rsavegameparser.version>3.0.1</d2rsavegameparser.version>
         <slf4j.version>2.0.17</slf4j.version>
         <assertj.version>3.27.7</assertj.version>
     </properties>

@@ -16,6 +16,7 @@
 package io.github.paladijn.d2rcharviewer.calculator;
 
 import io.github.paladijn.d2rcharviewer.model.Breakpoints;
+import io.github.paladijn.d2rcharviewer.model.ChronicleStats;
 import io.github.paladijn.d2rcharviewer.model.ConfigOptions;
 import io.github.paladijn.d2rcharviewer.model.Constants;
 import io.github.paladijn.d2rcharviewer.model.DisplayAttributes;
@@ -23,7 +24,9 @@ import io.github.paladijn.d2rcharviewer.model.DisplayStats;
 import io.github.paladijn.d2rcharviewer.model.Keys;
 import io.github.paladijn.d2rcharviewer.model.Resistances;
 import io.github.paladijn.d2rcharviewer.model.SpeedRunItems;
+import io.github.paladijn.d2rcharviewer.service.TranslationService;
 import io.github.paladijn.d2rcharviewer.utils.SaveGameFolder;
+import io.github.paladijn.d2rsavegameparser.model.ChronicleItem;
 import io.github.paladijn.d2rsavegameparser.model.ChronicleStashTab;
 import io.github.paladijn.d2rsavegameparser.model.D2Character;
 import io.github.paladijn.d2rsavegameparser.model.Difficulty;
@@ -31,6 +34,7 @@ import io.github.paladijn.d2rsavegameparser.model.Item;
 import io.github.paladijn.d2rsavegameparser.model.ItemLocation;
 import io.github.paladijn.d2rsavegameparser.model.ItemPosition;
 import io.github.paladijn.d2rsavegameparser.model.ItemProperty;
+import io.github.paladijn.d2rsavegameparser.model.ItemQuality;
 import io.github.paladijn.d2rsavegameparser.model.Location;
 import io.github.paladijn.d2rsavegameparser.model.QuestData;
 import io.github.paladijn.d2rsavegameparser.model.SharedStashTab;
@@ -50,7 +54,9 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +77,9 @@ public class DisplayStatsCalculator {
 
     private final BreakpointCalculator breakpointCalculator;
 
-    private final CharacterParser characterParser = new CharacterParser(false);
+    private final TranslationService translationService;
+
+    private final CharacterParser characterParser = new CharacterParser(true);
 
     private final SharedStashParser sharedStashParser = new SharedStashParser(false);
 
@@ -80,10 +88,13 @@ public class DisplayStatsCalculator {
     public DisplayStatsCalculator(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
                                   @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
                                   @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
-                                  @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX) {
+                                  @ConfigProperty(name = "runes.withX", defaultValue = "false") boolean runesWithX,
+                                  TranslationService translationService
+    ) {
         this.savegameFolder = SaveGameFolder.getSavegameFolder(savegameLocation);
         this.breakpointCalculator = new BreakpointCalculator();
         this.configOptions = new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX);
+        this.translationService = translationService;
     }
 
     public DisplayStats getDisplayStats(final Path characterFile) {
@@ -151,23 +162,55 @@ public class DisplayStatsCalculator {
 
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
-        int chronicleSetsDiscovered = 0;
-        int chronicleUniquesDiscovered = 0;
-        int chronicleRunewordsDiscovered = 0;
-        // If this item is a RotW character, also collect data from the Chronicle
-        if (character.reignOfTheWarlock()) {
-            final ChronicleStashTab chronicleTab = getChronicleTab(character.hardcore());
-            chronicleSetsDiscovered = chronicleTab.setItemsDiscovered();
-            chronicleUniquesDiscovered = chronicleTab.uniqueItemsDiscovered();
-            chronicleRunewordsDiscovered = chronicleTab.runewordsDiscovered();
-        }
-
-        final int totalChronicleDiscovered = chronicleSetsDiscovered + chronicleUniquesDiscovered + chronicleRunewordsDiscovered;
+        final ChronicleStats chronicleStats = character.reignOfTheWarlock()
+                ? getChronicleStats(character.hardcore())
+                : new ChronicleStats(0, 0, 0, 0, "", ItemQuality.NONE, "", LocalDateTime.now());
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
                 attributes, maxHP, maxMana, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()),
                 goldString(goldInStash), goldString(goldInSharedStash), runes, runewords, keys, speedRunItems, Instant.now(),
-                chronicleSetsDiscovered, chronicleUniquesDiscovered, chronicleRunewordsDiscovered, totalChronicleDiscovered);
+                chronicleStats);
+    }
+
+    public ChronicleStats getChronicleStats(boolean hardcore) {
+
+        final ChronicleStashTab chronicleTab = getChronicleTab(hardcore);
+        final int chronicleSetsDiscovered = chronicleTab.setItemsDiscovered();
+        final int chronicleUniquesDiscovered = chronicleTab.uniqueItemsDiscovered();
+        final int chronicleRunewordsDiscovered = chronicleTab.runewordsDiscovered();
+
+        final int totalChronicleDiscovered = chronicleSetsDiscovered + chronicleUniquesDiscovered + chronicleRunewordsDiscovered;
+
+        final List<ChronicleItem> allItems = new ArrayList<>();
+        allItems.addAll(chronicleTab.runewords());
+        allItems.addAll(chronicleTab.setItems());
+        allItems.addAll(chronicleTab.uniques());
+        allItems.sort(Comparator.comparing(ChronicleItem::firstTimeInMinutes).reversed());
+
+        if (allItems.isEmpty()) {
+            return new ChronicleStats(0, 0, 0, 0, "", ItemQuality.NONE, "", LocalDateTime.now());
+        }
+
+        final ChronicleItem latest = allItems.getFirst();
+        final String itemName = getChronicleItemName(latest);
+        final String monsterName = latest.monsterId() == 0 ? "" : translationService.getTranslationByKey(String.valueOf(latest.monsterId()));
+
+        return new ChronicleStats(chronicleSetsDiscovered, chronicleUniquesDiscovered, chronicleRunewordsDiscovered, totalChronicleDiscovered,
+                itemName,
+                latest.quality(),
+                monsterName,
+                latest.firstTimeInMinutes()
+        );
+    }
+
+    private String getChronicleItemName(ChronicleItem latest) {
+        return switch (latest.quality()) {
+            case NORMAL -> translationService.getTranslationByKey("Runeword" + latest.itemId());
+            case UNIQUE -> translationService.getTranslationByKey(txtProperties.getUniqueNameById((short)latest.itemId()).getName());
+            case SET -> translationService.getTranslationByKey(txtProperties.getSetItemById((short)latest.itemId()).getName());
+
+            default -> String.valueOf(latest.itemId());
+        };
     }
 
     private String goldString(long goldValue) {
@@ -203,9 +246,15 @@ public class DisplayStatsCalculator {
 
     private ChronicleStashTab getChronicleTab(final boolean isHardcore) {
         final String stashFilename = getSharedStashFilename(isHardcore, true);
+        final Path stashFile = Path.of(savegameFolder, stashFilename);
+        if (!Files.exists(stashFile)) {
+            log.debug("modern stash file doesn't exist, returning empty Chronicle data");
+            return new ChronicleStashTab(0, 0, 0, List.of(), List.of(), List.of());
+        }
+
         final ByteBuffer buffer;
         try {
-            buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameFolder, stashFilename)));
+            buffer = ByteBuffer.wrap(Files.readAllBytes(stashFile));
         } catch (IOException e) {
             throw new ParseException("could not read shared stash file %s".formatted(stashFilename), e);
         }
