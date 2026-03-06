@@ -50,6 +50,7 @@ public class TranslationService {
             storeTranslationItems(objectMapper, "translations/item-names.json");
             storeTranslationItems(objectMapper, "translations/item-runes.json");
             storeTranslationItems(objectMapper, "translations/mercenaries.json");
+            storeTranslationForObjects(objectMapper);
             storeTranslationForMonsters(objectMapper);
             storeTranslationItems(objectMapper, "translations/skills.json");
         } catch (IOException e) {
@@ -71,6 +72,14 @@ public class TranslationService {
         translatedItems.forEach(translatedItem -> translationsMappedByKey.put(fixedKey(translatedItem), getTranslatedValue(translatedItem)));
 
         log.debug("found {} translated items in {}", translatedItems.size(), fileLocation);
+    }
+
+    private void storeTranslationForObjects(ObjectMapper objectMapper) throws IOException {
+        final InputStream resourceAsStream = new FileInputStream("translations/objects.json");
+        final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+        translatedItems.forEach(translatedItem -> translationsMappedByKey.put(String.valueOf(translatedItem.id()), getTranslatedValue(translatedItem)));
+
+        log.debug("found {} translated items in objects.json", translatedItems.size());
     }
 
     private void storeTranslationForMonsters(ObjectMapper objectMapper) throws IOException {
