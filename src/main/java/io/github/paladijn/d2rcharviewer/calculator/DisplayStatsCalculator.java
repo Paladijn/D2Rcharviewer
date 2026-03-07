@@ -157,8 +157,8 @@ public class DisplayStatsCalculator {
         final List<String> runewordsOnCharacter = getRuneWordsOnCharacter(character.items());
         final String runewords = getAvailableRuneWords(availableRunes, runewordsOnCharacter);
 
-        final Keys keys = getAvailableKeys(allItems);
-        final SpeedRunItems speedRunItems = getSpeedRunItems(allItems);
+        final Keys keys = getAvailableKeys(allItems, character.reignOfTheWarlock());
+        final SpeedRunItems speedRunItems = getSpeedRunItems(allItems, character.reignOfTheWarlock());
 
         final String percentToNext = calculateLevelPercentage(character.level(), character.attributes().experience());
 
@@ -280,16 +280,16 @@ public class DisplayStatsCalculator {
                 .toList();
     }
 
-    private Keys getAvailableKeys(List<Item> allItems) {
+    private Keys getAvailableKeys(final List<Item> allItems, final boolean isRotW) {
         int terror = 0;
         int hate = 0;
         int destruction = 0;
         for (Item item: allItems) {
             if (item.level() >= 80) { // hate 80, terror 85, destruction 90
                 switch (item.itemName()) {
-                    case "Key of Terror" -> terror++;
-                    case "Key of Hate" -> hate++;
-                    case "Key of Destruction" -> destruction++;
+                    case "Key of Terror" -> terror = plusValue(terror, isRotW, item);
+                    case "Key of Hate" -> hate = plusValue(hate, isRotW, item);
+                    case "Key of Destruction" -> destruction = plusValue(destruction, isRotW, item);
                 }
             }
         }
@@ -298,25 +298,31 @@ public class DisplayStatsCalculator {
         return new Keys(terror, hate, destruction, total);
     }
 
-    private SpeedRunItems getSpeedRunItems(List<Item> allItems) {
+    private SpeedRunItems getSpeedRunItems(final List<Item> allItems, final boolean isRotW) {
         int fullRejuvs = 0;
         int smallRejuvs = 0;
         int chipped = 0;
-        // TODO 20260228 this is broken due to the material stash, so we'll skip checking for these items - will fix in a later update.
-//        for (Item item: allItems) {
-//            switch (item.code()) {
-//                case "rvs" -> smallRejuvs++;
-//                case "rvl" -> fullRejuvs++;
-//                case "gcv" -> chipped++; // amethyst
-//                case "gcy" -> chipped++; // topaz
-//                case "gcb" -> chipped++; // sapphire
-//                case "gcg" -> chipped++; // emerald
-//                case "gcr" -> chipped++; // ruby
-//                case "gcw" -> chipped++; // diamond
-//                case "skc" -> chipped++; // skull
-//            }
-//        }
+        // TODO 20260228 this is broken due to the material stash, so we'll skip checking for these items - will need to figure out how to handle chipped gems
+        for (Item item: allItems) {
+            switch (item.code()) {
+                case "rvs" -> smallRejuvs = plusValue(smallRejuvs, isRotW, item);
+                case "rvl" -> fullRejuvs = plusValue(fullRejuvs, isRotW, item);
+                case "gcv" -> chipped++; // amethyst
+                case "gcy" -> chipped++; // topaz
+                case "gcb" -> chipped++; // sapphire
+                case "gcg" -> chipped++; // emerald
+                case "gcr" -> chipped++; // ruby
+                case "gcw" -> chipped++; // diamond
+                case "skc" -> chipped++; // skull
+            }
+        }
         return new SpeedRunItems(fullRejuvs, smallRejuvs, chipped);
+    }
+
+    private int plusValue(final int previous, final boolean isRotW, final Item item) {
+        return !isRotW
+                ? previous + 1
+                : item.stacks(); // always return the stack value, prevents doubling when one is in inventory and the other is in stash
     }
 
     public static List<ItemProperty> getPropertiesByNames(List<Item> items, List<String> name) {
