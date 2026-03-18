@@ -38,6 +38,8 @@ public class StatisticsController {
 
     private String characterTemplate;
 
+    private String chronicleTemplate;
+
     @ConfigProperty(name = "template.error", defaultValue = "templates/error.html")
     private String errorTemplateLocation;
 
@@ -49,10 +51,12 @@ public class StatisticsController {
     private final SaveGameWatchService saveGameWatchService;
 
     public StatisticsController(SaveGameWatchService saveGameWatchService,
-                                @ConfigProperty(name = "template.character", defaultValue = "templates/character.html") String characterTemplateLocation) {
+                                @ConfigProperty(name = "template.character", defaultValue = "templates/character.html") String characterTemplateLocation,
+                                @ConfigProperty(name = "template.chronicle", defaultValue = "templates/chronicle-progress.html") String chronicleTemplateLocation) {
         this.saveGameWatchService = saveGameWatchService;
         this.statisticsService = saveGameWatchService.getStatisticsService();
         this.characterTemplate = readFileContents(characterTemplateLocation);
+        this.chronicleTemplate = readFileContents(chronicleTemplateLocation);
     }
 
     @GET
@@ -67,9 +71,21 @@ public class StatisticsController {
 
         log.debug("character stats: {}", statsForMostRecent);
 
-        return statisticsService.replaceValues(
-                characterTemplate,
-                statsForMostRecent);
+        return statisticsService.replaceValues(characterTemplate, statsForMostRecent);
+    }
+
+    @GET
+    @Path("chronicle")
+    @Produces(MediaType.TEXT_HTML)
+    public String getChronicleProgresss() {
+        log.debug("attempting to load latest statistics for chronicle");
+
+        final DisplayStats statsForMostRecent = saveGameWatchService.getLastDisplayStats();
+        if (statsForMostRecent == null) {
+            return "";
+        }
+
+        return statisticsService.replaceValues(chronicleTemplate, statsForMostRecent);
     }
 
     @GET()

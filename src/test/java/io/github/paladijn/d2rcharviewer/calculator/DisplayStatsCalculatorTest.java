@@ -15,11 +15,18 @@
  */
 package io.github.paladijn.d2rcharviewer.calculator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.paladijn.d2rcharviewer.model.DisplayStats;
+import io.github.paladijn.d2rcharviewer.service.TranslationService;
 import io.github.paladijn.d2rsavegameparser.model.CharacterType;
 import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +35,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class DisplayStatsCalculatorTest {
 
-    private final DisplayStatsCalculator cut = new DisplayStatsCalculator("", false, false, false);
+    private static final Logger log = LoggerFactory.getLogger(DisplayStatsCalculatorTest.class);
+    private final TranslationService translationService = new TranslationService(new ObjectMapper(), "enUS");
+
+    private final DisplayStatsCalculator cut = new DisplayStatsCalculator("", false, false, false, translationService);
 
     @Test
     void simpleChar() {
@@ -73,7 +83,7 @@ class DisplayStatsCalculatorTest {
 
     @Test
     void removeRunewordAlreadyMade() {
-        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator("", true, false, false);
+        final DisplayStatsCalculator calculatorWithoutDuplicates = new DisplayStatsCalculator("", true, false, false, translationService);
         final DisplayStats result = calculatorWithoutDuplicates.getDisplayStats(Path.of("src/test/resources/2.5/Fierljepper.d2s"));
 
         // Stealth is already made, so should be skipped
@@ -199,5 +209,20 @@ class DisplayStatsCalculatorTest {
         final DisplayStats result = cut.getDisplayStats(Path.of("src/test/resources/1.7.90898/Fjoerich.d2s"));
 
         assertThat(result.maxHP()).isEqualTo(902); // Should not count the +6 from the small charm
+    }
+
+    @Test
+    void broken() throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of("broken"), "*.d2s")) {
+            for (Path path : stream) {
+                try {
+                    final DisplayStats result = cut.getDisplayStats(path);
+                    assertThat(result.name()).isEqualTo("rfvcz_Kano");
+                } catch (Exception e) {
+                    log.debug("D2s file failed -> {}", path);
+                    throw new RuntimeException("broken Character " + path, e);
+                }
+            }
+        }
     }
 }

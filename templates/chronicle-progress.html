@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px;
+            font-family: Exocet,sans-serif;
+        }
+
+        .progress-uniques {
+            background:
+                    radial-gradient(closest-side, white 60%, transparent 60%),
+                    conic-gradient(#908858 ${chronicle.uniquePercentage}%, #e0e0e0 0);
+            color: #908858;
+        }
+
+        .progress-sets {
+            background:
+                    radial-gradient(closest-side, white 60%, transparent 60%),
+                    conic-gradient(#00c400 ${chronicle.setPercentage}%, #e0e0e0 0);
+            color: #00c400;
+        }
+
+        .progress-runewords {
+            background:
+                    radial-gradient(closest-side, white 60%, transparent 60%),
+                    conic-gradient(#808B96 ${chronicle.uniquePercentage}%, #e0e0e0 0);
+            color: #808B96;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .vertical-container {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .stats {
+            font-weight: bold;
+            font-family: Exocet,sans-serif;
+        }
+        .latest {
+            font-family: Exocet,sans-serif;
+        }
+    </style>
+</head>
+<body>
+<div class="vertical-container">
+    <div class="container">
+        <div class="vertical-container">
+            <div class="progress-circle progress-uniques">${chronicle.uniquePercentage}%</div>
+            <div class="stats">${chronicle.uniques}/${chronicle.uniqueMax}</div>
+        </div>
+
+        <div class="vertical-container">
+            <div class="progress-circle progress-sets">${chronicle.setPercentage}%</div>
+            <div class="stats">${chronicle.setItems}/${chronicle.setMax}</div>
+        </div>
+
+        <div class="vertical-container">
+            <div class="progress-circle progress-runewords">${chronicle.runewordPercentage}%</div>
+            <div class="stats">${chronicle.runewords}/${chronicle.runewordMax}</div>
+        </div>
+    </div>
+
+    <div class="latest">${chronicle.found} ${chronicle.item} from ${chronicle.monster}</div>
+</div>
+</body>
+</html>

@@ -136,15 +136,26 @@ public class StatisticsService {
             case "speedrun.fullRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().fullRejuvs());
             case "speedrun.smallRejuvs" -> String.valueOf(statsForMostRecent.speedRunItems().smallRejuvs());
             case "speedrun.chippedGems" -> String.valueOf(statsForMostRecent.speedRunItems().chippedGems());
+
             case "chronicle.setItems" -> String.valueOf(statsForMostRecent.chronicleStats().chronicleSetsDiscovered());
+            case "chronicle.setMax" -> String.valueOf(statsForMostRecent.chronicleStats().maxSets());
+            case "chronicle.setPercentage" -> String.valueOf(statsForMostRecent.chronicleStats().setPercentage());
+
             case "chronicle.uniques" -> String.valueOf(statsForMostRecent.chronicleStats().chronicleUniquesDiscovered());
+            case "chronicle.uniqueMax" -> String.valueOf(statsForMostRecent.chronicleStats().maxUniques());
+            case "chronicle.uniquePercentage" -> String.valueOf(statsForMostRecent.chronicleStats().uniquePercentage());
+
             case "chronicle.runewords" -> String.valueOf(statsForMostRecent.chronicleStats().chronicleRunewordsDiscovered());
+            case "chronicle.runewordMax" -> String.valueOf(statsForMostRecent.chronicleStats().maxRunewords());
+            case "chronicle.runewordPercentage" -> String.valueOf(statsForMostRecent.chronicleStats().runewordPercentage());
+
             case "chronicle.total" -> String.valueOf(statsForMostRecent.chronicleStats().totalChronicleDiscovered());
 
             case "chronicle.item" -> String.valueOf(statsForMostRecent.chronicleStats().itemName());
             case "chronicle.itemType" -> String.valueOf(statsForMostRecent.chronicleStats().quality());
             case "chronicle.monster" -> String.valueOf(statsForMostRecent.chronicleStats().monsterName());
             case "chronicle.found" -> String.valueOf(statsForMostRecent.chronicleStats().found());
+            case "chronicle.timefound" -> dtf.format(statsForMostRecent.chronicleStats().found());
 
             default -> "${" + token + "}";
         };

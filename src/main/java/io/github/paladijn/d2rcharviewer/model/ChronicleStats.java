@@ -6,8 +6,14 @@ import java.time.LocalDateTime;
 
 public record ChronicleStats(
         int chronicleSetsDiscovered,
+        int maxSets,
+        int setPercentage,
         int chronicleUniquesDiscovered,
+        int maxUniques,
+        int uniquePercentage,
         int chronicleRunewordsDiscovered,
+        int maxRunewords,
+        int runewordPercentage,
         int totalChronicleDiscovered,
         String itemName,
         ItemQuality quality,

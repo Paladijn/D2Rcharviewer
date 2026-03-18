@@ -85,6 +85,10 @@ public class DisplayStatsCalculator {
 
     private final TXTProperties txtProperties = TXTProperties.getInstance();
 
+    private final int maxUniques;
+    private final int maxSetItems;
+    private final int maxRunewords;
+
     public DisplayStatsCalculator(@ConfigProperty(name = "savegame.location", defaultValue = ".") String savegameLocation,
                                   @ConfigProperty(name = "runewords.remove-duplicates", defaultValue = "true") boolean removeDuplicateRuneword,
                                   @ConfigProperty(name = "sharedstash.include", defaultValue = "false") boolean includeSharedStash,
@@ -95,6 +99,14 @@ public class DisplayStatsCalculator {
         this.breakpointCalculator = new BreakpointCalculator();
         this.configOptions = new ConfigOptions(removeDuplicateRuneword, includeSharedStash, runesWithX);
         this.translationService = translationService;
+
+        this.maxUniques = txtProperties.getUniques().size();
+        this.maxSetItems = txtProperties.getSetItems().stream()
+                .filter(setItem -> !setItem.cannotLoot())
+                .toList().size();
+        this.maxRunewords = txtProperties.getRunewords().stream()
+                .filter(Runeword::isActive)
+                .toList().size();
     }
 
     public DisplayStats getDisplayStats(final Path characterFile) {
@@ -164,12 +176,19 @@ public class DisplayStatsCalculator {
 
         final ChronicleStats chronicleStats = character.reignOfTheWarlock()
                 ? getChronicleStats(character.hardcore())
-                : new ChronicleStats(0, 0, 0, 0, "", ItemQuality.NONE, "", LocalDateTime.now());
+                : getEmptyChronicleStats();
 
         return new DisplayStats(character.name(), character.characterType(), character.level(), character.hardcore(), percentToNext,
                 attributes, maxHP, maxMana, resistances, breakpoints, frw, far, mf, gf, goldString(character.attributes().gold()),
                 goldString(goldInStash), goldString(goldInSharedStash), runes, runewords, keys, speedRunItems, Instant.now(),
                 chronicleStats);
+    }
+
+    private ChronicleStats getEmptyChronicleStats() {
+        return new ChronicleStats(0, maxSetItems, 0,
+                0, maxUniques, 0,
+                0, maxRunewords, 0,
+                0, "", ItemQuality.NONE, "", LocalDateTime.now());
     }
 
     public ChronicleStats getChronicleStats(boolean hardcore) {
@@ -188,14 +207,22 @@ public class DisplayStatsCalculator {
         allItems.sort(Comparator.comparing(ChronicleItem::firstTimeInMinutes).reversed());
 
         if (allItems.isEmpty()) {
-            return new ChronicleStats(0, 0, 0, 0, "", ItemQuality.NONE, "", LocalDateTime.now());
+            return getEmptyChronicleStats();
         }
 
         final ChronicleItem latest = allItems.getFirst();
         final String itemName = getChronicleItemName(latest);
-        final String monsterName = latest.monsterId() == 0 ? "" : translationService.getTranslationByKey(String.valueOf(latest.monsterId()));
+        final String monsterName = latest.monsterId() == 0 ? "-" : translationService.getTranslationByKey(String.valueOf(latest.monsterId()));
 
-        return new ChronicleStats(chronicleSetsDiscovered, chronicleUniquesDiscovered, chronicleRunewordsDiscovered, totalChronicleDiscovered,
+        final int setPercentage = Math.round(((float) chronicleSetsDiscovered / maxSetItems) * 100f);
+        final int uniquePercentage = Math.round(((float) chronicleUniquesDiscovered / maxUniques) * 100f);
+        final int runewordPercentage = Math.round(((float) chronicleRunewordsDiscovered / maxRunewords) * 100f);
+
+        return new ChronicleStats(
+                chronicleSetsDiscovered, maxSetItems, setPercentage,
+                chronicleUniquesDiscovered, maxUniques, uniquePercentage,
+                chronicleRunewordsDiscovered, maxRunewords, runewordPercentage,
+                totalChronicleDiscovered,
                 itemName,
                 latest.quality(),
                 monsterName,
@@ -205,7 +232,7 @@ public class DisplayStatsCalculator {
 
     private String getChronicleItemName(ChronicleItem latest) {
         return switch (latest.quality()) {
-            case NORMAL -> translationService.getTranslationByKey("Runeword" + latest.itemId());
+            case NORMAL -> translationService.getTranslationByKey("" + latest.itemId());
             case UNIQUE -> translationService.getTranslationByKey(txtProperties.getUniqueNameById((short)latest.itemId()).getName());
             case SET -> translationService.getTranslationByKey(txtProperties.getSetItemById((short)latest.itemId()).getName());
 

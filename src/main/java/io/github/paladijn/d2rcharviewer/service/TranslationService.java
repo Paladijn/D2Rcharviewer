@@ -52,6 +52,7 @@ public class TranslationService {
             storeTranslationItems(objectMapper, "translations/mercenaries.json");
             storeTranslationForObjects(objectMapper);
             storeTranslationForMonsters(objectMapper);
+            storeTranslationForRunewords(objectMapper);
             storeTranslationItems(objectMapper, "translations/skills.json");
         } catch (IOException e) {
             log.error("Could not read one of the translation jsons, please ensure they are present in the translations/ folder", e);
@@ -67,27 +68,44 @@ public class TranslationService {
     }
 
     private void storeTranslationItems(ObjectMapper objectMapper, String fileLocation) throws IOException {
-        final InputStream resourceAsStream = new FileInputStream(fileLocation);
-        final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
-        translatedItems.forEach(translatedItem -> translationsMappedByKey.put(fixedKey(translatedItem), getTranslatedValue(translatedItem)));
+        try(final InputStream resourceAsStream = new FileInputStream(fileLocation)) {
+            final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+            translatedItems.forEach(translatedItem -> translationsMappedByKey.put(fixedKey(translatedItem), getTranslatedValue(translatedItem)));
 
-        log.debug("found {} translated items in {}", translatedItems.size(), fileLocation);
+            log.debug("found {} translated items in {}", translatedItems.size(), fileLocation);
+        }
     }
 
     private void storeTranslationForObjects(ObjectMapper objectMapper) throws IOException {
-        final InputStream resourceAsStream = new FileInputStream("translations/objects.json");
-        final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
-        translatedItems.forEach(translatedItem -> translationsMappedByKey.put(String.valueOf(translatedItem.id()), getTranslatedValue(translatedItem)));
+        try(final InputStream resourceAsStream = new FileInputStream("translations/objects.json")) {
+            final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+            translatedItems.forEach(translatedItem -> translationsMappedByKey.put(String.valueOf(translatedItem.id()), getTranslatedValue(translatedItem)));
 
-        log.debug("found {} translated items in objects.json", translatedItems.size());
+            log.debug("found {} translated items in objects.json", translatedItems.size());
+        }
     }
 
     private void storeTranslationForMonsters(ObjectMapper objectMapper) throws IOException {
-        final InputStream resourceAsStream = new FileInputStream("translations/monsters.json");
-        final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
-        translatedItems.forEach(translatedItem -> translationsMappedByKey.put(String.valueOf(translatedItem.id()), getTranslatedValue(translatedItem)));
+        try(final InputStream resourceAsStream = new FileInputStream("translations/monsters.json")) {
+            final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+            translatedItems.forEach(translatedItem -> translationsMappedByKey.put(String.valueOf(translatedItem.id()), getTranslatedValue(translatedItem)));
 
-        log.debug("found {} translated items in monsters.json", translatedItems.size());
+            log.debug("found {} translated items in monsters.json", translatedItems.size());
+        }
+    }
+
+    /** this is specifically for the runewords found through the chronicle */
+    private void storeTranslationForRunewords(ObjectMapper objectMapper) throws IOException {
+        try(final InputStream resourceAsStream = new FileInputStream("translations/item-runes.json")) {
+            final List<TranslationItem> translatedItems = objectMapper.readValue(resourceAsStream, new TypeReference<>() {});
+            translatedItems.forEach(translatedItem -> {
+                if (translatedItem.key().startsWith("Runeword")) {
+                    translationsMappedByKey.put(String.valueOf(translatedItem.id()), getTranslatedValue(translatedItem));
+                }
+            });
+
+            log.debug("found {} translated runewords in runes.json", translatedItems.size());
+        }
     }
 
     private static String fixedKey(TranslationItem translatedItem) {
