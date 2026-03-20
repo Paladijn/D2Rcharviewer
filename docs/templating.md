@@ -30,55 +30,58 @@ Separate .css files can be hosted in templates/css/ and its subfolders. To use t
 Separate javascript files can be hosted in templates/js/ and its subfolders. To use them link to `js/`, just make sure they work well in the OBS browser window.
 
 # Available tokens
-| token                        | type          | notes                                                                                                    |
-|------------------------------|---------------|----------------------------------------------------------------------------------------------------------|
-| name                         | string        |                                                                                                          |
-| percentToNext                | string        | percentage to next level, formatted as a string, without the %                                           |
-| hardcore                     | string        | hardcore if hardcore character, empty string otherwise                                                   |
-| level                        | number        |                                                                                                          |
-| gold                         | string        | number is rounded > 1000 to 1K etc.                                                                      |
-| goldInStash                  | string        | number is rounded > 1000 to 1K etc.                                                                      |
-| goldInSharedStash            | string        | number is rounded > 1000 to 1K etc.                                                                      |
-| mf                           | number        | magic find %                                                                                             |
-| gf                           | number        | gold find %                                                                                              |
-| attributes.strength          | number        |                                                                                                          |
-| attributes.dexterity         | number        |                                                                                                          |
-| attributes.vitality          | number        |                                                                                                          |
-| attributes.energy            | number        |                                                                                                          |
-| resistances.fire             | number        |                                                                                                          |
-| resistances.lightning        | number        |                                                                                                          |
-| resistances.cold             | number        |                                                                                                          |
-| resistances.poison           | number        |                                                                                                          |
-| resistances.physical         | number        |                                                                                                          |
-| breakpoints.fCR              | number        | current Faster Cast Rate breakpoint                                                                      |
-| breakpoints.nextFCR          | number        | next Faster Cast Rate breakpoint                                                                         |
-| breakpoints.fHR              | number        | current Faster Hit Recovery breakpoint                                                                   |
-| breakpoints.nextFHR          | number        | next Faster Hit Recovery breakpoint                                                                      |
-| breakpoints.fBR              | number        | current Faster Block Rate breakpoint                                                                     |
-| breakpoints.nextFBR          | number        | next Faster Block Rate breakpoint                                                                        |
-| fasterRunWalk                | number        | faster run walk %                                                                                        |
-| runes                        | string        | list of runes in inventory and stash (including shared stash if property enabled)                        |
-| runewords                    | string        | list of runewords you can create with your runes                                                         |
-| lastUpdated                  | string        | hh:mm timestamp of you the last time your character data was updated (can be up to 5 minutes)            |
-| lastUpdatedAgo               | String        | file updated time ago, 'xxs' below 1 minute, m:ss when it was longer than one minute ago                 |
-| keys.terror                  | number        | number of Key of Terror in your inventory/stash                                                          |
-| keys.hate                    | number        | number of Key of Hate in your inventory/stash                                                            |
-| keys.destruction             | number        | number of Key of Destruction in your inventory/stash                                                     |
-| keys.totalKeys               | number        | number of total keys available, maxed at 3 per type (so if you have 4 keys of hate it will only count 3) |
-| speedrun.fullRejuvs          | number        | Disabled on RotW - number of full rejuvenation potions in your inventory/stash                           |
-| speedrun.smallRejuvs         | number        | Disabled on RotW - number of (normal/35%) rejuvenation potions in your inventory/stash                   |
-| speedrun.chippedGems         | number        | Disabled on RotW - number of chipped gems in your inventory                                              |
-| chronicle.setItems           | number        | The amount of set items discovered so far                                                                |
-| chronicle.setMax             | number        | The max amount of set items available                                                                    |
-| chronicle.setPercentage      | number        | The percentage of set items discovered so far                                                            |
-| chronicle.uniques            | number        | The max amount of unique available                                                                       |
-| chronicle.uniqueMax          | number        | The amount of unique items discovered so far                                                             |
-| chronicle.uniquePercentage   | number        | The percentage of unique items discovered so far                                                         |
-| chronicle.runewords          | number        | The amount of runewords discovered so far                                                                |
-| chronicle.runewordMax        | number        | The max amount of runewords available                                                                    |
-| chronicle.runewordPercentage | number        | The percentage of runewords discovered so far                                                            |
-| chronicle.total              | number        | The amount of set, unique and runeword items discovered so far                                           |
-| chronicle.found              | LocalDateTime | date + time the most recent chronicle item was found                                                     |
-| chronicle.foundTime          | HH:mm         | hour + minutes the most recent chronicle item was found (in 24h format)                                  |
+| token                         | type          | notes                                                                                                    |
+|-------------------------------|---------------|----------------------------------------------------------------------------------------------------------|
+| name                          | string        |                                                                                                          |
+| percentToNext                 | string        | percentage to next level, formatted as a string, without the %                                           |
+| hardcore                      | string        | hardcore if hardcore character, empty string otherwise                                                   |
+| level                         | number        |                                                                                                          |
+| gold                          | string        | number is rounded > 1000 to 1K etc.                                                                      |
+| goldInStash                   | string        | number is rounded > 1000 to 1K etc.                                                                      |
+| goldInSharedStash             | string        | number is rounded > 1000 to 1K etc.                                                                      |
+| mf                            | number        | magic find %                                                                                             |
+| gf                            | number        | gold find %                                                                                              |
+| attributes.strength           | number        |                                                                                                          |
+| attributes.dexterity          | number        |                                                                                                          |
+| attributes.vitality           | number        |                                                                                                          |
+| attributes.energy             | number        |                                                                                                          |
+| resistances.fire              | number        |                                                                                                          |
+| resistances.lightning         | number        |                                                                                                          |
+| resistances.cold              | number        |                                                                                                          |
+| resistances.poison            | number        |                                                                                                          |
+| resistances.physical          | number        |                                                                                                          |
+| breakpoints.fCR               | number        | current Faster Cast Rate breakpoint                                                                      |
+| breakpoints.nextFCR           | number        | next Faster Cast Rate breakpoint                                                                         |
+| breakpoints.fHR               | number        | current Faster Hit Recovery breakpoint                                                                   |
+| breakpoints.nextFHR           | number        | next Faster Hit Recovery breakpoint                                                                      |
+| breakpoints.fBR               | number        | current Faster Block Rate breakpoint                                                                     |
+| breakpoints.nextFBR           | number        | next Faster Block Rate breakpoint                                                                        |
+| fasterRunWalk                 | number        | faster run walk %                                                                                        |
+| runes                         | string        | list of runes in inventory and stash (including shared stash if property enabled)                        |
+| runewords                     | string        | list of runewords you can create with your runes                                                         |
+| lastUpdated                   | string        | hh:mm timestamp of you the last time your character data was updated (can be up to 5 minutes)            |
+| lastUpdatedAgo                | String        | file updated time ago, 'xxs' below 1 minute, m:ss when it was longer than one minute ago                 |
+| keys.terror                   | number        | number of Key of Terror in your inventory/stash                                                          |
+| keys.hate                     | number        | number of Key of Hate in your inventory/stash                                                            |
+| keys.destruction              | number        | number of Key of Destruction in your inventory/stash                                                     |
+| keys.totalKeys                | number        | number of total keys available, maxed at 3 per type (so if you have 4 keys of hate it will only count 3) |
+| speedrun.fullRejuvs           | number        | Disabled on RotW - number of full rejuvenation potions in your inventory/stash                           |
+| speedrun.smallRejuvs          | number        | Disabled on RotW - number of (normal/35%) rejuvenation potions in your inventory/stash                   |
+| speedrun.chippedGems          | number        | Disabled on RotW - number of chipped gems in your inventory                                              |
+| chronicle.setItems            | number        | The amount of set items discovered so far                                                                |
+| chronicle.set.max             | number        | The max amount of set items available                                                                    |
+| chronicle.set.percentage      | number        | The percentage of set items discovered so far                                                            |
+| chronicle.uniques             | number        | The max amount of unique available                                                                       |
+| chronicle.unique.max          | number        | The amount of unique items discovered so far                                                             |
+| chronicle.unique.percentage   | number        | The percentage of unique items discovered so far                                                         |
+| chronicle.runewords           | number        | The amount of runewords discovered so far                                                                |
+| chronicle.runeword.max        | number        | The max amount of runewords available                                                                    |
+| chronicle.runeword.percentage | number        | The percentage of runewords discovered so far                                                            |
+| chronicle.progress.unique     | number        | % of total chronicle items by unique                                                                     |
+| chronicle.progress.set        | number        | % of total chronicle items by set (including uniques)                                                    |
+| chronicle.progress.runeword   | number        | % of total chronicle items by runeword (including uniques + sets)                                        |
+| chronicle.total               | number        | The amount of set, unique and runeword items discovered so far                                           |
+| chronicle.found               | LocalDateTime | date + time the most recent chronicle item was found                                                     |
+| chronicle.foundTime           | HH:mm         | hour + minutes the most recent chronicle item was found (in 24h format)                                  |
 
 If you think any other data should be added please request so in an issue on GitHub. Not all fields can be added unfortunately (such as amount of times a character has died).

@@ -44,6 +44,7 @@ import io.github.paladijn.d2rsavegameparser.parser.ParseException;
 import io.github.paladijn.d2rsavegameparser.parser.SharedStashParser;
 import io.github.paladijn.d2rsavegameparser.txt.MiscStats;
 import io.github.paladijn.d2rsavegameparser.txt.Runeword;
+import io.github.paladijn.d2rsavegameparser.txt.SetItem;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -51,6 +52,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -102,7 +104,7 @@ public class DisplayStatsCalculator {
 
         this.maxUniques = txtProperties.getUniques().size();
         this.maxSetItems = txtProperties.getSetItems().stream()
-                .filter(setItem -> !setItem.cannotLoot())
+                .filter(SetItem::spawnable)
                 .toList().size();
         this.maxRunewords = txtProperties.getRunewords().stream()
                 .filter(Runeword::isActive)
@@ -188,7 +190,8 @@ public class DisplayStatsCalculator {
         return new ChronicleStats(0, maxSetItems, 0,
                 0, maxUniques, 0,
                 0, maxRunewords, 0,
-                0, "", ItemQuality.NONE, "", LocalDateTime.now());
+                0, 0, 0, 0,
+                "", ItemQuality.NONE, "", LocalDateTime.now());
     }
 
     public ChronicleStats getChronicleStats(boolean hardcore) {
@@ -212,17 +215,45 @@ public class DisplayStatsCalculator {
 
         final ChronicleItem latest = allItems.getFirst();
         final String itemName = getChronicleItemName(latest);
-        final String monsterName = latest.monsterId() == 0 ? "-" : translationService.getTranslationByKey(String.valueOf(latest.monsterId()));
+        final String monsterName = latest.monsterId() == 0 ? "" : translationService.getTranslationByKey(String.valueOf(latest.monsterId()));
 
-        final int setPercentage = Math.round(((float) chronicleSetsDiscovered / maxSetItems) * 100f);
-        final int uniquePercentage = Math.round(((float) chronicleUniquesDiscovered / maxUniques) * 100f);
-        final int runewordPercentage = Math.round(((float) chronicleRunewordsDiscovered / maxRunewords) * 100f);
+        int setPercentage = Math.round(((float) chronicleSetsDiscovered / maxSetItems) * 100f);
+        int uniquePercentage = Math.round(((float) chronicleUniquesDiscovered / maxUniques) * 100f);
+        int runewordPercentage = Math.round(((float) chronicleRunewordsDiscovered / maxRunewords) * 100f);
+        // bump by 1 in case there's at least one item found, but the % is still 0.
+        if (chronicleSetsDiscovered > 0) {
+            setPercentage = Math.max(1, setPercentage);
+        }
+        if (chronicleUniquesDiscovered > 0) {
+            uniquePercentage = Math.max(1, uniquePercentage);
+        }
+        if (chronicleRunewordsDiscovered > 0) {
+            runewordPercentage = Math.max(1, runewordPercentage);
+        }
+
+        final int totalChronicleItems = maxSetItems + maxUniques + maxRunewords;
+        int uniqueProgress = Math.round(((float) chronicleUniquesDiscovered / totalChronicleItems) * 100f);
+        int setProgress = Math.round(((float) chronicleSetsDiscovered / totalChronicleItems) * 100f);
+        int runewordProgress = Math.round(((float) chronicleRunewordsDiscovered / totalChronicleItems) * 100f);
+        // we'll bump up all % by 1 in case it's 0 due to rounding while having at least one item: total atm. is 643, meaning you'll need at least 7 items to get a visible bar otherwise.
+        if (chronicleUniquesDiscovered > 0) {
+            uniqueProgress = Math.max(1, uniqueProgress);
+        }
+        if (chronicleSetsDiscovered > 0) {
+            setProgress = Math.max(1, setProgress);
+        }
+        if (chronicleRunewordsDiscovered > 0) {
+            runewordProgress = Math.max(1, runewordProgress);
+        }
 
         return new ChronicleStats(
                 chronicleSetsDiscovered, maxSetItems, setPercentage,
                 chronicleUniquesDiscovered, maxUniques, uniquePercentage,
                 chronicleRunewordsDiscovered, maxRunewords, runewordPercentage,
                 totalChronicleDiscovered,
+                uniqueProgress,
+                uniqueProgress + setProgress,
+                uniqueProgress + setProgress + runewordProgress,
                 itemName,
                 latest.quality(),
                 monsterName,
@@ -265,6 +296,9 @@ public class DisplayStatsCalculator {
         final ByteBuffer buffer;
         try {
             buffer = ByteBuffer.wrap(Files.readAllBytes(Path.of(savegameFolder, stashFilename)));
+        } catch (FileSystemException fse) {
+            log.info("Could not read shared stash due to {}, returning empty tabs", fse.getMessage());
+            return List.of();
         } catch (IOException e) {
             throw new ParseException("could not read shared stash file %s".formatted(stashFilename), e);
         }
@@ -275,15 +309,18 @@ public class DisplayStatsCalculator {
         final String stashFilename = getSharedStashFilename(isHardcore, true);
         final Path stashFile = Path.of(savegameFolder, stashFilename);
         if (!Files.exists(stashFile)) {
-            log.debug("modern stash file doesn't exist, returning empty Chronicle data");
+            log.debug("Modern stash file doesn't exist, returning empty Chronicle data");
             return new ChronicleStashTab(0, 0, 0, List.of(), List.of(), List.of());
         }
 
         final ByteBuffer buffer;
         try {
             buffer = ByteBuffer.wrap(Files.readAllBytes(stashFile));
+        } catch (FileSystemException fse) {
+            log.info("Could not read shared stash file {} due to {}, returning empty Chronicle data.",  stashFilename, fse.getMessage());
+            return new ChronicleStashTab(0, 0, 0, List.of(), List.of(), List.of());
         } catch (IOException e) {
-            throw new ParseException("could not read shared stash file %s".formatted(stashFilename), e);
+            throw new ParseException("Could not read shared stash file %s".formatted(stashFilename), e);
         }
         return sharedStashParser.getChronicleStashTab(buffer);
     }

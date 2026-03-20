@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: blanchedalmond;
+        }
+
+        .combined-progress {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .combined-progress::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+
+            background: conic-gradient(
+                    #908858 0% ${chronicle.progress.uniques}%,        /* uniques - gold */
+                    #00c400 ${chronicle.progress.uniques}% ${chronicle.progress.sets}%,       /* sets - green */
+                    #808B96 ${chronicle.progress.sets}% ${chronicle.progress.runewords}%,       /* runewords - gray */
+                    #e0e0e0 ${chronicle.progress.runewords}% 100%       /* remainder - light gray */
+            );
+            -webkit-mask: radial-gradient(closest-side, transparent 70%, black 70%);
+            mask: radial-gradient(closest-side, transparent 70%, black 70%);
+            z-index: -1;
+        }
+
+        .progress-content {
+            text-align: center;
+            font-family: Exocet, sans-serif;
+        }
+
+        .vertical-container {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .stats {
+            font-weight: bold;
+            font-family: Exocet, sans-serif;
+            font-size: 20px;
+            margin: 2px 0;
+        }
+
+        .stats-uniques, .stats-UNIQUE { color: #908858; }
+        .stats-sets, .stats-SET { color: #00c400; }
+        .stats-runewords, .stats-NORMAL { color: #808B96; }
+
+        .latest {
+            font-family: Exocet, sans-serif;
+            text-align: center;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="vertical-container">
+    <div class="combined-progress">
+        <div class="progress-content">
+            <div class="stats stats-uniques">${chronicle.uniques} / ${chronicle.unique.max}</div>
+            <div class="stats stats-sets">${chronicle.setItems} / ${chronicle.set.max}</div>
+            <div class="stats stats-runewords">${chronicle.runewords} / ${chronicle.runeword.max}</div>
+        </div>
+    </div>
+
+    <div class="latest">${chronicle.found}</div>
+    <div class="latest stats-${chronicle.itemType}">${chronicle.item}</div>
+    <div class="latest">${chronicle.monster}</div>
+</div>
+</body>
+</html>
