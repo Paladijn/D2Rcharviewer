@@ -1,15 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script type="text/javascript">
+        function softRefresh() {
+            location.replace(location.href);
+        }
+
+        setTimeout(softRefresh, 1000); // every second
+    </script>
+
     <style>
         body {
-            background-color: blanchedalmond;
+            background-color: background-color: rgba(0, 0, 0, 0);
         }
 
         .combined-progress {
             position: relative;
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -27,7 +35,7 @@
                     #908858 0% ${chronicle.progress.uniques}%,        /* uniques - gold */
                     #00c400 ${chronicle.progress.uniques}% ${chronicle.progress.sets}%,       /* sets - green */
                     #808B96 ${chronicle.progress.sets}% ${chronicle.progress.runewords}%,       /* runewords - gray */
-                    #e0e0e0 ${chronicle.progress.runewords}% 100%       /* remainder - light gray */
+                    rgba(0, 0, 0, 0.5) ${chronicle.progress.runewords}% 100%       /* remainder - light gray */
             );
             -webkit-mask: radial-gradient(closest-side, transparent 70%, black 70%);
             mask: radial-gradient(closest-side, transparent 70%, black 70%);
@@ -61,6 +69,10 @@
             text-align: center;
             margin: 2px 0;
         }
+
+        .white-text {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -73,9 +85,9 @@
         </div>
     </div>
 
-    <div class="latest">${chronicle.found}</div>
+    <div class="latest white-text">${chronicle.found}</div>
     <div class="latest stats-${chronicle.itemType}">${chronicle.item}</div>
-    <div class="latest">${chronicle.monster}</div>
+    <div class="latest white-text">${chronicle.monster}</div>
 </div>
 </body>
 </html>

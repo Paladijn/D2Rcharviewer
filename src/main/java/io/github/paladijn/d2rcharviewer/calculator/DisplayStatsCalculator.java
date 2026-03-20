@@ -474,10 +474,13 @@ public class DisplayStatsCalculator {
     }
 
     private boolean requirementsMet(int charLevel, int strength, int dexterity, Item item) {
-        final int adjustRequirementPercentage = item.properties().stream()
+        int adjustRequirementPercentage = item.properties().stream()
                 .filter(itemProperty -> itemProperty.name().equals("item_req_percent"))
                     .findAny().map(itemProperty -> itemProperty.values()[0])
                     .orElse(0);
+        if (item.itemName().equals("Immortal King's Stone Crusher")) { // it does not have item_req_percent, but requires half the strength.
+            adjustRequirementPercentage = -50;
+        }
 
         final int reqStr = adjustRequirementPercentage == 0
                 ? item.reqStr()
