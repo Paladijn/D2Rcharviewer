@@ -21,6 +21,7 @@ public record ChronicleStats(
         String itemName,
         ItemQuality quality,
         String monsterName,
-        LocalDateTime found
+        LocalDateTime found,
+        int treasureClass
 ) {
 }

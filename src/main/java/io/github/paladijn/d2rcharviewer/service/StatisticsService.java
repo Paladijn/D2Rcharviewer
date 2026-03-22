@@ -161,6 +161,7 @@ public class StatisticsService {
             case "chronicle.monster" -> String.valueOf(statsForMostRecent.chronicleStats().monsterName());
             case "chronicle.found" -> dtfFullDate.format(statsForMostRecent.chronicleStats().found());
             case "chronicle.timefound" -> dtf.format(statsForMostRecent.chronicleStats().found());
+            case "chronicle.tc" -> String.valueOf(statsForMostRecent.chronicleStats().treasureClass());
 
             default -> "${" + token + "}";
         };

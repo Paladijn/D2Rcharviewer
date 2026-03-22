@@ -46,6 +46,7 @@ import io.github.paladijn.d2rsavegameparser.txt.MiscStats;
 import io.github.paladijn.d2rsavegameparser.txt.Runeword;
 import io.github.paladijn.d2rsavegameparser.txt.SetItem;
 import io.github.paladijn.d2rsavegameparser.txt.TXTProperties;
+import io.github.paladijn.d2rsavegameparser.txt.UniqueItem;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
@@ -62,6 +63,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.github.paladijn.d2rsavegameparser.model.ItemContainer.INVENTORY;
@@ -191,7 +193,7 @@ public class DisplayStatsCalculator {
                 0, maxUniques, 0,
                 0, maxRunewords, 0,
                 0, 0, 0, 0,
-                "", ItemQuality.NONE, "", LocalDateTime.now());
+                "", ItemQuality.NONE, "", LocalDateTime.now(), 0);
     }
 
     public ChronicleStats getChronicleStats(boolean hardcore) {
@@ -246,6 +248,8 @@ public class DisplayStatsCalculator {
             runewordProgress = Math.max(1, runewordProgress);
         }
 
+        int treasureClass = getTreasureClass(latest.quality(), latest.itemId());
+
         return new ChronicleStats(
                 chronicleSetsDiscovered, maxSetItems, setPercentage,
                 chronicleUniquesDiscovered, maxUniques, uniquePercentage,
@@ -257,8 +261,31 @@ public class DisplayStatsCalculator {
                 itemName,
                 latest.quality(),
                 monsterName,
-                latest.firstTimeInMinutes()
+                latest.firstTimeInMinutes(),
+                treasureClass
         );
+    }
+
+    private int getTreasureClass(ItemQuality quality, int itemId) {
+        if (quality == ItemQuality.UNIQUE) {
+            final Optional<UniqueItem> item = txtProperties.getUniques().stream()
+                    .filter(uq -> uq.getId() == itemId)
+                    .findFirst();
+            if (item.isPresent()) {
+                return txtProperties.getTreasureClassByCode(item.get().getCode());
+            }
+        }
+
+        if (quality == ItemQuality.SET) {
+            final Optional<SetItem> item = txtProperties.getSetItems().stream()
+                    .filter(s -> s.getId() == itemId)
+                    .findFirst();
+            if (item.isPresent()) {
+                return txtProperties.getTreasureClassByCode(item.get().getCode());
+            }
+        }
+
+        return 0;
     }
 
     private String getChronicleItemName(ChronicleItem latest) {

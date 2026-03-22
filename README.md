@@ -1,6 +1,6 @@
 # Character viewer for Diablo II: Resurrected
 
-This character viewer will generate a html representation of your character at http://localhost:8080/stats (you can change the port and host with the configuration options below) with very low cpu and memory usage.
+This character viewer will generate a html representation of your character at http://localhost:8080/stats (you can change the port and host with the configuration options below) with very low cpu and memory usage. The chronicle stats are available at http://localhost:8080/stats/chronicle
 
 The output is templated and matches ${fields} which are replaced with the character data. You're free to alter the markup and remove fields you don't want. See [templates](docs/templating.md) for more info.  
 
