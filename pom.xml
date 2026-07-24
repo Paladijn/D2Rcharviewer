@@ -17,11 +17,11 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.37.4</quarkus.platform.version>
         <skipITs>true</skipITs>
-        <surefire-plugin.version>3.5.5</surefire-plugin.version>
+        <surefire-plugin.version>3.5.6</surefire-plugin.version>
         <maven.versions.plugin>2.21.0</maven.versions.plugin>
 
-        <openrewrite-plugin.version>6.32.0</openrewrite-plugin.version>
-        <openrewrite-migrate-java.version>3.29.0</openrewrite-migrate-java.version>
+        <openrewrite-plugin.version>6.44.0</openrewrite-plugin.version>
+        <openrewrite-migrate-java.version>3.40.0</openrewrite-migrate-java.version>
 
         <d2rsavegameparser.version>3.1.1</d2rsavegameparser.version>
         <assertj.version>3.27.7</assertj.version>
