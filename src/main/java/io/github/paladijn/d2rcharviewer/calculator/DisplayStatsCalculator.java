@@ -290,12 +290,17 @@ public class DisplayStatsCalculator {
 
     private String getChronicleItemName(ChronicleItem latest) {
         return switch (latest.quality()) {
-            case NORMAL -> translationService.getTranslationByKey("" + latest.itemId());
-            case UNIQUE -> translationService.getTranslationByKey(txtProperties.getUniqueNameById((short)latest.itemId()).getName());
+            case NORMAL -> translationService.getTranslationByKey("" + latest.itemId()); // TODO 20261001 -- is this even possible?
+            case UNIQUE -> translationService.getTranslationByKey(getUniqueNameById(latest));
             case SET -> translationService.getTranslationByKey(txtProperties.getSetItemById((short)latest.itemId()).getName());
 
             default -> String.valueOf(latest.itemId());
         };
+    }
+
+    private String getUniqueNameById(ChronicleItem latest) {
+        final UniqueItem uniqueItem = txtProperties.getUniqueNameById((short) latest.itemId());
+        return uniqueItem == null ? "unknown unique: " + latest.itemId() : uniqueItem.getName();
     }
 
     private String goldString(long goldValue) {
