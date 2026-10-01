@@ -98,7 +98,7 @@ public class DiabloRunItemTransformer {
             results.add(new ItemPayload(
                     baseName,
                     getItemName(item, baseName),
-                    item.setName() == null ? "" : item.setName(),
+                    item.setName() == null ? "" : translationService.getTranslationByKey(item.setName()),
                     runewordRunes,
                     getQuality(item),
                     getItemProperties(item, level),
@@ -180,9 +180,13 @@ public class DiabloRunItemTransformer {
                 ? translationService.getTranslationByKey(item.code())
                 : getBaseName(item.itemType(), item.code());
 
+        String personalized = "";
+        if (item.isPersonalized() && item.isRuneword()) { // this is only for runewords where the runeword retains the original name, and personalises the type.
+            personalized = item.personalizedName().endsWith("s") ? item.personalizedName() + "' " : item.personalizedName() + "'s ";
+        }
         return baseName.equals(TRANSLATION_NOT_FOUND)
-                ? item.itemName()
-                : baseName;
+                ? baseName
+                : personalized + baseName;
     }
 
     private String getItemName(final Item item, final String baseName) {
@@ -194,11 +198,13 @@ public class DiabloRunItemTransformer {
             return translationService.getTranslationByKey(runewordLabelsByName.get(item.itemName()));
         }
 
+        String personalized = getPersonalizedName(item);
+
         if (item.quality() == ItemQuality.MAGIC) {
-            String prefix = "";
+            String prefix = personalized;
             String suffix = "";
             if (!item.prefixIds().isEmpty()) {
-                prefix = translationService.getTranslationByKey(txtProperties.getMagicPrefix(item.prefixIds().getFirst()).getName()) + " ";
+                prefix += translationService.getTranslationByKey(txtProperties.getMagicPrefix(item.prefixIds().getFirst()).getName()) + " ";
             }
             if (!item.suffixIds().isEmpty()) {
                 suffix = " " + translationService.getTranslationByKey(txtProperties.getMagicSuffix(item.suffixIds().getFirst()).getName());
@@ -210,14 +216,22 @@ public class DiabloRunItemTransformer {
         if (item.quality() == ItemQuality.RARE || item.quality() == ItemQuality.CRAFT) {
             final String name1 = (item.rareNameId1() >= 156) ? txtProperties.getRarePrefixById(item.rareNameId1() - 156) : "DID_YOU_FORGET_TO_SET_THE_PREFIX_ID_SLIV";
             final String name2 = txtProperties.getRareSuffixById(item.rareNameId2() - 1);
-            return "%s %s".formatted(translationService.getTranslationByKey(name1), translationService.getTranslationByKey(name2));
+            return "%s%s %s".formatted(personalized, translationService.getTranslationByKey(name1), translationService.getTranslationByKey(name2));
         }
 
         if (item.quality() == ItemQuality.SET || item.quality() == ItemQuality.UNIQUE) {
-            return translationService.getTranslationByKey(item.itemName());
+            return personalized + translationService.getTranslationByKey(item.itemName());
         }
 
-        return translationService.getTranslationByKey(item.code());
+        return personalized + translationService.getTranslationByKey(item.code());
+    }
+
+    private static String getPersonalizedName(Item item) {
+        if (!item.isPersonalized()) {
+            return "";
+        }
+
+        return item.personalizedName().endsWith("s") ? item.personalizedName() + "' " : item.personalizedName() + "'s ";
     }
 
     List<String> getItemProperties(final Item item, final int level) {
