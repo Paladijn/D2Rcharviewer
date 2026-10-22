@@ -15,10 +15,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.40.1</quarkus.platform.version>
+        <quarkus.platform.version>3.40.1.1</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.6.0</surefire-plugin.version>
-        <maven.versions.plugin>2.22.0</maven.versions.plugin>
+        <maven.versions.plugin>2.23.0</maven.versions.plugin>
 
         <openrewrite-plugin.version>6.46.1</openrewrite-plugin.version>
         <openrewrite-migrate-java.version>3.42.1</openrewrite-migrate-java.version>
